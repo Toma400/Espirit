@@ -1,0 +1,12 @@
+= Espirit
+
+*Espirit* is simple parser of Morrowind .esp & .esm files, written entirely in
+Nim language.
+
+Currently it is in very early development stage, thus should not be used. +
+Make sure to check it out in few months however, as I will strive to make it
+fairly complete by that time.
+
+=== License
+
+Currently, Espirit follows All Rights Reserved license.
