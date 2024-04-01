@@ -1,12 +1,31 @@
-= Espirit
+image:espirit.png[]
+
+== Espirit
 
 *Espirit* is simple parser of Morrowind .esp & .esm files, written entirely in
 Nim language.
 
-Currently it is in very early development stage, thus should not be used. +
+Currently, it is in very early development stage, thus should not be used. +
 Make sure to check it out in few months however, as I will strive to make it
 fairly complete by that time.
 
-=== License
+=== Installing and use
+You can install Espirit by using standard Nimble installation:
+====
+nimble install https://github.com/Toma400/Espirit
+====
 
+=== License
 Currently, Espirit follows All Rights Reserved license.
+
+=== FAQ
+Q: *Will other games (Oblivion, Skyrim, Fallout) be covered?* +
+A: Not by me. If you want to make PR with their respective parsers, feel
+   free to contribute.
+
+Q: *Will saving to .esp, merging and other actions be available?* +
+A: It's not planned at the moment. If either the plugin use by me becomes
+important part of my future development, or if the plugin gets enough
+attention, I can think about it. +
+Mind you that plugin merging and editing is covered by Construction Set
+and software like TESAME.
