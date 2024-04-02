@@ -1,8 +1,12 @@
 import std/strformat
 import std/strutils
 import std/os
+import formats
 import streams
+import tables
 import parse
+
+export tables
 
 # srcs: https://stackoverflow.com/questions/33107332/writing-reading-binary-file-in-nim
 #       https://stackoverflow.com/questions/26845538/parsing-a-binary-file-what-is-a-modern-way
@@ -11,11 +15,14 @@ import parse
 
 type
   RecordHeader = object
+    bytestr* : string
 
   MWPlugin = object
     name*   : string
     master* : bool
     head*   : RecordHeader
+    deps*   : OrderedTable[string, uint64] # MASTERFILE DEPENDENCIES || .esm file | bytes size
+    # string, JSONNode - all // variant = [value]
 
 proc `$`* (plugin: MWPlugin): string =
     result = fmt"""
@@ -24,7 +31,7 @@ proc `$`* (plugin: MWPlugin): string =
     """.unindent()
 
 proc newRecordHeader(header_string: string): RecordHeader =
-    discard
+    result.bytestr = header_string
 
 proc newMWPlugin* (path: string): MWPlugin =
     let fs : FileStream = newFileStream(path)
@@ -42,4 +49,19 @@ proc newMWPlugin* (path: string): MWPlugin =
       result.master = true
     else: raise newException(Exception, "Cannot verify master file. Make sure the file scanned is of .esp/.esm format.")
 
-    result.head = newRecordHeader(fr.read(300)) # 300 bytes after initial check
+    discard readStr(fr, 12) # loose bytes
+    if readStr(fr, 4) != "HEDR": # check for header
+      raise newException(Exception, "File header not found.")
+    discard readStr(fr, 4) # loose bytes
+
+    result.head = newRecordHeader(fr.read(300)) # 300 bytes after initial check (w/o TES3 header)
+
+    # records
+    while fr.len > 0:
+      let rec_type = readStr(fr, 4)
+      case rec_type:
+        of "MAST": parseMAST(fr, result.deps)
+        else:
+          break
+
+      discard readStr(fr, 4) # loose bytes

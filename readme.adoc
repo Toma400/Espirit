@@ -14,6 +14,14 @@ You can install Espirit by using standard Nimble installation:
 ====
 nimble install https://github.com/Toma400/Espirit
 ====
+In code, simply import the library and use *newMWPlugin* proc:
+[source,java]
+----
+import espirit
+
+let esp = newMWPlugin("your_mod_file.esp")
+----
+You can find reference to the object in *espirit.nim* file.
 
 === License
 Currently, Espirit follows All Rights Reserved license.

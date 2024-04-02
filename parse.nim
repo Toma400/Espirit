@@ -1,4 +1,6 @@
 import flatty/binny
+import std/strutils
+import std/parseutils
 
 # yields fragment of string [0..i] then removes it
 proc read* (s: var string, i: int): string =
@@ -8,3 +10,9 @@ proc read* (s: var string, i: int): string =
 # alias procs for flatty/binny, so you don't need to type 0 and v twice
 proc readStr* (s: var string, v: int): string =
     return readStr(s.read(v), 0, v)
+
+proc readChar* (s: var string): char =
+    return readStr(s.read(1), 0, 1)[0]
+
+proc readUint64* (s: var string, v: int): uint64 =
+    return readUint64(s.read(v), 0)
