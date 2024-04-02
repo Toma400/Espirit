@@ -48,12 +48,11 @@ proc parseCLOT* (fr: var string): MWCloth =
       ctdt = opt == "CTDT"
 
     if ctdt:
-      discard readStr(fr, 3) # loose bytes
+      discard readStr(fr, 4) # loose bytes
       result.data = MWClothData(kind:   readUint32(fr, 4),
                                 weight: readFloat32(fr, 4),
-                                value:  readUint16(fr, 4),
-                                ench:   readUint16(fr, 4))
-      discard readStr(fr, 1) # loose bytes
+                                value:  readUint16(fr, 2),
+                                ench:   readUint16(fr, 2))
 
     else:
       raise newException(Exception, "No CTDT field found for CLOT entry: " & result.id)
