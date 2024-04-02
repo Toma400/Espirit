@@ -2,6 +2,7 @@ import std/strformat
 import std/strutils
 import std/os
 import formats
+import records
 import streams
 import tables
 import parse
@@ -21,14 +22,27 @@ type
     name*   : string
     master* : bool
     head*   : RecordHeader
-    deps*   : OrderedTable[string, uint64] # MASTERFILE DEPENDENCIES || .esm file | bytes size
-    # string, JSONNode - all // variant = [value]
+    deps*   : OrderedTable[string, uint64] # esm dependencies as [.esm file, bytes size]
+    # Plugin regular records
+    clot*   : seq[MWCloth] # clothes (see `MWCloth` in records.nim for reference)
 
 proc `$`* (plugin: MWPlugin): string =
     result = fmt"""
     [{plugin.name}]
     Master: {plugin.master}
     """.unindent()
+proc `$`* (record: MWCloth): string =
+    result = fmt"""
+    ID:    {record.id}
+    Name:  {record.name}
+    Model: {record.model}
+    Icon:  {record.icon}
+    =====
+      Kind:   {record.data.kind}
+      Weight: {record.data.weight}
+      Value:  {record.data.value}
+    =====
+    """
 
 proc newRecordHeader(header_string: string): RecordHeader =
     result.bytestr = header_string
@@ -61,7 +75,9 @@ proc newMWPlugin* (path: string): MWPlugin =
       let rec_type = readStr(fr, 4)
       case rec_type:
         of "MAST": parseMAST(fr, result.deps)
+        of "CLOT": result.clot.add(parseCLOT(fr))
         else:
           break
 
-      discard readStr(fr, 4) # loose bytes
+      if fr.len >= 4:
+        discard readStr(fr, 4) # loose bytes

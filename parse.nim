@@ -16,3 +16,12 @@ proc readChar* (s: var string): char =
 
 proc readUint64* (s: var string, v: int): uint64 =
     return readUint64(s.read(v), 0)
+
+proc readUint32* (s: var string, v: int): uint32 =
+    return readUint32(s.read(v), 0)
+
+proc readUint16* (s: var string, v: int): uint16 =
+    return readUint16(s.read(v), 0)
+
+proc readFloat32* (s: var string, v: int): float32 =
+    return readFloat32(s.read(v), 0)
