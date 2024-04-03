@@ -109,3 +109,18 @@ proc info* (record: MWCloth): string =
       Value:  {record.data.value}
     ====={options}
     """
+
+proc info* (record: MWMisc): string =
+    var options = ""
+    if record.script != "":
+      options.add("\n    Script:  " & record.script)
+    result = fmt"""
+    ID:    {record.id}
+    Name:  {record.name}
+    Model: {record.model}
+    Icon:  {record.icon}
+    =====
+      Weight: {record.data.weight}
+      Value:  {record.data.value}
+    ====={options}
+    """

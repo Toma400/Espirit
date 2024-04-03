@@ -73,6 +73,6 @@ proc newMWPlugin* (path: string): MWPlugin =
         of "MAST": parseMAST(fr, result.deps)
         of "CLOT": result.clot.add(parseCLOT(fr))
         of "STAT": result.stat.add(parseSTAT(fr))
-        of "MISC": break #result.misc.add(parseMISC(fr))
+        of "MISC": result.misc.add(parseMISC(fr))
         else:
           break
