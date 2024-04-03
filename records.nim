@@ -37,6 +37,9 @@ type
     script* : string = "" # script name (optional)
     icon*   : string = "" # icon name (optional)
     data*   : MWMiscData
+  MWStatic* = object
+    id*    : string # ID
+    model* : string # model name
 
 # Enum references
 type
@@ -79,7 +82,7 @@ type
     Weapon        = 25
     Tail          = 26
 
-proc `$`* (record: MWCloth | MWMisc): string =
+proc `$`* (record: MWCloth | MWMisc | MWStatic): string =
     result = record.id
 
 proc `$`* (clobj: MWClothObj): string =

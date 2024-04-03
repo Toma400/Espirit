@@ -45,11 +45,6 @@ proc parseCLOT* (fr: var string): MWCloth =
     else:
       raise newException(Exception, "No CTDT field found for CLOT entry: " & result.id)
 
-    # ==================
-      # TODO
-      # - INDX/BNAM/CNAM
-    # ==================
-
     if len(fr) >= 4:
       if fr[0..3] == "SCRI":
         discard readStr(fr, 4) # SCRI

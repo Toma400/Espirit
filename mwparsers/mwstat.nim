@@ -1,0 +1,17 @@
+import ../records
+import ../parse
+
+proc parseSTAT* (fr: var string): MWStatic =
+  #[ Parses singel STAT key of .esm/.esp files and returns it as MWStatic object ]#
+  # optional handling uses `fr[0..3]` for scouting, instead of `readStr`/other
+  discard readStr(fr, 12) # loose bytes
+
+  if readStr(fr, 4) != "NAME":
+    raise newException(Exception, "No NAME field found for STAT entry.")
+  discard readStr(fr, 4) # loose bytes
+  result.id = parseZString(fr)
+
+  if readStr(fr, 4) != "MODL":
+    raise newException(Exception, "No MODL field found for STAT entry: " & result.id)
+  discard readStr(fr, 4) # loose bytes
+  result.model = parseZString(fr)
