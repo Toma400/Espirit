@@ -1,5 +1,11 @@
 import std/strformat
 
+const reserved_records* = [
+  "ACTI", "ALCH", "APPA", "ARMO", "BODY", "BOOK", "BSGN", "CELL", "CLAS", "CLOT", "CONT", "CREA", "DIAL", "DOOR", "ENCH",
+  "FACT", "GLOB", "GMST", "INFO", "INGR", "LAND", "LEVC", "LEVI", "LIGH", "LOCK", "LTEX", "MGEF", "MISC", "NPC_", "PGRD",
+  "PROB", "RACE", "REGN", "REPA", "SCPT", "SKIL", "SNDG", "SOUN", "SPEL", "SSCR", "STAT", "TES3", "WEAP"
+]
+
 type
   MWClothData* = object
     kind*   : uint32  # type (please refer to `MWClothType` enum in type section below)
@@ -7,15 +13,16 @@ type
     value*  : uint16  # value
     ench*   : uint16  # enchantment points
   MWClothObj* = object
-    biped* : uint8  # biped object (please refer to `MWClothBipedType` enum in type section below)
-    mname* : string # male name for cloth (optional)
-    fname* : string # female name for cloth (optional, `mname` used if absent)
+    #[ TODO: Is this a struct with `mname/fname`, or are those separate? Ref: https://en.uesp.net/wiki/Morrowind_Mod:Mod_File_Format/CLOT ]#
+    biped* : uint8       # biped object (please refer to `MWClothBipedType` enum in type section below)
+    mname* : string = "" # male name for cloth (optional)
+    fname* : string = "" # female name for cloth (optional, `mname` used if absent)
   MWCloth* = object
     id*     : string          # ID
     model*  : string          # model name
     name*   : string = ""     # name (optional)
     script* : string = ""     # script name (optional)
-    ench*   : string = ""     # enchantment name (optional)
+    enchnm* : string = ""     # enchantment name (optional)
     icon*   : string = ""     # icon name (optional)
     data*   : MWClothData
     objs*   : seq[MWClothObj] # objects (repeatable)
@@ -61,10 +68,19 @@ type
     Weapon        = 25
     Tail          = 26
 
+proc `$`* (clobj: MWClothObj): string =
+    result = fmt"{clobj.biped}: {MWClothBipedType(clobj.biped)} | {clobj.mname}, {clobj.fname}"
+
 proc info* (record: MWCloth): string =
     var options = ""
     if record.script != "":
-      options.add("\n    Script: " & record.script)
+      options.add("\n    Script:  " & record.script)
+    if record.enchnm != "":
+      options.add("\n    Enchant: " & record.enchnm)
+    if record.objs.len > 0:
+      options.add("\n    Objects:")
+      for obj in record.objs:
+        options.add("\n    - " & $obj)
     result = fmt"""
     ID:    {record.id}
     Name:  {record.name}

@@ -11,9 +11,9 @@ fairly complete by that time.
 
 === Installing and use
 You can install Espirit by using standard Nimble installation:
-====
+----
 nimble install https://github.com/Toma400/Espirit
-====
+----
 In code, simply import the library and use *newMWPlugin* proc:
 [source,java]
 ----

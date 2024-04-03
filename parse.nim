@@ -14,14 +14,17 @@ proc readStr* (s: var string, v: int): string =
 proc readChar* (s: var string): char =
     return readStr(s.read(1), 0, 1)[0]
 
-proc readUint64* (s: var string, v: int): uint64 =
+proc readUint64* (s: var string, v: int = 8): uint64 =
     return readUint64(s.read(v), 0)
 
-proc readUint32* (s: var string, v: int): uint32 =
+proc readUint32* (s: var string, v: int = 4): uint32 =
     return readUint32(s.read(v), 0)
 
-proc readUint16* (s: var string, v: int): uint16 =
+proc readUint16* (s: var string, v: int = 2): uint16 =
     return readUint16(s.read(v), 0)
 
-proc readFloat32* (s: var string, v: int): float32 =
+proc readUint8* (s: var string, v: int = 1): uint8 =
+    return readUint8(s.read(v), 0)
+
+proc readFloat32* (s: var string, v: int = 4): float32 =
     return readFloat32(s.read(v), 0)
