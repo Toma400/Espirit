@@ -26,6 +26,17 @@ type
     icon*   : string = ""     # icon name (optional)
     data*   : MWClothData
     objs*   : seq[MWClothObj] # objects (repeatable)
+  MWMiscData* = object
+    weight* : float32 # weight
+    value*  : uint32  # value
+    unkn*   : uint32  # unknown field, only uses 0 and 1, but usually unused
+  MWMisc* = object
+    id*     : string      # ID
+    model*  : string      # model name
+    name*   : string = "" # name (optional)
+    script* : string = "" # script name (optional)
+    icon*   : string = "" # icon name (optional)
+    data*   : MWMiscData
 
 # Enum references
 type
@@ -67,6 +78,9 @@ type
     LeftPauldron  = 24
     Weapon        = 25
     Tail          = 26
+
+proc `$`* (record: MWCloth | MWMisc): string =
+    result = record.id
 
 proc `$`* (clobj: MWClothObj): string =
     result = fmt"{clobj.biped}: {MWClothBipedType(clobj.biped)} | {clobj.mname}, {clobj.fname}"

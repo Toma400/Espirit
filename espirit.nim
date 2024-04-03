@@ -1,3 +1,4 @@
+import mwparsers/mwmisc
 import std/strformat
 import std/strutils
 import std/os
@@ -26,6 +27,7 @@ type
     deps*   : OrderedTable[string, uint64] # esm dependencies as [.esm file, bytes size]
     # Plugin regular records
     clot*   : seq[MWCloth] # clothes (see `MWCloth` in records.nim for reference)
+    misc*   : seq[MWMisc]  # misc items (see `MWMisc` in records.nim for reference)
 
 proc `$`* (plugin: MWPlugin): string =
     var deps = ""
@@ -35,8 +37,6 @@ proc `$`* (plugin: MWPlugin): string =
     [{plugin.name}]
     Dependencies: {deps}
     """.unindent()
-proc `$`* (record: MWCloth): string =
-    result = record.id
 
 proc newRecordHeader(header_string: string): RecordHeader =
     result.bytestr = header_string
@@ -70,8 +70,6 @@ proc newMWPlugin* (path: string): MWPlugin =
       case rec_type:
         of "MAST": parseMAST(fr, result.deps)
         of "CLOT": result.clot.add(parseCLOT(fr))
+        of "MISC": break #result.misc.add(parseMISC(fr))
         else:
           break
-
-      if fr.len >= 4:
-        discard readStr(fr, 4) # loose bytes

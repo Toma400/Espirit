@@ -28,3 +28,11 @@ proc readUint8* (s: var string, v: int = 1): uint8 =
 
 proc readFloat32* (s: var string, v: int = 4): float32 =
     return readFloat32(s.read(v), 0)
+
+proc parseZString* (fr: var string): string =
+    #[ Reads from string pseudo-stream until finds end of string ]#
+    while true:
+      let o = readChar(fr)
+      if o != '\0':
+        result.add(o)
+      else: break

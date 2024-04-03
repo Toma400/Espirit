@@ -3,14 +3,6 @@ import strutils
 import records
 import parse
 
-proc parseZString(fr: var string): string =
-    #[ Reads from string pseudo-stream until finds end of string ]#
-    while true:
-      let o = readChar(fr)
-      if o != '\0':
-        result.add(o)
-      else: break
-
 proc parseMAST* (fr: var string, tabl: var OrderedTable[string, uint64]) =
     #[ Parses single MAST key of .esm/.esp files and adds it to `tabl` ]#
     discard readStr(fr, 4) # loose bytes
@@ -21,6 +13,8 @@ proc parseMAST* (fr: var string, tabl: var OrderedTable[string, uint64]) =
     discard readStr(fr, 4) # loose bytes
 
     tabl[mast_name] = readUint64(fr, 4)
+
+    discard readStr(fr, 4) # loose bytes
 
 proc parseCLOT* (fr: var string): MWCloth =
     #[ Parses singel CLOT key of .esm/.esp files and returns it as MWCloth object ]#
