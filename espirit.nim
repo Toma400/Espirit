@@ -8,6 +8,7 @@ import tables
 import parse
 
 export tables
+export records
 
 # srcs: https://stackoverflow.com/questions/33107332/writing-reading-binary-file-in-nim
 #       https://stackoverflow.com/questions/26845538/parsing-a-binary-file-what-is-a-modern-way
@@ -27,22 +28,15 @@ type
     clot*   : seq[MWCloth] # clothes (see `MWCloth` in records.nim for reference)
 
 proc `$`* (plugin: MWPlugin): string =
+    var deps = ""
+    for k, _ in plugin.deps:
+      deps.add("\n" & "* " & k)
     result = fmt"""
     [{plugin.name}]
-    Master: {plugin.master}
+    Dependencies: {deps}
     """.unindent()
 proc `$`* (record: MWCloth): string =
-    result = fmt"""
-    ID:    {record.id}
-    Name:  {record.name}
-    Model: {record.model}
-    Icon:  {record.icon}
-    =====
-      Kind:   {record.data.kind}
-      Weight: {record.data.weight}
-      Value:  {record.data.value}
-    =====
-    """
+    result = record.id
 
 proc newRecordHeader(header_string: string): RecordHeader =
     result.bytestr = header_string

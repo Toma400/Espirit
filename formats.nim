@@ -23,52 +23,48 @@ proc parseMAST* (fr: var string, tabl: var OrderedTable[string, uint64]) =
 
 proc parseCLOT* (fr: var string): MWCloth =
     #[ Parses singel CLOT key of .esm/.esp files and returns it as MWCloth object ]#
+    # optional handling uses `fr[0..3]` for scouting, instead of `readStr`/other
     discard readStr(fr, 12) # loose bytes
 
     if readStr(fr, 4) != "NAME":
       raise newException(Exception, "No NAME field found for CLOT entry.")
     discard readStr(fr, 4) # loose bytes
     result.id = parseZString(fr)
-    echo result.id
 
     if readStr(fr, 4) != "MODL":
       raise newException(Exception, "No MODL field found for CLOT entry: " & result.id)
     discard readStr(fr, 4) # loose bytes
     result.model = parseZString(fr)
 
-    let opt  = readStr(fr, 4)
-    var ctdt : bool
-
-    if opt == "FNAM":
+    if fr[0..3] == "FNAM":
+      discard readStr(fr, 4) # FNAM
       discard readStr(fr, 4) # loose bytes
       result.name = parseZString(fr)
-      ctdt = readStr(fr, 4) == "CTDT"
-    else:
-      result.name = ""
-      ctdt = opt == "CTDT"
 
-    if ctdt:
+    if readStr(fr, 4) == "CTDT":
       discard readStr(fr, 4) # loose bytes
       result.data = MWClothData(kind:   readUint32(fr, 4),
                                 weight: readFloat32(fr, 4),
                                 value:  readUint16(fr, 2),
                                 ench:   readUint16(fr, 2))
-
     else:
       raise newException(Exception, "No CTDT field found for CLOT entry: " & result.id)
 
     # ==================
       # TODO
-      # - SCRI
       # - INDX/BNAM/CNAM
       # - ENAM
-      # - ..consider icon / ITEX as optional
     # ==================
-    result.script = "" # + set all defaults at the top as [= ""]
     result.ench   = ""
-    result.icon   = "" # change later
 
     if len(fr) >= 4:
-      if readStr(fr, 4) == "ITEX":
+      if fr[0..3] == "SCRI":
+        discard readStr(fr, 4) # SCRI
+        discard readStr(fr, 4) # loose bytes
+        result.script = parseZString(fr)
+
+    if len(fr) >= 4:
+      if fr[0..3] == "ITEX":
+        discard readStr(fr, 4) # ITEX
         discard readStr(fr, 4) # loose bytes
         result.icon = parseZString(fr)

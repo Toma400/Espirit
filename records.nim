@@ -1,3 +1,5 @@
+import std/strformat
+
 type
   MWClothData* = object
     kind*   : uint32  # type (please refer to `MWClothType` enum in type section below)
@@ -9,12 +11,12 @@ type
     mname* : string # male name for cloth (optional)
     fname* : string # female name for cloth (optional, `mname` used if absent)
   MWCloth* = object
-    id*     : string # ID
-    model*  : string # model name
-    name*   : string # name (optional)
-    script* : string # script name (optional)
-    ench*   : string # enchantment name (optional)
-    icon*   : string # icon name (optional)
+    id*     : string          # ID
+    model*  : string          # model name
+    name*   : string = ""     # name (optional)
+    script* : string = ""     # script name (optional)
+    ench*   : string = ""     # enchantment name (optional)
+    icon*   : string = ""     # icon name (optional)
     data*   : MWClothData
     objs*   : seq[MWClothObj] # objects (repeatable)
 
@@ -58,3 +60,19 @@ type
     LeftPauldron  = 24
     Weapon        = 25
     Tail          = 26
+
+proc info* (record: MWCloth): string =
+    var options = ""
+    if record.script != "":
+      options.add("\n    Script: " & record.script)
+    result = fmt"""
+    ID:    {record.id}
+    Name:  {record.name}
+    Model: {record.model}
+    Icon:  {record.icon}
+    =====
+      Kind:   {record.data.kind} [{MWClothType(record.data.kind)}]
+      Weight: {record.data.weight}
+      Value:  {record.data.value}
+    ====={options}
+    """
