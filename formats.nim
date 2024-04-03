@@ -73,28 +73,24 @@ proc parseCLOT* (fr: var string): MWCloth =
         if fr[0..3] == "INDX":
           discard readStr(fr, 4) # INDX
           discard readStr(fr, 4) # loose bytes
+          var biped = MWClothObj(biped: readUint8(fr, 1))
           if len(fr) >= 4: # sometimes INDX is empty, this let us not try to parse new record thinking it's part of INDX
             if not (fr[0..3] in reserved_records): # <---/
-              var biped = MWClothObj(biped: readUint8(fr, 1))
-              if len(fr) >= 4:
+              if len(fr) >= 4: # redundant, but repeats rule visually
                 if fr[0..3] == "BNAM":
                   discard readStr(fr, 4) # BNAM
-                  discard readStr(fr, 4) # loose bytes
-                  biped.mname = parseZString(fr)
-                  # TODO:
-                  if "CNAM" in biped.mname:
-                    biped.mname = biped.mname.replace("CNAM", "")
-                    fr = "CNAM" & fr
+                  let length = readUint8(fr, 1).int # length of string
+                  discard readStr(fr, 3) # loose bytes
+                  biped.mname = readStr(fr, length)
               if len(fr) >= 4:
                 if fr[0..3] == "CNAM":
                   discard readStr(fr, 4) # CNAM
-                  discard readStr(fr, 2) # loose bytes
-                  biped.fname = parseZString(fr)
+                  let length = readUint8(fr, 1).int # length of string
+                  discard readStr(fr, 3) # loose bytes
+                  biped.fname = readStr(fr, length)
 
-              result.objs.add(biped)
+          result.objs.add(biped)
 
-              if len(fr) >= 4:
-                discard readStr(fr, 4) # loose bytes
       if len(fr) >= 4:
         if fr[0..3] == "INDX":
           continue
