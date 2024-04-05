@@ -1,5 +1,6 @@
 import mwparsers/mwstat
 import mwparsers/mwmisc
+import mwparsers/mwingr
 import std/strformat
 import std/strutils
 import std/os
@@ -27,9 +28,11 @@ type
     head*   : RecordHeader
     deps*   : OrderedTable[string, uint64] # esm dependencies as [.esm file, bytes size]
     # Plugin regular records
-    clot*   : seq[MWCloth]  # clothes (see `MWCloth` in records.nim for reference)
-    misc*   : seq[MWMisc]   # misc items (see `MWMisc` in records.nim for reference)
-    stat*   : seq[MWStatic] # statics (see `MWStatic` in records.nim for reference)
+    clot*   : seq[MWCloth]      # clothes (see `MWCloth` in records.nim for reference)
+    misc*   : seq[MWMisc]       # misc items (see `MWMisc` in records.nim for reference)
+    stat*   : seq[MWStatic]     # statics (see `MWStatic` in records.nim for reference)
+    cont*   : seq[MWContainer]  # containers (see `MWContainer` in records.nim for reference)
+    ingr*   : seq[MWIngredient] # ingredients (see `MWIngredient` in records.nim for reference)
 
 proc `$`* (plugin: MWPlugin): string =
     var deps = ""
@@ -38,6 +41,13 @@ proc `$`* (plugin: MWPlugin): string =
     result = fmt"""
     [{plugin.name}]
     Dependencies: {deps}
+
+    Data:
+    * statics:     {plugin.stat.len}
+    * containers:  {plugin.cont.len}
+    * miscs:       {plugin.misc.len}
+    * clothes:     {plugin.clot.len}
+    * ingredients: {plugin.ingr.len}
     """.unindent()
 
 proc newRecordHeader(header_string: string): RecordHeader =
@@ -74,5 +84,7 @@ proc newMWPlugin* (path: string): MWPlugin =
         of "CLOT": result.clot.add(parseCLOT(fr))
         of "STAT": result.stat.add(parseSTAT(fr))
         of "MISC": result.misc.add(parseMISC(fr))
+        of "INGR": result.ingr.add(parseINGR(fr))
+        of "CONT": break
         else:
           break

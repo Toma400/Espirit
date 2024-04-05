@@ -1,4 +1,7 @@
 import std/strformat
+import indexes
+
+export indexes
 
 const reserved_records* = [
   "ACTI", "ALCH", "APPA", "ARMO", "BODY", "BOOK", "BSGN", "CELL", "CLAS", "CLOT", "CONT", "CREA", "DIAL", "DOOR", "ENCH",
@@ -40,49 +43,70 @@ type
   MWStatic* = object
     id*    : string # ID
     model* : string # model name
+  MWContainer* = object
+    id*       : string      # ID
+    model*    : string      # model name
+    name*     : string = "" # name (optional)
+    script*   : string = "" # script name (optional)
+    weight*   : float32
+    flags*    : uint32
+    contents* : seq[(int32, array[32, char])] # see if struct isn't better
+  MWIngredientData* = object
+    weight*   : float32         # weight
+    value*    : uint32          # value
+    effindex* : array[4, int32] # effect indexes
+    skill*    : array[4, int32] # skill IDs
+    attr*     : array[4, int32] # attribute IDs
+  MWIngredient* = object
+    id*     : string      # ID
+    model*  : string      # model name
+    name*   : string = "" # name (optional)
+    script* : string = "" # script name (optional)
+    icon*   : string = "" # icon name (optional)
+    data*   : MWIngredientData
 
 # Enum references
-type
-  MWClothType* = enum
-    Pants      = 0
-    Shoes      = 1
-    Shirt      = 2
-    Belt       = 3
-    Robe       = 4
-    RightGlove = 5
-    LeftGlove  = 6
-    Skirt      = 7
-    Ring       = 8
-    Amulet     = 9
-  MWClothBipedType* = enum
-    Head          = 1
-    Hair          = 2
-    Cuirass       = 3
-    Groin         = 4
-    Skirt         = 5
-    RightHand     = 6
-    LeftHang      = 7
-    RightWrist    = 8
-    LeftWrist     = 9
-    Shield        = 10
-    RightForearm  = 11
-    LeftForearm   = 12
-    RightUpperArm = 13
-    LeftUpperArm  = 14
-    RightFoot     = 15
-    LeftFoot      = 16
-    RightAnkle    = 17
-    LeftAnkle     = 18
-    RightKnee     = 19
-    LeftKnee      = 20
-    RightUpperLeg = 21
-    LeftUpperLeg  = 22
-    RightPauldron = 23
-    LeftPauldron  = 24
-    Weapon        = 25
-    Tail          = 26
+# type
+#   MWClothType* = enum
+#     Pants      = 0
+#     Shoes      = 1
+#     Shirt      = 2
+#     Belt       = 3
+#     Robe       = 4
+#     RightGlove = 5
+#     LeftGlove  = 6
+#     Skirt      = 7
+#     Ring       = 8
+#     Amulet     = 9
+#   MWClothBipedType* = enum
+#     Head          = 1
+#     Hair          = 2
+#     Cuirass       = 3
+#     Groin         = 4
+#     Skirt         = 5
+#     RightHand     = 6
+#     LeftHang      = 7
+#     RightWrist    = 8
+#     LeftWrist     = 9
+#     Shield        = 10
+#     RightForearm  = 11
+#     LeftForearm   = 12
+#     RightUpperArm = 13
+#     LeftUpperArm  = 14
+#     RightFoot     = 15
+#     LeftFoot      = 16
+#     RightAnkle    = 17
+#     LeftAnkle     = 18
+#     RightKnee     = 19
+#     LeftKnee      = 20
+#     RightUpperLeg = 21
+#     LeftUpperLeg  = 22
+#     RightPauldron = 23
+#     LeftPauldron  = 24
+#     Weapon        = 25
+#     Tail          = 26
 
-proc `$`* (record: MWCloth | MWMisc | MWStatic): string =
+proc `$`* (record: MWCloth | MWMisc | MWStatic | MWIngredient | MWContainer): string =
     result = record.id
 
 proc `$`* (clobj: MWClothObj): string =
@@ -122,5 +146,50 @@ proc info* (record: MWMisc): string =
     =====
       Weight: {record.data.weight}
       Value:  {record.data.value}
+    ====={options}
+    """
+
+proc info* (record: MWIngredient): string =
+    var options = ""
+    var effects = ""
+    if record.script != "":
+      options.add("\n    Script:  " & record.script)
+    for c, ef in record.data.effindex:
+      if ef != -1:
+        var sk = ""
+        var at = ""
+        if record.data.skill[c] > 0: sk = fmt"[SkillIndex:     {record.data.skill[c]}]"
+        if record.data.attr[c]  > 0: at = fmt"[AttributeIndex: {record.data.attr[c]}]"
+        effects.add("\n      - " & fmt"{ef} [{MWEffectType(ef)}] {sk}{at}")
+    result = fmt"""
+    ID:    {record.id}
+    Name:  {record.name}
+    Model: {record.model}
+    Icon:  {record.icon}
+    =====
+      Weight: {record.data.weight}
+      Value:  {record.data.value}
+      Effects:    {effects}
+    ====={options}
+    """
+
+proc info* (record: MWContainer): string =
+    proc getID(a: array[32, char]): string =
+      for i in a: result.add(i)
+
+    var options = ""
+    if record.script != "":
+      options.add("\n    Script:  " & record.script)
+    if record.contents.len > 0:
+      options.add("\n    Contents:")
+      for it in record.contents:
+        options.add("\n" & fmt"    - {it[1].getID} [{it[0]}]")
+    # TODO: lacks some flags info
+    result = fmt"""
+    ID:    {record.id}
+    Name:  {record.name}
+    Model: {record.model}
+    =====
+      Weight: {record.weight}
     ====={options}
     """

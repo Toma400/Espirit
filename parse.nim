@@ -14,6 +14,9 @@ proc readStr* (s: var string, v: int): string =
 proc readChar* (s: var string): char =
     return readStr(s.read(1), 0, 1)[0]
 
+proc readInt32* (s: var string, v: int = 4): int32 =
+    return readInt32(s.read(v), 0)
+
 proc readUint64* (s: var string, v: int = 8): uint64 =
     return readUint64(s.read(v), 0)
 

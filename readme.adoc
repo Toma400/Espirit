@@ -23,6 +23,12 @@ let esp = newMWPlugin("your_mod_file.esp")
 ----
 You can find reference to the object in *espirit.nim* file.
 
+Right now, Espirit allows you to parse .esm and .esp files which have
+only fields supported by the library - with other files being parsed
+in random extent. +
+The feature plan is to allow Espirit to parse every file into custom
+MWPlugin struct and potentially also export it to JSON format at will.
+
 === License
 Currently, Espirit follows All Rights Reserved license.
 
