@@ -124,6 +124,9 @@ type
 type
   MWRecord* = MWCloth | MWMisc | MWStatic | MWIngredient | MWContainer | MWBook
 
+type
+  ParseError* = object of Exception
+
 proc `$`* (record: MWRecord): string =
     result = record.id
 

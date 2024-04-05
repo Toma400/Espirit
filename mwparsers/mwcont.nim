@@ -7,12 +7,12 @@ proc parseCONT* (fr: var string): MWContainer =
   discard readStr(fr, 12) # loose bytes
 
   if readStr(fr, 4) != "NAME":
-    raise newException(Exception, "No NAME field found for CONT entry.")
+    raise newException(ParseError, "No NAME field found for CONT entry.")
   discard readStr(fr, 4) # loose bytes
   result.id = parseZString(fr)
 
   if readStr(fr, 4) != "MODL":
-    raise newException(Exception, "No MODL field found for CONT entry: " & result.id)
+    raise newException(ParseError, "No MODL field found for CONT entry: " & result.id)
   discard readStr(fr, 4) # loose bytes
   result.model = parseZString(fr)
 
@@ -22,12 +22,12 @@ proc parseCONT* (fr: var string): MWContainer =
     result.name = parseZString(fr)
 
   if readStr(fr, 4) != "CNDT":
-    raise newException(Exception, "No CNDT field found for CONT entry: " & result.id)
+    raise newException(ParseError, "No CNDT field found for CONT entry: " & result.id)
   discard readStr(fr, 4) # loose bytes
   result.weight = readFloat32(fr, 4)
 
   if readStr(fr, 4) != "FLAG":
-    raise newException(Exception, "No FLAG field found for CONT entry: " & result.id)
+    raise newException(ParseError, "No FLAG field found for CONT entry: " & result.id)
   discard readStr(fr, 4) # loose bytes
   result.flags = readUint32(fr, 4)
 

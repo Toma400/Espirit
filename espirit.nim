@@ -61,7 +61,7 @@ proc newMWPlugin* (path: string): MWPlugin =
     var fr : string     = fs.readAll()        # file read: string here == seq[bytes]
 
     if readStr(fr, 4) != "TES3": # initial .esp check
-      raise newException(Exception, "File scanned does not follow correct Morrowind .esp/.esm plugin record format.")
+      raise newException(ParseError, "File scanned does not follow correct Morrowind .esp/.esm plugin record format.")
     close(fs)
 
     if endswith(toLowerAscii(path), ".esp"):
@@ -70,11 +70,11 @@ proc newMWPlugin* (path: string): MWPlugin =
     elif endsWith(toLowerAscii(path), ".esm"):
       result.name   = path.replace(".esm", "")
       result.master = true
-    else: raise newException(Exception, "Cannot verify master file. Make sure the file scanned is of .esp/.esm format.")
+    else: raise newException(ParseError, "Cannot verify master file. Make sure the file scanned is of .esp/.esm format.")
 
     discard readStr(fr, 12) # loose bytes
     if readStr(fr, 4) != "HEDR": # check for header
-      raise newException(Exception, "File header not found.")
+      raise newException(ParseError, "File header not found.")
     discard readStr(fr, 4) # loose bytes
 
     result.head = newRecordHeader(fr.read(300)) # 300 bytes after initial check (w/o TES3 header)

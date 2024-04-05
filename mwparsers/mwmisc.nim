@@ -7,12 +7,12 @@ proc parseMISC* (fr: var string): MWMisc =
   discard readStr(fr, 12) # loose bytes
 
   if readStr(fr, 4) != "NAME":
-    raise newException(Exception, "No NAME field found for MISC entry.")
+    raise newException(ParseError, "No NAME field found for MISC entry.")
   discard readStr(fr, 4) # loose bytes
   result.id = parseZString(fr)
 
   if readStr(fr, 4) != "MODL":
-    raise newException(Exception, "No MODL field found for MISC entry: " & result.id)
+    raise newException(ParseError, "No MODL field found for MISC entry: " & result.id)
   discard readStr(fr, 4) # loose bytes
   result.model = parseZString(fr)
 
@@ -27,7 +27,7 @@ proc parseMISC* (fr: var string): MWMisc =
                              value:  readUint32(fr, 4),
                              unkn:   readUint32(fr, 4))
   else:
-    raise newException(Exception, "No MCDT field found for MISC entry: " & result.id)
+    raise newException(ParseError, "No MCDT field found for MISC entry: " & result.id)
 
   if len(fr) >= 4:
     if fr[0..3] == "SCRI":

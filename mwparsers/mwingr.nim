@@ -7,12 +7,12 @@ proc parseINGR* (fr: var string): MWIngredient =
   discard readStr(fr, 12) # loose bytes
 
   if readStr(fr, 4) != "NAME":
-    raise newException(Exception, "No NAME field found for INGR entry.")
+    raise newException(ParseError, "No NAME field found for INGR entry.")
   discard readStr(fr, 4) # loose bytes
   result.id = parseZString(fr)
 
   if readStr(fr, 4) != "MODL":
-    raise newException(Exception, "No MODL field found for INGR entry: " & result.id)
+    raise newException(ParseError, "No MODL field found for INGR entry: " & result.id)
   discard readStr(fr, 4) # loose bytes
   result.model = parseZString(fr)
 
@@ -38,7 +38,7 @@ proc parseINGR* (fr: var string): MWIngredient =
                                               readInt32(fr, 4),
                                               readInt32(fr, 4)])
   else:
-    raise newException(Exception, "No IRDT field found for INGR entry: " & result.id)
+    raise newException(ParseError, "No IRDT field found for INGR entry: " & result.id)
 
   if len(fr) >= 4:
     if fr[0..3] == "SCRI":

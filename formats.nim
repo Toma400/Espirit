@@ -9,7 +9,7 @@ proc parseMAST* (fr: var string, tabl: var OrderedTable[string, uint64]) =
     var mast_name = parseZString(fr)
 
     if readStr(fr, 4) != "DATA":
-      raise newException(Exception, "No byte length found for master file: " & mast_name)
+      raise newException(ParseError, "No byte length found for master file: " & mast_name)
     discard readStr(fr, 4) # loose bytes
 
     tabl[mast_name] = readUint64(fr, 4)
@@ -22,12 +22,12 @@ proc parseCLOT* (fr: var string): MWCloth =
     discard readStr(fr, 12) # loose bytes
 
     if readStr(fr, 4) != "NAME":
-      raise newException(Exception, "No NAME field found for CLOT entry.")
+      raise newException(ParseError, "No NAME field found for CLOT entry.")
     discard readStr(fr, 4) # loose bytes
     result.id = parseZString(fr)
 
     if readStr(fr, 4) != "MODL":
-      raise newException(Exception, "No MODL field found for CLOT entry: " & result.id)
+      raise newException(ParseError, "No MODL field found for CLOT entry: " & result.id)
     discard readStr(fr, 4) # loose bytes
     result.model = parseZString(fr)
 
@@ -43,7 +43,7 @@ proc parseCLOT* (fr: var string): MWCloth =
                                 value:  readUint16(fr, 2),
                                 ench:   readUint16(fr, 2))
     else:
-      raise newException(Exception, "No CTDT field found for CLOT entry: " & result.id)
+      raise newException(ParseError, "No CTDT field found for CLOT entry: " & result.id)
 
     if len(fr) >= 4:
       if fr[0..3] == "SCRI":

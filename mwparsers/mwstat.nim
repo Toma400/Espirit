@@ -7,11 +7,11 @@ proc parseSTAT* (fr: var string): MWStatic =
   discard readStr(fr, 12) # loose bytes
 
   if readStr(fr, 4) != "NAME":
-    raise newException(Exception, "No NAME field found for STAT entry.")
+    raise newException(ParseError, "No NAME field found for STAT entry.")
   discard readStr(fr, 4) # loose bytes
   result.id = parseZString(fr)
 
   if readStr(fr, 4) != "MODL":
-    raise newException(Exception, "No MODL field found for STAT entry: " & result.id)
+    raise newException(ParseError, "No MODL field found for STAT entry: " & result.id)
   discard readStr(fr, 4) # loose bytes
   result.model = parseZString(fr)
