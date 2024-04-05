@@ -7,12 +7,12 @@ proc parseINGR* (fr: var string): MWIngredient =
   discard readStr(fr, 12) # loose bytes
 
   if readStr(fr, 4) != "NAME":
-    raise newException(Exception, "No NAME field found for MISC entry.")
+    raise newException(Exception, "No NAME field found for INGR entry.")
   discard readStr(fr, 4) # loose bytes
   result.id = parseZString(fr)
 
   if readStr(fr, 4) != "MODL":
-    raise newException(Exception, "No MODL field found for MISC entry: " & result.id)
+    raise newException(Exception, "No MODL field found for INGR entry: " & result.id)
   discard readStr(fr, 4) # loose bytes
   result.model = parseZString(fr)
 

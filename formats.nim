@@ -83,7 +83,7 @@ proc parseCLOT* (fr: var string): MWCloth =
       if len(fr) >= 4:
         if fr[0..3] == "INDX":
           continue
-      break # if nothing or new record is found
+      break # if nothing, ENAM or new record is found
 
 
     if len(fr) >= 4:

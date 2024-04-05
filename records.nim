@@ -49,7 +49,7 @@ type
     name*     : string = "" # name (optional)
     script*   : string = "" # script name (optional)
     weight*   : float32
-    flags*    : uint32
+    flags*    : uint32      # 0x1 = organic, 0x2 = respawns (organic only), 0x8 = unknown, always set
     contents* : seq[(int32, array[32, char])] # see if struct isn't better
   MWIngredientData* = object
     weight*   : float32         # weight
@@ -193,7 +193,8 @@ proc info* (record: MWIngredient): string =
 
 proc info* (record: MWContainer): string =
     proc getID(a: array[32, char]): string =
-      for i in a: result.add(i)
+      for i in a:
+        if i != '\0': result.add(i)
 
     var options = ""
     if record.script != "":

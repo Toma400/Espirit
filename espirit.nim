@@ -1,6 +1,7 @@
 import mwparsers/mwstat
 import mwparsers/mwmisc
 import mwparsers/mwingr
+import mwparsers/mwcont
 import std/strformat
 import std/strutils
 import std/os
@@ -87,7 +88,7 @@ proc newMWPlugin* (path: string): MWPlugin =
         of "STAT": result.stat.add(parseSTAT(fr))
         of "MISC": result.misc.add(parseMISC(fr))
         of "INGR": result.ingr.add(parseINGR(fr))
-        of "CONT": break
+        of "CONT": result.cont.add(parseCONT(fr))
         of "BOOK": break
         else:
           break
