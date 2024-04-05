@@ -33,6 +33,7 @@ type
     stat*   : seq[MWStatic]     # statics (see `MWStatic` in records.nim for reference)
     cont*   : seq[MWContainer]  # containers (see `MWContainer` in records.nim for reference)
     ingr*   : seq[MWIngredient] # ingredients (see `MWIngredient` in records.nim for reference)
+    book*   : seq[MWBook]       # books (see `MWBook` in records.nim for reference)
 
 proc `$`* (plugin: MWPlugin): string =
     var deps = ""
@@ -48,6 +49,7 @@ proc `$`* (plugin: MWPlugin): string =
     * miscs:       {plugin.misc.len}
     * clothes:     {plugin.clot.len}
     * ingredients: {plugin.ingr.len}
+    * books:       {plugin.book.len}
     """.unindent()
 
 proc newRecordHeader(header_string: string): RecordHeader =
@@ -86,5 +88,6 @@ proc newMWPlugin* (path: string): MWPlugin =
         of "MISC": result.misc.add(parseMISC(fr))
         of "INGR": result.ingr.add(parseINGR(fr))
         of "CONT": break
+        of "BOOK": break
         else:
           break

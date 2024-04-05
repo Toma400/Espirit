@@ -64,6 +64,21 @@ type
     script* : string = "" # script name (optional)
     icon*   : string = "" # icon name (optional)
     data*   : MWIngredientData
+  MWBookData* = object
+    weight* : float32 # weight
+    value*  : uint32  # value
+    flags*  : uint32  # if scroll or not
+    skill*  : int32   # -1 if none
+    ench*   : uint32  # enchantment points
+  MWBook* = object
+    id*     : string      # ID
+    model*  : string      # model name
+    name*   : string = "" # name (optional)
+    script* : string = "" # script name (optional)
+    enchnm* : string = "" # enchantment name (optional)
+    text*   : string = "" # text contents (optional)
+    icon*   : string = "" # icon name (optional)
+    data*   : MWBookData
 
 # Enum references
 # type
@@ -106,7 +121,10 @@ type
 #     Weapon        = 25
 #     Tail          = 26
 
-proc `$`* (record: MWCloth | MWMisc | MWStatic | MWIngredient | MWContainer): string =
+type
+  MWRecord* = MWCloth | MWMisc | MWStatic | MWIngredient | MWContainer | MWBook
+
+proc `$`* (record: MWRecord): string =
     result = record.id
 
 proc `$`* (clobj: MWClothObj): string =
@@ -193,3 +211,5 @@ proc info* (record: MWContainer): string =
       Weight: {record.weight}
     ====={options}
     """
+
+# TODO: MWBook `info` proc
