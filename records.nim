@@ -1,4 +1,5 @@
 import std/strformat
+import std/strutils
 import indexes
 
 export indexes
@@ -79,6 +80,12 @@ type
     text*   : string = "" # text contents (optional)
     icon*   : string = "" # icon name (optional)
     data*   : MWBookData
+  MWLeveledItem* = object
+    id*     : string      # ID
+    data*   : uint32      # flags (0x1 = Calculate for each item in count | 0x2 = Calculate from all levels <= PC's level)
+    nnam*   : uint8       # chance none?
+    count*  : uint32 = 0  # count of following items (optional)
+    items*  : seq[(string, uint16)] # (item name, PC level)
 
 # Enum references
 # type
@@ -122,7 +129,7 @@ type
 #     Tail          = 26
 
 type
-  MWRecord* = MWCloth | MWMisc | MWStatic | MWIngredient | MWContainer | MWBook
+  MWRecord* = MWCloth | MWMisc | MWStatic | MWIngredient | MWContainer | MWBook | MWLeveledItem
 
 type
   ParseError* = object of Exception
@@ -216,4 +223,37 @@ proc info* (record: MWContainer): string =
     ====={options}
     """
 
-# TODO: MWBook `info` proc
+proc info* (record: MWBook): string =
+    var options = ""
+    if record.script != "":
+      options.add("\n    Script:  " & record.script)
+    if record.enchnm != "":
+      options.add("\n    Enchant: " & record.enchnm)
+    result = fmt"""
+    ID:    {record.id}
+    Name:  {record.name}
+    Model: {record.model}
+    Icon:  {record.icon}
+    =====
+      Weight: {record.data.weight}
+      Value:  {record.data.value}
+    ====={options}
+    """
+    # TODO: Not all values added
+
+proc read* (record: MWBook): string =
+    return record.text.replace("<br>", "\n")
+
+proc info* (record: MWLeveledItem): string =
+    var items = ""
+    if record.count > 0:
+      items.add("\n    Count: " & $record.count)
+    if record.items.len > 0:
+      items.add("\n    Items:")
+    for i in record.items:
+      items.add("\n    - " & fmt"{i[0]}: {i[1]}")
+    result = fmt"""
+    ID:    {record.id}
+    ====={items}
+    =====
+    """
