@@ -3,6 +3,7 @@ import mwparsers/mwmisc
 import mwparsers/mwingr
 import mwparsers/mwlevi
 import mwparsers/mwcont
+import mwparsers/mwbook
 import std/strformat
 import std/strutils
 import std/os
@@ -93,6 +94,6 @@ proc newMWPlugin* (path: string): MWPlugin =
         of "INGR": result.ingr.add(parseINGR(fr))
         of "CONT": result.cont.add(parseCONT(fr))
         of "LEVI": result.levi.add(parseLEVI(fr))
-        of "BOOK": break
+        of "BOOK": result.book.add(parseBOOK(fr))
         else:
           break

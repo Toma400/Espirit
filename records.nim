@@ -242,7 +242,12 @@ proc info* (record: MWBook): string =
     # TODO: Not all values added
 
 proc read* (record: MWBook): string =
-    return record.text.replace("<br>", "\n")
+    proc mwFormat(r: string): string =
+      result = r
+      result = result.replace("<br>", "\n")
+      result = result.replace("<BR>", "\n")
+
+    return mwFormat(record.text)
 
 proc info* (record: MWLeveledItem): string =
     var items = ""

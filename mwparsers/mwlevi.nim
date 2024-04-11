@@ -2,7 +2,7 @@ import ../records
 import ../parse
 
 proc parseLEVI* (fr: var string): MWLeveledItem =
-  #[ Parses singel LEVI key of .esm/.esp files and returns it as MWLeveledItem object ]#
+  #[ Parses single LEVI key of .esm/.esp files and returns it as MWLeveledItem object ]#
   # optional handling uses `fr[0..3]` for scouting, instead of `readStr`/other
   discard readStr(fr, 12) # loose bytes
 
