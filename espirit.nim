@@ -65,7 +65,7 @@ proc newMWPlugin* (path: string): MWPlugin =
     var fr : string     = fs.readAll()        # file read: string here == seq[bytes]
 
     if readStr(fr, 4) != "TES3": # initial .esp check
-      raise newException(ParseError, "File scanned does not follow correct Morrowind .esp/.esm plugin record format.")
+      raise newException(ParseError, fmt"File scanned does not follow correct Morrowind .esp/.esm plugin record format. File path: {path}.")
     close(fs)
 
     if endswith(toLowerAscii(path), ".esp"):
@@ -74,19 +74,18 @@ proc newMWPlugin* (path: string): MWPlugin =
     elif endsWith(toLowerAscii(path), ".esm"):
       result.name   = path.replace(".esm", "")
       result.master = true
-    else: raise newException(ParseError, "Cannot verify master file. Make sure the file scanned is of .esp/.esm format.")
+    else: raise newException(ParseError, fmt"Cannot verify file: {path}. Make sure the file scanned is of .esp/.esm format.")
 
     discard readStr(fr, 12) # loose bytes
     if readStr(fr, 4) != "HEDR": # check for header
-      raise newException(ParseError, "File header not found.")
+      raise newException(ParseError, fmt"File header for file: {path} not found.")
     discard readStr(fr, 4) # loose bytes
 
     result.head = newRecordHeader(fr.read(300)) # 300 bytes after initial check (w/o TES3 header)
 
     # records
     while fr.len > 0:
-      let rec_type = readStr(fr, 4)
-      case rec_type:
+      case readStr(fr, 4):
         of "MAST": parseMAST(fr, result.deps)
         of "CLOT": result.clot.add(parseCLOT(fr))
         of "STAT": result.stat.add(parseSTAT(fr))
@@ -95,5 +94,15 @@ proc newMWPlugin* (path: string): MWPlugin =
         of "CONT": result.cont.add(parseCONT(fr))
         of "LEVI": result.levi.add(parseLEVI(fr))
         of "BOOK": result.book.add(parseBOOK(fr))
+        of "ACTI": discard
+        of "LIGH": discard
+        of "DOOR": discard
+        of "ALCH": discard
+        of "ARMO": discard
+        of "WEAP": discard
+        of "LOCK": discard
+        of "APPA": discard
+        of "PROB": discard
+        of "REPA": discard
         else:
           break

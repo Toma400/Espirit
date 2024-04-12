@@ -243,9 +243,11 @@ proc info* (record: MWBook): string =
 
 proc read* (record: MWBook): string =
     proc mwFormat(r: string): string =
+      let rep = {"<br>": "\n",
+                 "<BR>": "\n"}
       result = r
-      result = result.replace("<br>", "\n")
-      result = result.replace("<BR>", "\n")
+      for k, v in rep.items:
+        result = result.replace(k, v)
 
     return mwFormat(record.text)
 
