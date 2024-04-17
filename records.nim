@@ -52,6 +52,11 @@ type
     weight*   : float32
     flags*    : uint32      # 0x1 = organic, 0x2 = respawns (organic only), 0x8 = unknown, always set
     contents* : seq[(int32, array[32, char])] # see if struct isn't better
+  MWActivator* = object
+    id*       : string      # ID
+    model*    : string      # model name
+    name*     : string = "" # name (optional)
+    script*   : string = "" # script name (optional)
   MWIngredientData* = object
     weight*   : float32         # weight
     value*    : uint32          # value
@@ -129,7 +134,7 @@ type
 #     Tail          = 26
 
 type
-  MWRecord* = MWCloth | MWMisc | MWStatic | MWIngredient | MWContainer | MWBook | MWLeveledItem
+  MWRecord* = MWCloth | MWMisc | MWStatic | MWIngredient | MWContainer | MWBook | MWLeveledItem | MWActivator
 
 type
   ParseError* = object of Exception
@@ -221,6 +226,17 @@ proc info* (record: MWContainer): string =
     =====
       Weight: {record.weight}
     ====={options}
+    """
+
+proc info* (record: MWActivator): string =
+    var script = "[None]"
+    if record.script != "":
+      script = record.script
+    result = fmt"""
+    ID:     {record.id}
+    Name:   {record.name}
+    Model:  {record.model}
+    Script: {script}
     """
 
 proc info* (record: MWBook): string =

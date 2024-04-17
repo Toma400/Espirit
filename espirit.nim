@@ -4,6 +4,7 @@ import mwparsers/mwingr
 import mwparsers/mwlevi
 import mwparsers/mwcont
 import mwparsers/mwbook
+import mwparsers/mwacti
 import std/strformat
 import std/strutils
 import std/os
@@ -30,11 +31,13 @@ type
     master* : bool
     head*   : RecordHeader
     deps*   : OrderedTable[string, uint64] # esm dependencies as [.esm file, bytes size]
+    fin*    : bool                         # whether it was read fully to the last byte
     # Plugin regular records
     clot*   : seq[MWCloth]       # clothes (see `MWCloth` in records.nim for reference)
     misc*   : seq[MWMisc]        # misc items (see `MWMisc` in records.nim for reference)
     stat*   : seq[MWStatic]      # statics (see `MWStatic` in records.nim for reference)
     cont*   : seq[MWContainer]   # containers (see `MWContainer` in records.nim for reference)
+    acti*   : seq[MWActivator]   # activators (see `MWActivator` in records.nim for reference)
     ingr*   : seq[MWIngredient]  # ingredients (see `MWIngredient` in records.nim for reference)
     book*   : seq[MWBook]        # books (see `MWBook` in records.nim for reference)
     levi*   : seq[MWLeveledItem] # leveled item (see `MWLeveledItem` in records.nim for reference)
@@ -50,6 +53,7 @@ proc `$`* (plugin: MWPlugin): string =
     Data:
     * statics:       {plugin.stat.len}
     * containers:    {plugin.cont.len}
+    * activators:    {plugin.acti.len}
     * miscs:         {plugin.misc.len}
     * clothes:       {plugin.clot.len}
     * ingredients:   {plugin.ingr.len}
@@ -82,9 +86,13 @@ proc newMWPlugin* (path: string): MWPlugin =
     discard readStr(fr, 4) # loose bytes
 
     result.head = newRecordHeader(fr.read(300)) # 300 bytes after initial check (w/o TES3 header)
+    result.fin  = true                          # default, will be overwritten later if 'false'
 
     # records
     while fr.len > 0:
+      if fr.len < 4:
+        result.fin = false
+        break
       case readStr(fr, 4):
         of "MAST": parseMAST(fr, result.deps)
         of "CLOT": result.clot.add(parseCLOT(fr))
@@ -94,15 +102,16 @@ proc newMWPlugin* (path: string): MWPlugin =
         of "CONT": result.cont.add(parseCONT(fr))
         of "LEVI": result.levi.add(parseLEVI(fr))
         of "BOOK": result.book.add(parseBOOK(fr))
-        of "ACTI": discard
-        of "LIGH": discard
-        of "DOOR": discard
-        of "ALCH": discard
-        of "ARMO": discard
-        of "WEAP": discard
-        of "LOCK": discard
-        of "APPA": discard
-        of "PROB": discard
-        of "REPA": discard
+        of "ACTI": result.acti.add(parseACTI(fr))
+        # of "LIGH": discard
+        # of "DOOR": discard
+        # of "ALCH": discard
+        # of "ARMO": discard
+        # of "WEAP": discard
+        # of "LOCK": discard
+        # of "APPA": discard
+        # of "PROB": discard
+        # of "REPA": discard
         else:
+          result.fin = false
           break
