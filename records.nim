@@ -57,7 +57,21 @@ type
     model*    : string      # model name
     name*     : string = "" # name (optional)
     script*   : string = "" # script name (optional)
+  MWLightData* = object
+    weight*   : float32
+    value*    : uint32
+    time*     : int32
+    radius*   : uint32
+    color*    : (uint8, uint8, uint8, uint8) # rgb(a)?
+    flags*    : uint32
   MWLight* = object
+    id*       : string      # ID
+    model*    : string      # model name
+    name*     : string = "" # name (optional)
+    script*   : string = "" # script name (optional)
+    sound*    : string = "" # sound name (optional)
+    icon*     : string = "" # icon name (optional)
+    data*     : MWLightData
   MWIngredientData* = object
     weight*   : float32         # weight
     value*    : uint32          # value
@@ -135,7 +149,7 @@ type
 #     Tail          = 26
 
 type
-  MWRecord* = MWCloth | MWMisc | MWStatic | MWIngredient | MWContainer | MWBook | MWLeveledItem | MWActivator
+  MWRecord* = MWCloth | MWMisc | MWStatic | MWIngredient | MWContainer | MWBook | MWLeveledItem | MWActivator | MWLight
 
 type
   ParseError* = object of Exception
@@ -238,6 +252,27 @@ proc info* (record: MWActivator): string =
     Name:   {record.name}
     Model:  {record.model}
     Script: {script}
+    """
+
+proc info* (record: MWLight): string =
+    var options = ""
+    if record.script != "":
+      options.add("\n    Script:  " & record.script)
+    if record.sound != "":
+      options.add("\n    Sound:   " & record.sound)
+    result = fmt"""
+    ID:     {record.id}
+    Name:   {record.name}
+    Model:  {record.model}
+    Icon:   {record.icon}
+    =====
+      Type:   {record.data.flags} [{MWLightType(record.data.flags)}]
+      Weight: {record.data.weight}
+      Value:  {record.data.value}
+      Time:   {record.data.time}
+      Radius: {record.data.radius}
+      Color:  {record.data.color}
+    ====={options}
     """
 
 proc info* (record: MWBook): string =

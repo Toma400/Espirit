@@ -185,3 +185,13 @@ type
     sEffectSummonCreature03         = 140 # Call Bonewolf (BM)
     sEffectSummonCreature04         = 141 # BM/TR
     sEffectSummonCreature05         = 142 # BM/TR
+  MWLightType* = enum
+    Dynamic      = 1
+    CanCarry     = 2
+    Negative     = 4
+    Flicker      = 8
+    Fire         = 10
+    OffByDefault = 20
+    FlickerSlow  = 40
+    Pulse        = 80
+    PulseSlow    = 100

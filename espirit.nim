@@ -107,7 +107,7 @@ proc newMWPlugin* (path: string): MWPlugin =
         of "LEVI": result.levi.add(parseLEVI(fr))
         of "BOOK": result.book.add(parseBOOK(fr))
         of "ACTI": result.acti.add(parseACTI(fr))
-        of "LIGH": discard
+        of "LIGH": result.ligh.add(parseLIGH(fr))
         # of "DOOR": discard
         # of "ALCH": discard
         # of "ARMO": discard
