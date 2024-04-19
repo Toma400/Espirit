@@ -57,6 +57,7 @@ type
     model*    : string      # model name
     name*     : string = "" # name (optional)
     script*   : string = "" # script name (optional)
+  MWLight* = object
   MWIngredientData* = object
     weight*   : float32         # weight
     value*    : uint32          # value

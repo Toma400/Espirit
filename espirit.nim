@@ -5,6 +5,8 @@ import mwparsers/mwlevi
 import mwparsers/mwcont
 import mwparsers/mwbook
 import mwparsers/mwacti
+import mwparsers/mwclot
+import mwparsers/mwligh
 import std/strformat
 import std/strutils
 import std/os
@@ -38,6 +40,7 @@ type
     stat*   : seq[MWStatic]      # statics (see `MWStatic` in records.nim for reference)
     cont*   : seq[MWContainer]   # containers (see `MWContainer` in records.nim for reference)
     acti*   : seq[MWActivator]   # activators (see `MWActivator` in records.nim for reference)
+    ligh*   : seq[MWLight]       # lights (see `MWLight` in records.nim for reference)
     ingr*   : seq[MWIngredient]  # ingredients (see `MWIngredient` in records.nim for reference)
     book*   : seq[MWBook]        # books (see `MWBook` in records.nim for reference)
     levi*   : seq[MWLeveledItem] # leveled item (see `MWLeveledItem` in records.nim for reference)
@@ -54,6 +57,7 @@ proc `$`* (plugin: MWPlugin): string =
     * statics:       {plugin.stat.len}
     * containers:    {plugin.cont.len}
     * activators:    {plugin.acti.len}
+    * lights:        {plugin.ligh.len}
     * miscs:         {plugin.misc.len}
     * clothes:       {plugin.clot.len}
     * ingredients:   {plugin.ingr.len}
@@ -103,7 +107,7 @@ proc newMWPlugin* (path: string): MWPlugin =
         of "LEVI": result.levi.add(parseLEVI(fr))
         of "BOOK": result.book.add(parseBOOK(fr))
         of "ACTI": result.acti.add(parseACTI(fr))
-        # of "LIGH": discard
+        of "LIGH": discard
         # of "DOOR": discard
         # of "ALCH": discard
         # of "ARMO": discard
