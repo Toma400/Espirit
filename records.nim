@@ -106,6 +106,13 @@ type
     nnam*   : uint8       # chance none?
     count*  : uint32 = 0  # count of following items (optional)
     items*  : seq[(string, uint16)] # (item name, PC level)
+  MWDoor* = object
+    id*       : string      # ID
+    model*    : string      # model name
+    name*     : string = "" # name (optional)
+    script*   : string = "" # script name (optional)
+    soundo*   : string = "" # sound name: open (optional)
+    soundc*   : string = "" # sound name: close (optional)
 
 # Enum references
 # type
@@ -149,7 +156,7 @@ type
 #     Tail          = 26
 
 type
-  MWRecord* = MWCloth | MWMisc | MWStatic | MWIngredient | MWContainer | MWBook | MWLeveledItem | MWActivator | MWLight
+  MWRecord* = MWCloth | MWMisc | MWStatic | MWIngredient | MWContainer | MWBook | MWLeveledItem | MWActivator | MWLight | MWDoor
 
 type
   ParseError* = object of Exception
@@ -243,7 +250,7 @@ proc info* (record: MWContainer): string =
     ====={options}
     """
 
-proc info* (record: MWActivator): string =
+proc info* (record: MWActivator | MWDoor): string =
     var script = "[None]"
     if record.script != "":
       script = record.script

@@ -30,7 +30,11 @@ The feature plan is to allow Espirit to parse every file into custom
 MWPlugin struct and potentially also export it to JSON format at will.
 
 === License
-Currently, Espirit follows All Rights Reserved license.
+Currently, Espirit follows All Rights Reserved license. +
+You can use it as library and fork to create PRs, but I do not permit
+using its code for other reasons. +
+This license will be changed to more permissive, custom one once I write
+it properly.
 
 === FAQ
 Q: *Will other games (Oblivion, Skyrim, Fallout) be covered?* +

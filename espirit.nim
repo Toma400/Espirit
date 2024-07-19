@@ -7,6 +7,7 @@ import mwparsers/mwbook
 import mwparsers/mwacti
 import mwparsers/mwclot
 import mwparsers/mwligh
+import mwparsers/mwdoor
 import std/strformat
 import std/strutils
 import std/os
@@ -44,6 +45,7 @@ type
     ingr*   : seq[MWIngredient]  # ingredients (see `MWIngredient` in records.nim for reference)
     book*   : seq[MWBook]        # books (see `MWBook` in records.nim for reference)
     levi*   : seq[MWLeveledItem] # leveled item (see `MWLeveledItem` in records.nim for reference)
+    door*   : seq[MWDoor]        # door (see `MWDoor` in records.nim for reference)
 
 proc `$`* (plugin: MWPlugin): string =
     var deps = ""
@@ -63,6 +65,7 @@ proc `$`* (plugin: MWPlugin): string =
     * ingredients:   {plugin.ingr.len}
     * books:         {plugin.book.len}
     * leveled items: {plugin.levi.len}
+    * doors:         {plugin.door.len}
     """.unindent()
 
 proc newRecordHeader(header_string: string): RecordHeader =
@@ -108,7 +111,7 @@ proc newMWPlugin* (path: string): MWPlugin =
         of "BOOK": result.book.add(parseBOOK(fr))
         of "ACTI": result.acti.add(parseACTI(fr))
         of "LIGH": result.ligh.add(parseLIGH(fr))
-        # of "DOOR": discard
+        of "DOOR": result.door.add(parseDOOR(fr))
         # of "ALCH": discard
         # of "ARMO": discard
         # of "WEAP": discard

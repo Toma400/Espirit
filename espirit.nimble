@@ -11,3 +11,5 @@ license       = "All Rights Reserved"
 
 #[--- REQUIREMENTS ------]#
 # None yet
+requires "nim    >= 1.4.0"
+requires "flatty >= 0.3.0"
