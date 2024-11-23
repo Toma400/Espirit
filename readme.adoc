@@ -5,7 +5,8 @@ image:espirit.png[]
 *Espirit* is simple parser of Morrowind .esp & .esm files, written entirely in
 Nim language.
 
-Currently, it is in very early development stage, thus should not be used. +
+Currently, it is in very early development stage, thus it is not stable enough
+for projects where that matters. +
 Make sure to check it out in few months however, as I will strive to make it
 fairly complete by that time.
 
@@ -30,11 +31,11 @@ The feature plan is to allow Espirit to parse every file into custom
 MWPlugin struct and potentially also export it to JSON format at will.
 
 === License
-Currently, Espirit follows All Rights Reserved license. +
+Espirit is allowed for personal and non-commercial use as dependency
+for other projects. +
 You can use it as library and fork to create PRs, but I do not permit
-using its code for other reasons. +
-This license will be changed to more permissive, custom one once I write
-it properly.
+using its code for other reasons. Training for large language models
+is specifically prohibited. +
 
 === FAQ
 Q: *Will other games (Oblivion, Skyrim, Fallout) be covered?* +
