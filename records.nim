@@ -85,6 +85,27 @@ type
     script* : string = "" # script name (optional)
     icon*   : string = "" # icon name (optional)
     data*   : MWIngredientData
+  MWPotionData* = object
+    weight*   : float32
+    value*    : uint32
+    flags*    : uint32 # 0x1 = autocalc
+  MWPotionEnch* = object
+    effindex* : uint16
+    skill*    : int8   # skill affected (-1 if not applicable)
+    attr*     : int8   # attribute affected (-1 if not applicable)
+    range*    : uint32 # 0 = self, 1 = touch, 2 = target
+    area*     : uint32
+    duration* : uint32
+    mmin*     : uint32 # magnitude min
+    mmax*     : uint32 # magnitude max
+  MWPotion* = object
+    id*     : string      # ID
+    model*  : string      # model name
+    name*   : string = "" # name (optional)
+    script* : string = "" # script name (optional)
+    icon*   : string = "" # icon name (optional)
+    data*   : MWPotionData
+    ench*   : seq[MWPotionEnch]
   MWBookData* = object
     weight* : float32 # weight
     value*  : uint32  # value
@@ -156,7 +177,7 @@ type
 #     Tail          = 26
 
 type
-  MWRecord* = MWCloth | MWMisc | MWStatic | MWIngredient | MWContainer | MWBook | MWLeveledItem | MWActivator | MWLight | MWDoor
+  MWRecord* = MWCloth | MWMisc | MWStatic | MWIngredient | MWContainer | MWBook | MWLeveledItem | MWActivator | MWLight | MWDoor | MWPotion
 
 type
   ParseError* = object of Exception
@@ -323,3 +344,19 @@ proc info* (record: MWLeveledItem): string =
     ====={items}
     =====
     """
+
+proc info* (record: MWPotion): string =
+    var options = ""
+    if record.script != "":
+      options.add("\n    Script:  " & record.script)
+    result = fmt"""
+    ID:    {record.id}
+    Name:  {record.name}
+    Model: {record.model}
+    Icon:  {record.icon}
+    =====
+      Weight: {record.data.weight}
+      Value:  {record.data.value}
+    ====={options}
+    """
+    # TODO: Not all values added # EFFECTS!!!

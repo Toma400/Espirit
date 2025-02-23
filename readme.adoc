@@ -6,7 +6,8 @@ image:espirit.png[]
 Nim language.
 
 Currently, it is in very early development stage, thus it is not stable enough
-for projects where that matters. +
+for projects where that matters. For complete list of parsable records, check
+link:records_list.adoc[this list].  +
 Make sure to check it out in few months however, as I will strive to make it
 fairly complete by that time.
 

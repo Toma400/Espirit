@@ -2,7 +2,7 @@ import ../records
 import ../parse
 
 proc parseCONT* (fr: var string): MWContainer =
-  #[ Parses singel MISC key of .esm/.esp files and returns it as MWMisc object ]#
+  #[ Parses singel CONT key of .esm/.esp files and returns it as MWContainer object ]#
   # optional handling uses `fr[0..3]` for scouting, instead of `readStr`/other
   discard readStr(fr, 12) # loose bytes
 
