@@ -134,6 +134,27 @@ type
     script*   : string = "" # script name (optional)
     soundo*   : string = "" # sound name: open (optional)
     soundc*   : string = "" # sound name: close (optional)
+  MWLandHeightData* = object
+    hoffset*  : float32
+    hdata*    : array[65, array[65, int8]] # height data is not absolute values but uses differences between adjacent pixels
+                                           # thus a pixel value of 0 means it has the same height as the last pixel
+                                           # note that the Y-direction of the data is from the bottom up
+    junk*     : array[3, uint8]
+  MWLand* = object
+    coord*    : (int32, int32)
+    data*     : uint32                                   # data types included; if the relevant bit isn't set, the related fields will not be loaded, even if present
+                                                           # 0x01 = Includes VNML, VHGT and WNAM
+                                                           # 0x02 = Includes VCLR
+                                                           # 0x04 = Includes VTEX
+    vnormals* : array[65, array[65, (int8, int8, int8)]] # (x, y, z); y-direction of the data is from the bottom up
+    hgdata*   : MWLandHeightData                         # heights for terrain
+    hgmap*    : array[9,  array[9, uint8]]               # heights for map
+    vcolors*  : array[65, array[65, (uint8, uint8, uint8)]]
+    vtex*     : array[16, array[16, uint16]]
+  MWLandTexture* = object
+    id*       : string      # ID
+    index*    : uint32      # although nominally a uint32, uint16s are used as indices in LAND records, so these are effectively restricted to uint16 values
+    tex*      : string
 
 # Enum references
 # type
@@ -177,7 +198,7 @@ type
 #     Tail          = 26
 
 type
-  MWRecord* = MWCloth | MWMisc | MWStatic | MWIngredient | MWContainer | MWBook | MWLeveledItem | MWActivator | MWLight | MWDoor | MWPotion
+  MWRecord* = MWCloth | MWMisc | MWStatic | MWIngredient | MWContainer | MWBook | MWLeveledItem | MWActivator | MWLight | MWDoor | MWPotion | MWLandTexture
 
 type
   ParseError* = object of Exception
@@ -187,6 +208,9 @@ proc `$`* (record: MWRecord): string =
 
 proc `$`* (clobj: MWClothObj): string =
     result = fmt"{clobj.biped}: {MWClothBipedType(clobj.biped)} | {clobj.mname}, {clobj.fname}"
+
+proc `$`* (land: MWLand): string =
+    result = fmt"X: {land.coord[0]}, Y: {land.coord[1]}"
 
 proc info* (record: MWCloth): string =
     var options = ""
@@ -360,3 +384,17 @@ proc info* (record: MWPotion): string =
     ====={options}
     """
     # TODO: Not all values added # EFFECTS!!!
+
+proc info* (record: MWLandTexture): string =
+    result = fmt"""
+    ID:      {record.id}
+    Index:   {record.index}
+    Texture: {record.tex}
+    """
+
+proc info* (record: MWLand): string =
+    result = fmt"""
+    Coords:  X: {record.coord[0]}
+             Y: {record.coord[1]}
+    Offset: {record.hgdata.hoffset}
+    """

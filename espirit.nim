@@ -9,6 +9,8 @@ import mwparsers/mwclot
 import mwparsers/mwligh
 import mwparsers/mwdoor
 import mwparsers/mwalch
+import mwparsers/mwland
+import mwparsers/mwltex
 import std/strformat
 import std/strutils
 import std/os
@@ -48,6 +50,8 @@ type
     book*   : seq[MWBook]        # books (see `MWBook` in records.nim for reference)
     levi*   : seq[MWLeveledItem] # leveled item (see `MWLeveledItem` in records.nim for reference)
     door*   : seq[MWDoor]        # door (see `MWDoor` in records.nim for reference)
+    land*   : seq[MWLand]        # land (see `MWLand` in records.nim for reference)
+    ltex*   : seq[MWLandTexture] # land texture (see `MWLandTexture` in records.nim for reference)
 
 proc `$`* (plugin: MWPlugin): string =
     var deps = ""
@@ -69,6 +73,8 @@ proc `$`* (plugin: MWPlugin): string =
     * books:         {plugin.book.len}
     * leveled items: {plugin.levi.len}
     * doors:         {plugin.door.len}
+    * land:          {plugin.land.len}
+    * land textures: {plugin.ltex.len}
     """.unindent()
 
 proc newRecordHeader(header_string: string): RecordHeader =
@@ -116,6 +122,9 @@ proc newMWPlugin* (path: string): MWPlugin =
         of "LIGH": result.ligh.add(parseLIGH(fr))
         of "DOOR": result.door.add(parseDOOR(fr))
         of "ALCH": result.alch.add(parseALCH(fr))
+        of "LAND": result.land.add(parseLAND(fr))
+        of "LTEX": result.ltex.add(parseLTEX(fr))
+        of "CELL": discard readStr(fr, 12 + 29) # for `tesannwyn.esp` compatibility only
         # of "ARMO": discard
         # of "WEAP": discard
         # of "LOCK": discard

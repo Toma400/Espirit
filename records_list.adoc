@@ -1,19 +1,21 @@
 === Features
 This is list of records included in .esm/.esp files of Morrowind:
 
-* Done (10/32):
+* Done (12/32):
 ** [x] ALCH (potion)
 ** [x] ACTI (activator)
 ** [x] BOOK (book)
 ** [x] CLOT (cloth)
 ** [x] DOOR (door)
+** [x] LAND (land)
 ** [x] LEVI (leveled item)
 ** [x] LIGH (light)
+** [x] LTEX (land texture)
 ** [x] INGR (ingredient)
 ** [x] MISC (misc)
 ** [x] STAT (static)
 
-* To do (22/32):
+* To do (20/32):
 ** [ ] APPA (alchemy apparatus)
 ** [ ] ARMO (armor)
 ** [ ] BODY (body part)
@@ -27,10 +29,8 @@ This is list of records included in .esm/.esp files of Morrowind:
 ** [ ] GLOB (global)
 ** [ ] GMST (game setting)
 ** [ ] INFO (dialogue response)
-** [ ] LAND (land)
 ** [ ] LEVC (leveled creature)
 ** [ ] LOCK (lockpicking item)
-** [ ] LTEX (land texture)
 ** [ ] MGEF (magic effect)
 ** [ ] NPC_ (npc)
 ** [ ] PGRD (path grid)
