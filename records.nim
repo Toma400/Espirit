@@ -155,6 +155,22 @@ type
     id*       : string      # ID
     index*    : uint32      # although nominally a uint32, uint16s are used as indices in LAND records, so these are effectively restricted to uint16 values
     tex*      : string
+  MWRegionSoundChances* = object
+    name*     : array[32, char]
+    chance*   : uint8
+  MWRegion* = object
+    id*       : string                    # ID
+    name*     : string                    # name
+    weather*  : (uint8, uint8,            # weather
+                 uint8, uint8,
+                 uint8, uint8,
+                 uint8, uint8,
+                 uint8, uint8)              # Bloodmoon/Tribunal only, set to 0 if not available
+    sleep_cr* : string                    # sleep creature
+    map_col*  : (uint8, uint8,            # map colour
+                 uint8, uint8)
+    sound_ch* : seq[MWRegionSoundChances] # sound chances
+
 
 # Enum references
 # type
@@ -198,7 +214,7 @@ type
 #     Tail          = 26
 
 type
-  MWRecord* = MWCloth | MWMisc | MWStatic | MWIngredient | MWContainer | MWBook | MWLeveledItem | MWActivator | MWLight | MWDoor | MWPotion | MWLandTexture
+  MWRecord* = MWCloth | MWMisc | MWStatic | MWIngredient | MWContainer | MWBook | MWLeveledItem | MWActivator | MWLight | MWDoor | MWPotion | MWLandTexture | MWRegion
 
 type
   ParseError* = object of Exception
@@ -394,7 +410,26 @@ proc info* (record: MWLandTexture): string =
 
 proc info* (record: MWLand): string =
     result = fmt"""
-    Coords:  X: {record.coord[0]}
-             Y: {record.coord[1]}
+    Coords: X: {record.coord[0]}
+            Y: {record.coord[1]}
     Offset: {record.hgdata.hoffset}
     """
+
+proc info* (record: MWRegion): string =
+    result = fmt"""
+    ID:      {record.id}
+    Name:    {record.name}
+    Weather:
+      - Clear    [{record.weather[0]}]
+      - Cloudy   [{record.weather[1]}]
+      - Foggy    [{record.weather[2]}]
+      - Overcast [{record.weather[3]}]
+      - Rain     [{record.weather[4]}]
+      - Thunder  [{record.weather[5]}]
+      - Ash      [{record.weather[6]}]
+      - Blight   [{record.weather[7]}]
+      - Snow     [{record.weather[8]}]
+      - Blizzard [{record.weather[9]}]
+    Map: (R: {record.map_col[0]}, G: {record.map_col[1]}, B: {record.map_col[2]}, A: {record.map_col[3]})
+    """
+    # TODO: Not all values added # SOUND CHANCES / SLEEP CREATURE? !!!

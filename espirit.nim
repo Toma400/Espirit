@@ -11,6 +11,7 @@ import mwparsers/mwdoor
 import mwparsers/mwalch
 import mwparsers/mwland
 import mwparsers/mwltex
+import mwparsers/mwregn
 import std/strformat
 import std/strutils
 import std/os
@@ -52,6 +53,7 @@ type
     door*   : seq[MWDoor]        # door (see `MWDoor` in records.nim for reference)
     land*   : seq[MWLand]        # land (see `MWLand` in records.nim for reference)
     ltex*   : seq[MWLandTexture] # land texture (see `MWLandTexture` in records.nim for reference)
+    regn*   : seq[MWRegion]      # region (see `MWRegion` in records.nim for reference)
 
 proc `$`* (plugin: MWPlugin): string =
     var deps = ""
@@ -75,6 +77,7 @@ proc `$`* (plugin: MWPlugin): string =
     * doors:         {plugin.door.len}
     * land:          {plugin.land.len}
     * land textures: {plugin.ltex.len}
+    * regions:       {plugin.regn.len}
     """.unindent()
 
 proc newRecordHeader(header_string: string): RecordHeader =
@@ -124,6 +127,7 @@ proc newMWPlugin* (path: string): MWPlugin =
         of "ALCH": result.alch.add(parseALCH(fr))
         of "LAND": result.land.add(parseLAND(fr))
         of "LTEX": result.ltex.add(parseLTEX(fr))
+        of "REGN": result.regn.add(parseREGN(fr, result.deps))
         of "CELL": discard readStr(fr, 12 + 29) # for `tesannwyn.esp` compatibility only
         # of "ARMO": discard
         # of "WEAP": discard

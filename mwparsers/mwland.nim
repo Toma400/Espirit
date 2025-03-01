@@ -2,12 +2,12 @@ import ../records
 import ../parse
 
 # [ helpers to solve seq > array conversion ] #
-proc seq65toArray (s: seq[(int8, int8, int8)]): array[65, (int8, int8, int8)] =
+proc seq65toArray[T] (s: seq[(T, T, T)]): array[65, (T, T, T)] =
   assert s.len >= result.len # in case seq is for some reason smaller than 65
   for ix in 0..result.len - 1:
       result[ix] = s[ix]
 
-proc seq65toArray (s: seq[array[65, (int8, int8, int8)]]): array[65, array[65, (int8, int8, int8)]] =
+proc seq65toArray[T] (s: seq[array[65, (T, T, T)]]): array[65, array[65, (T, T, T)]] =
   assert s.len >= result.len # in case seq is for some reason smaller than 65
   for ix in 0..result.len - 1:
       result[ix] = s[ix]
@@ -18,16 +18,6 @@ proc seq65toArray (s: seq[int8]): array[65, int8] =
       result[ix] = s[ix]
 
 proc seq65toArray (s: seq[array[65, int8]]): array[65, array[65, int8]] =
-  assert s.len >= result.len # in case seq is for some reason smaller than 65
-  for ix in 0..result.len - 1:
-      result[ix] = s[ix]
-
-proc seq65toArray (s: seq[(uint8, uint8, uint8)]): array[65, (uint8, uint8, uint8)] =
-  assert s.len >= result.len # in case seq is for some reason smaller than 65
-  for ix in 0..result.len - 1:
-      result[ix] = s[ix]
-
-proc seq65toArray (s: seq[array[65, (uint8, uint8, uint8)]]): array[65, array[65, (uint8, uint8, uint8)]] =
   assert s.len >= result.len # in case seq is for some reason smaller than 65
   for ix in 0..result.len - 1:
       result[ix] = s[ix]
