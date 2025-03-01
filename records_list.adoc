@@ -1,7 +1,7 @@
 === Features
 This is list of records included in .esm/.esp files of Morrowind:
 
-* Done (12/32):
+* Done (14/32):
 ** [x] ALCH (potion)
 ** [x] ACTI (activator)
 ** [x] BOOK (book)
@@ -13,9 +13,11 @@ This is list of records included in .esm/.esp files of Morrowind:
 ** [x] LTEX (land texture)
 ** [x] INGR (ingredient)
 ** [x] MISC (misc)
+** [x] REGN (region)
+** [x] REPA (repair item)
 ** [x] STAT (static)
 
-* To do (20/32):
+* To do (18/32):
 ** [ ] APPA (alchemy apparatus)
 ** [ ] ARMO (armor)
 ** [ ] BODY (body part)
@@ -36,8 +38,6 @@ This is list of records included in .esm/.esp files of Morrowind:
 ** [ ] PGRD (path grid)
 ** [ ] PROB (probe item)
 ** [ ] RACE (race)
-** [ ] REGN (region)
-** [ ] REPA (repair item)
 ** [ ] SCPT (script)
 ** [ ] SKIL (skill)
 ** [ ] SNDG (sound generator)

@@ -170,7 +170,18 @@ type
     map_col*  : (uint8, uint8,            # map colour
                  uint8, uint8)
     sound_ch* : seq[MWRegionSoundChances] # sound chances
-
+  MWRepairToolData* = object
+    weight*   : float32
+    value*    : uint32
+    uses*     : uint32
+    quality*  : float32
+  MWRepairTool* = object
+    id*       : string      # ID
+    model*    : string      # model name
+    name*     : string = "" # name (optional)
+    script*   : string = "" # script name (optional)
+    icon*     : string = "" # icon name (optional)
+    data*     : MWRepairToolData
 
 # Enum references
 # type
@@ -214,7 +225,8 @@ type
 #     Tail          = 26
 
 type
-  MWRecord* = MWCloth | MWMisc | MWStatic | MWIngredient | MWContainer | MWBook | MWLeveledItem | MWActivator | MWLight | MWDoor | MWPotion | MWLandTexture | MWRegion
+  MWRecord* = MWCloth | MWMisc | MWStatic | MWIngredient  | MWContainer | MWBook       | MWLeveledItem | MWActivator |
+              MWLight | MWDoor | MWPotion | MWLandTexture | MWRegion    | MWRepairTool
 
 type
   ParseError* = object of Exception
@@ -433,3 +445,20 @@ proc info* (record: MWRegion): string =
     Map: (R: {record.map_col[0]}, G: {record.map_col[1]}, B: {record.map_col[2]}, A: {record.map_col[3]})
     """
     # TODO: Not all values added # SOUND CHANCES / SLEEP CREATURE? !!!
+
+proc info* (record: MWRepairTool): string =
+    var options = ""
+    if record.script != "":
+      options.add("\n    Script:  " & record.script)
+    result = fmt"""
+    ID:    {record.id}
+    Name:  {record.name}
+    Model: {record.model}
+    Icon:  {record.icon}
+    =====
+      Weight:  {record.data.weight}
+      Value:   {record.data.value}
+      Uses:    {record.data.uses}
+      Quality: {record.data.quality}
+    ====={options}
+    """
