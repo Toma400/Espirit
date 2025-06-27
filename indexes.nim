@@ -195,3 +195,8 @@ type
     FlickerSlow  = 40
     Pulse        = 80
     PulseSlow    = 100
+  MWApparatusType* = enum
+    MortarAndPestle = 0
+    Alembic         = 1
+    Calcinator      = 2
+    Retort          = 3

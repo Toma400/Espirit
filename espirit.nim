@@ -13,17 +13,23 @@ import mwparsers/mwland
 import mwparsers/mwltex
 import mwparsers/mwregn
 import mwparsers/mwrepa
+import mwparsers/mwappa
+import mwparsers/mwprob
+import mwparsers/mwlock
+import mwparsers/mwskil
 import std/strformat
 import std/strutils
 import std/os
 import formats
 import records
+import recordsutils
 import streams
 import tables
 import parse
 
 export tables
 export records
+export recordsutils
 
 # srcs: https://stackoverflow.com/questions/33107332/writing-reading-binary-file-in-nim
 #       https://stackoverflow.com/questions/26845538/parsing-a-binary-file-what-is-a-modern-way
@@ -51,11 +57,15 @@ type
     alch*   : seq[MWPotion]      # potion (see `MWPotion` in records.nim for reference)
     book*   : seq[MWBook]        # books (see `MWBook` in records.nim for reference)
     repa*   : seq[MWRepairTool]  # repair tools (see `MWRepairTool` in records.nim for reference)
-    levi*   : seq[MWLeveledItem] # leveled item (see `MWLeveledItem` in records.nim for reference)
-    door*   : seq[MWDoor]        # door (see `MWDoor` in records.nim for reference)
-    land*   : seq[MWLand]        # land (see `MWLand` in records.nim for reference)
-    ltex*   : seq[MWLandTexture] # land texture (see `MWLandTexture` in records.nim for reference)
-    regn*   : seq[MWRegion]      # region (see `MWRegion` in records.nim for reference)
+    appa*   : seq[MWApparatus]   # apparatuses (see `MWApparatus` in records.nim for reference)
+    lock*   : seq[MWLock]        # locks (see `MWLock` in records.nim for reference)
+    prob*   : seq[MWProbe]       # probes (see `MWProbe` in records.nim for reference)
+    levi*   : seq[MWLeveledItem] # leveled items (see `MWLeveledItem` in records.nim for reference)
+    door*   : seq[MWDoor]        # doors (see `MWDoor` in records.nim for reference)
+    land*   : seq[MWLand]        # lands (see `MWLand` in records.nim for reference)
+    ltex*   : seq[MWLandTexture] # land textures (see `MWLandTexture` in records.nim for reference)
+    regn*   : seq[MWRegion]      # regions (see `MWRegion` in records.nim for reference)
+    skil*   : seq[MWSkill]       # skills (see `MWSkill` in records.nim for reference)
 
 proc `$`* (plugin: MWPlugin): string =
     var deps = ""
@@ -76,11 +86,15 @@ proc `$`* (plugin: MWPlugin): string =
     * potions:       {plugin.alch.len}
     * books:         {plugin.book.len}
     * repair tools:  {plugin.repa.len}
+    * apparatuses:   {plugin.appa.len}
+    * locks:         {plugin.lock.len}
+    * probes:        {plugin.prob.len}
     * leveled items: {plugin.levi.len}
     * doors:         {plugin.door.len}
     * land:          {plugin.land.len}
     * land textures: {plugin.ltex.len}
     * regions:       {plugin.regn.len}
+    * skills:        {plugin.skil.len}
     """.unindent()
 
 proc newRecordHeader(header_string: string): RecordHeader =
@@ -134,10 +148,11 @@ proc newMWPlugin* (path: string): MWPlugin =
         of "CELL": discard readStr(fr, 12 + 29) # for `tesannwyn.esp` compatibility only
         # of "ARMO": discard
         # of "WEAP": discard
-        # of "LOCK": discard
-        # of "APPA": discard
-        # of "PROB": discard
         of "REPA": result.repa.add(parseREPA(fr))
+        of "APPA": result.appa.add(parseAPPA(fr))
+        of "LOCK": result.lock.add(parseLOCK(fr))
+        of "PROB": result.prob.add(parsePROB(fr))
+        of "SKIL": result.skil.add(parseSKIL(fr))
         else:
           result.fin = false
           break

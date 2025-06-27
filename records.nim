@@ -12,7 +12,7 @@ const reserved_records* = [
 
 type
   MWClothData* = object
-    kind*   : uint32  # type (please refer to `MWClothType` enum in type section below)
+    kind*   : uint32  # type (please refer to `MWClothType` enum in -indexes.nim-)
     weight* : float32 # weight
     value*  : uint16  # value
     ench*   : uint16  # enchantment points
@@ -182,6 +182,51 @@ type
     script*   : string = "" # script name (optional)
     icon*     : string = "" # icon name (optional)
     data*     : MWRepairToolData
+  MWApparatusData* = object
+    kind*     : uint32 # type of apparatus (please refer to `MWApparatusType` enum in -indexes.nim-)
+    quality*  : float32
+    weight*   : float32
+    value*    : uint32
+  MWApparatus* = object
+    id*       : string      # ID
+    model*    : string = "" # model name (optional apparently)
+    name*     : string = "" # name (optional)
+    script*   : string = "" # script name (optional)
+    icon*     : string = "" # icon name (optional)
+    data*     : MWApparatusData
+  MWLockData* = object
+    weight*   : float32
+    value*    : uint32
+    quality*  : float32
+    uses*     : uint32
+  MWLock* = object
+    id*       : string      # ID
+    model*    : string      # model name
+    name*     : string = "" # name (optional)
+    script*   : string = "" # script name (optional)
+    icon*     : string = "" # icon name (optional)
+    data*     : MWLockData
+  MWProbeData* = object
+    weight*   : float32
+    value*    : uint32
+    quality*  : float32
+    uses*     : uint32
+  MWProbe* = object
+    id*       : string      # ID
+    model*    : string      # model name
+    name*     : string = "" # name (optional)
+    script*   : string = "" # script name (optional)
+    icon*     : string = "" # icon name (optional)
+    data*     : MWProbeData
+  MWSkillData* = object
+    attr*     : uint32             # attribute
+    spec*     : uint32             # specialisation
+    usev*     : (float32, float32, # use values
+                 float32, float32)
+  MWSkill* = object
+    index*    : uint32      # index
+    descr*    : string = "" # description
+    data*     : MWSkillData
 
 # Enum references
 # type
@@ -223,242 +268,3 @@ type
 #     LeftPauldron  = 24
 #     Weapon        = 25
 #     Tail          = 26
-
-type
-  MWRecord* = MWCloth | MWMisc | MWStatic | MWIngredient  | MWContainer | MWBook       | MWLeveledItem | MWActivator |
-              MWLight | MWDoor | MWPotion | MWLandTexture | MWRegion    | MWRepairTool
-
-type
-  ParseError* = object of Exception
-
-proc `$`* (record: MWRecord): string =
-    result = record.id
-
-proc `$`* (clobj: MWClothObj): string =
-    result = fmt"{clobj.biped}: {MWClothBipedType(clobj.biped)} | {clobj.mname}, {clobj.fname}"
-
-proc `$`* (land: MWLand): string =
-    result = fmt"X: {land.coord[0]}, Y: {land.coord[1]}"
-
-proc info* (record: MWCloth): string =
-    var options = ""
-    if record.script != "":
-      options.add("\n    Script:  " & record.script)
-    if record.enchnm != "":
-      options.add("\n    Enchant: " & record.enchnm)
-    if record.objs.len > 0:
-      options.add("\n    Objects:")
-      for obj in record.objs:
-        options.add("\n    - " & $obj)
-    result = fmt"""
-    ID:    {record.id}
-    Name:  {record.name}
-    Model: {record.model}
-    Icon:  {record.icon}
-    =====
-      Kind:   {record.data.kind} [{MWClothType(record.data.kind)}]
-      Weight: {record.data.weight}
-      Value:  {record.data.value}
-    ====={options}
-    """
-
-proc info* (record: MWMisc): string =
-    var options = ""
-    if record.script != "":
-      options.add("\n    Script:  " & record.script)
-    result = fmt"""
-    ID:    {record.id}
-    Name:  {record.name}
-    Model: {record.model}
-    Icon:  {record.icon}
-    =====
-      Weight: {record.data.weight}
-      Value:  {record.data.value}
-    ====={options}
-    """
-
-proc info* (record: MWIngredient): string =
-    var options = ""
-    var effects = ""
-    if record.script != "":
-      options.add("\n    Script:  " & record.script)
-    for c, ef in record.data.effindex:
-      if ef != -1:
-        var sk = ""
-        var at = ""
-        if record.data.skill[c] > 0: sk = fmt"[SkillIndex:     {record.data.skill[c]}]"
-        if record.data.attr[c]  > 0: at = fmt"[AttributeIndex: {record.data.attr[c]}]"
-        effects.add("\n      - " & fmt"{ef} [{MWEffectType(ef)}] {sk}{at}")
-    result = fmt"""
-    ID:    {record.id}
-    Name:  {record.name}
-    Model: {record.model}
-    Icon:  {record.icon}
-    =====
-      Weight: {record.data.weight}
-      Value:  {record.data.value}
-      Effects:    {effects}
-    ====={options}
-    """
-
-proc info* (record: MWContainer): string =
-    proc getID(a: array[32, char]): string =
-      for i in a:
-        if i != '\0': result.add(i)
-
-    var options = ""
-    if record.script != "":
-      options.add("\n    Script:  " & record.script)
-    if record.contents.len > 0:
-      options.add("\n    Contents:")
-      for it in record.contents:
-        options.add("\n" & fmt"    - {it[1].getID} [{it[0]}]")
-    # TODO: lacks some flags info
-    result = fmt"""
-    ID:    {record.id}
-    Name:  {record.name}
-    Model: {record.model}
-    =====
-      Weight: {record.weight}
-    ====={options}
-    """
-
-proc info* (record: MWActivator | MWDoor): string =
-    var script = "[None]"
-    if record.script != "":
-      script = record.script
-    result = fmt"""
-    ID:     {record.id}
-    Name:   {record.name}
-    Model:  {record.model}
-    Script: {script}
-    """
-
-proc info* (record: MWLight): string =
-    var options = ""
-    if record.script != "":
-      options.add("\n    Script:  " & record.script)
-    if record.sound != "":
-      options.add("\n    Sound:   " & record.sound)
-    result = fmt"""
-    ID:     {record.id}
-    Name:   {record.name}
-    Model:  {record.model}
-    Icon:   {record.icon}
-    =====
-      Type:   {record.data.flags} [{MWLightType(record.data.flags)}]
-      Weight: {record.data.weight}
-      Value:  {record.data.value}
-      Time:   {record.data.time}
-      Radius: {record.data.radius}
-      Color:  {record.data.color}
-    ====={options}
-    """
-
-proc info* (record: MWBook): string =
-    var options = ""
-    if record.script != "":
-      options.add("\n    Script:  " & record.script)
-    if record.enchnm != "":
-      options.add("\n    Enchant: " & record.enchnm)
-    result = fmt"""
-    ID:    {record.id}
-    Name:  {record.name}
-    Model: {record.model}
-    Icon:  {record.icon}
-    =====
-      Weight: {record.data.weight}
-      Value:  {record.data.value}
-    ====={options}
-    """
-    # TODO: Not all values added
-
-proc read* (record: MWBook): string =
-    proc mwFormat(r: string): string =
-      let rep = {"<br>": "\n",
-                 "<BR>": "\n"}
-      result = r
-      for k, v in rep.items:
-        result = result.replace(k, v)
-
-    return mwFormat(record.text)
-
-proc info* (record: MWLeveledItem): string =
-    var items = ""
-    if record.count > 0:
-      items.add("\n    Count: " & $record.count)
-    if record.items.len > 0:
-      items.add("\n    Items:")
-    for i in record.items:
-      items.add("\n    - " & fmt"{i[0]}: {i[1]}")
-    result = fmt"""
-    ID:    {record.id}
-    ====={items}
-    =====
-    """
-
-proc info* (record: MWPotion): string =
-    var options = ""
-    if record.script != "":
-      options.add("\n    Script:  " & record.script)
-    result = fmt"""
-    ID:    {record.id}
-    Name:  {record.name}
-    Model: {record.model}
-    Icon:  {record.icon}
-    =====
-      Weight: {record.data.weight}
-      Value:  {record.data.value}
-    ====={options}
-    """
-    # TODO: Not all values added # EFFECTS!!!
-
-proc info* (record: MWLandTexture): string =
-    result = fmt"""
-    ID:      {record.id}
-    Index:   {record.index}
-    Texture: {record.tex}
-    """
-
-proc info* (record: MWLand): string =
-    result = fmt"""
-    Coords: X: {record.coord[0]}
-            Y: {record.coord[1]}
-    Offset: {record.hgdata.hoffset}
-    """
-
-proc info* (record: MWRegion): string =
-    result = fmt"""
-    ID:      {record.id}
-    Name:    {record.name}
-    Weather:
-      - Clear    [{record.weather[0]}]
-      - Cloudy   [{record.weather[1]}]
-      - Foggy    [{record.weather[2]}]
-      - Overcast [{record.weather[3]}]
-      - Rain     [{record.weather[4]}]
-      - Thunder  [{record.weather[5]}]
-      - Ash      [{record.weather[6]}]
-      - Blight   [{record.weather[7]}]
-      - Snow     [{record.weather[8]}]
-      - Blizzard [{record.weather[9]}]
-    Map: (R: {record.map_col[0]}, G: {record.map_col[1]}, B: {record.map_col[2]}, A: {record.map_col[3]})
-    """
-    # TODO: Not all values added # SOUND CHANCES / SLEEP CREATURE? !!!
-
-proc info* (record: MWRepairTool): string =
-    var options = ""
-    if record.script != "":
-      options.add("\n    Script:  " & record.script)
-    result = fmt"""
-    ID:    {record.id}
-    Name:  {record.name}
-    Model: {record.model}
-    Icon:  {record.icon}
-    =====
-      Weight:  {record.data.weight}
-      Value:   {record.data.value}
-      Uses:    {record.data.uses}
-      Quality: {record.data.quality}
-    ====={options}
-    """

@@ -18,7 +18,7 @@ This is list of records included in .esm/.esp files of Morrowind:
 ** [x] STAT (static)
 
 * To do (18/32):
-** [ ] APPA (alchemy apparatus)
+** [x] APPA (alchemy apparatus)
 ** [ ] ARMO (armor)
 ** [ ] BODY (body part)
 ** [ ] BSGN (birthsign)
@@ -32,16 +32,20 @@ This is list of records included in .esm/.esp files of Morrowind:
 ** [ ] GMST (game setting)
 ** [ ] INFO (dialogue response)
 ** [ ] LEVC (leveled creature)
-** [ ] LOCK (lockpicking item)
+** [x] LOCK (lockpicking item)
 ** [ ] MGEF (magic effect)
 ** [ ] NPC_ (npc)
 ** [ ] PGRD (path grid)
-** [ ] PROB (probe item)
+** [x] PROB (probe item)
 ** [ ] RACE (race)
 ** [ ] SCPT (script)
-** [ ] SKIL (skill)
+** [x] SKIL (skill)
 ** [ ] SNDG (sound generator)
 ** [ ] SOUN (sound)
 ** [ ] SPEL (spell)
 ** [ ] SSCR (start script)
 ** [ ] WEAP (weapon)
+
+From other features:
+
+* [ ] Recognition of record deletion
