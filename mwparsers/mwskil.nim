@@ -12,7 +12,7 @@ proc parseSKIL* (fr: var string): MWSkill =
   result.index = readUint32(fr)
 
   if readStr(fr, 4) != "SKDT":
-    raise newException(ParseError, "No SKDT field found for SKIL entry: " & result.id)
+    raise newException(ParseError, "No SKDT field found for SKIL entry: " & $result.index)
   discard readStr(fr, 4) # loose bytes
   result.data = MWSkillData(attr: readUint32(fr),
                             spec: readUint32(fr),

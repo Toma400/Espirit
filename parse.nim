@@ -14,6 +14,10 @@ proc readStr* (s: var string, v: int): string =
 proc readChar* (s: var string): char =
     return readStr(s.read(1), 0, 1)[0]
 
+proc read32Chars* (s: var string): array[32, char] =
+    for c in 1..32:
+      result[c-1] = readChar(s)
+
 proc readInt8* (s: var string, v: int = 1): int8 =
     return readInt8(s.read(v), 0)
 

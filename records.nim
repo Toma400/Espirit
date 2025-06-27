@@ -11,6 +11,9 @@ const reserved_records* = [
 ]
 
 type
+  ParseError* = object of Exception
+
+type
   MWClothData* = object
     kind*   : uint32  # type (please refer to `MWClothType` enum in -indexes.nim-)
     weight* : float32 # weight
@@ -227,6 +230,38 @@ type
     index*    : uint32      # index
     descr*    : string = "" # description
     data*     : MWSkillData
+  MWScriptHeader* = object
+    name*     : array[32, char]
+    numshort* : uint32 # NumShorts
+    numlong*  : uint32 # NumLongs
+    numfloat* : uint32 # NumFloats
+    size_sdt* : uint32 # ScriptDataSize (same as size of SCDT)
+    size_lvr* : uint32 # LocalVarSize (same as size of SCVR)
+  MWScriptVariables* = object
+    raw*    : string # raw string representation
+    shorts* : seq[string]
+    longs*  : seq[string]
+    floats* : seq[string]
+  MWScript* = object
+    header*   : MWScriptHeader
+    vars*     : MWScriptVariables # originally as string (reachable by vars.raw); length derived from header (size_lvr)
+    cdata*    : seq[uint8]        # compiled script data; seq as it is derived from header (size_sdt)
+    text*     : string
+  MWGlobal* = object
+    name*     : string
+    ftype*    : char     # field type
+    value*    : float32  # UESP:
+    #[ All globals are stored as floats, regardless of their specified type
+    This creates issues with rounding and a loss of precision when using very large positive or negative long values
+    Be sure to convert the value to the specified type before using it
+    Integer values like zero are often stored as very small float values, rather than a true zero value ]#
+  MWStartScript* = object
+    name* : string
+    data* : string # ASCII digits of unknown meaning
+
+type
+  MWRecord* = MWCloth | MWMisc | MWStatic | MWIngredient  | MWContainer | MWBook       | MWLeveledItem | MWActivator |
+              MWLight | MWDoor | MWPotion | MWLandTexture | MWRegion    | MWRepairTool | MWApparatus   | MWLock      | MWProbe
 
 # Enum references
 # type

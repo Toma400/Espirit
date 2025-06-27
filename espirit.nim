@@ -17,6 +17,9 @@ import mwparsers/mwappa
 import mwparsers/mwprob
 import mwparsers/mwlock
 import mwparsers/mwskil
+import mwparsers/mwscpt
+import mwparsers/mwglob
+import mwparsers/mwsscr
 import std/strformat
 import std/strutils
 import std/os
@@ -46,6 +49,7 @@ type
     head*   : RecordHeader
     deps*   : OrderedTable[string, uint64] # esm dependencies as [.esm file, bytes size]
     fin*    : bool                         # whether it was read fully to the last byte
+    rem*    : string                       # remaining string (non-empty only if fin == true)
     # Plugin regular records
     clot*   : seq[MWCloth]       # clothes (see `MWCloth` in records.nim for reference)
     misc*   : seq[MWMisc]        # misc items (see `MWMisc` in records.nim for reference)
@@ -66,6 +70,9 @@ type
     ltex*   : seq[MWLandTexture] # land textures (see `MWLandTexture` in records.nim for reference)
     regn*   : seq[MWRegion]      # regions (see `MWRegion` in records.nim for reference)
     skil*   : seq[MWSkill]       # skills (see `MWSkill` in records.nim for reference)
+    scpt*   : seq[MWScript]      # scripts (see `MWScript` in records.nim for reference)
+    glob*   : seq[MWGlobal]      # globals (see `MWGlobal` in records.nim for reference)
+    sscr*   : seq[MWStartScript] # start scripts (see `MWStartScript` in records.nim for reference)
 
 proc `$`* (plugin: MWPlugin): string =
     var deps = ""
@@ -95,6 +102,9 @@ proc `$`* (plugin: MWPlugin): string =
     * land textures: {plugin.ltex.len}
     * regions:       {plugin.regn.len}
     * skills:        {plugin.skil.len}
+    * scripts:       {plugin.scpt.len}
+    * globals:       {plugin.glob.len}
+    * start scripts: {plugin.sscr.len}
     """.unindent()
 
 proc newRecordHeader(header_string: string): RecordHeader =
@@ -153,6 +163,11 @@ proc newMWPlugin* (path: string): MWPlugin =
         of "LOCK": result.lock.add(parseLOCK(fr))
         of "PROB": result.prob.add(parsePROB(fr))
         of "SKIL": result.skil.add(parseSKIL(fr))
+        of "SCPT": result.scpt.add(parseSCPT(fr))
+        of "GLOB": result.glob.add(parseGLOB(fr))
+        of "SSCR": result.sscr.add(parseSSCR(fr))
         else:
           result.fin = false
           break
+
+    if result.fin == false: result.rem = fr

@@ -2,13 +2,6 @@ import std/strformat
 import std/strutils
 import records
 
-type
-  MWRecord* = MWCloth | MWMisc | MWStatic | MWIngredient  | MWContainer | MWBook       | MWLeveledItem | MWActivator |
-              MWLight | MWDoor | MWPotion | MWLandTexture | MWRegion    | MWRepairTool | MWApparatus   | MWLock      | MWProbe
-
-type
-  ParseError* = object of Exception
-
 proc `$`* (record: MWRecord): string =
     result = record.id
 
@@ -20,6 +13,12 @@ proc `$`* (land: MWLand): string =
 
 proc `$`* (sk: MWSkill): string =
     result = fmt"Index: {sk.index}"
+
+proc `$`* (scr: MWScript): string =
+    result = fmt"Name: {scr.header.name}"
+
+proc `$`* (scr: MWGlobal | MWStartScript): string =
+    result = fmt"Name: {scr.name}"
 
 proc info* (record: MWCloth): string =
     var options = ""
@@ -262,14 +261,66 @@ proc info* (record: MWApparatus): string =
     """
 
 proc info* (record: MWSkill): string =
-    var options = ""
     result = fmt"""
+    Name:  {MWSkillType(record.index)}
     Index: {record.index}
     =====
-      Attribute:      {record.data.attr}
+      Attribute:      {record.data.attr} [{MWAttributeType(record.data.attr)}]
       Specialisation: {record.data.spec}
       Use Values:     {record.data.usev}
     =====
     Description:
     {record.descr}
+    """
+
+proc info* (record: MWScript): string =
+    proc charsToString(ca: array[32, char]): string =
+      for c in ca:
+        result.add(c)
+    proc listMembers(sq: seq[string]): string =
+      for sqm in sq:
+        result.add("\n")
+        result.add(fmt"   - {sqm}")
+    proc formatScript(s: string): string =
+      let lines  = s.split({'\n', '\r'})
+      var lbreak = false
+      for i, sl in lines.pairs:
+        if i < len(lines):
+          if sl != "": # being here, allows for proper script to get in
+            lbreak = false
+          if lbreak == false:
+            result.add("\n")
+            result.add(fmt"    {sl}")
+          if sl == "": # being here, it allows for one break to happen
+            lbreak = true
+
+    result = fmt"""
+    Name: {charsToString(record.header.name)}
+    =====
+    Variables:
+      Shorts [{record.header.numshort}]{listMembers(record.vars.shorts)}
+      Longs [{record.header.numlong}]{listMembers(record.vars.longs)}
+      Floats [{record.header.numfloat}]{listMembers(record.vars.floats)}
+    =====
+    Script:
+    '''{formatScript(record.text)}
+    '''
+    """
+
+proc info* (record: MWGlobal): string =
+    type
+      FieldType = enum
+        Float = 'f'
+        Long  = 'l'
+        Short = 's'
+    result = fmt"""
+    Name:  {record.name}
+    Type:  {FieldType(record.ftype)}
+    Value: {record.value}
+    """
+
+proc info* (record: MWStartScript): string =
+    result = fmt"""
+    Name: {record.name}
+    Data: {record.data}
     """

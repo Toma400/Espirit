@@ -1,24 +1,30 @@
 === Features
 This is list of records included in .esm/.esp files of Morrowind:
 
-* Done (14/32):
+* Done (21/32):
 ** [x] ALCH (potion)
 ** [x] ACTI (activator)
+** [x] APPA (alchemy apparatus)
 ** [x] BOOK (book)
 ** [x] CLOT (cloth)
 ** [x] DOOR (door)
+** [x] GLOB (global)
 ** [x] LAND (land)
 ** [x] LEVI (leveled item)
 ** [x] LIGH (light)
+** [x] LOCK (lockpicking item)
 ** [x] LTEX (land texture)
 ** [x] INGR (ingredient)
 ** [x] MISC (misc)
+** [x] PROB (probe item)
 ** [x] REGN (region)
 ** [x] REPA (repair item)
+** [x] SCPT (script)
+** [x] SKIL (skill)
+** [x] SSCR (start script)
 ** [x] STAT (static)
 
-* To do (18/32):
-** [x] APPA (alchemy apparatus)
+* To do (11/32):
 ** [ ] ARMO (armor)
 ** [ ] BODY (body part)
 ** [ ] BSGN (birthsign)
@@ -28,22 +34,16 @@ This is list of records included in .esm/.esp files of Morrowind:
 ** [ ] DIAL (dialogue topic)
 ** [ ] ENCH (enchantment)
 ** [ ] FACT (faction)
-** [ ] GLOB (global)
 ** [ ] GMST (game setting)
 ** [ ] INFO (dialogue response)
 ** [ ] LEVC (leveled creature)
-** [x] LOCK (lockpicking item)
 ** [ ] MGEF (magic effect)
 ** [ ] NPC_ (npc)
 ** [ ] PGRD (path grid)
-** [x] PROB (probe item)
 ** [ ] RACE (race)
-** [ ] SCPT (script)
-** [x] SKIL (skill)
 ** [ ] SNDG (sound generator)
 ** [ ] SOUN (sound)
 ** [ ] SPEL (spell)
-** [ ] SSCR (start script)
 ** [ ] WEAP (weapon)
 
 From other features:

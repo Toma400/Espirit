@@ -2,7 +2,7 @@ import ../records
 import ../parse
 
 proc parseSTAT* (fr: var string): MWStatic =
-  #[ Parses singel STAT key of .esm/.esp files and returns it as MWStatic object ]#
+  #[ Parses single STAT key of .esm/.esp files and returns it as MWStatic object ]#
   # optional handling uses `fr[0..3]` for scouting, instead of `readStr`/other
   discard readStr(fr, 12) # loose bytes
 
