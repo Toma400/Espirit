@@ -15,7 +15,7 @@ type
 
 type
   # === Base object : all main records inherit from it ===
-  MWRecord* = object
+  MWRecord* = object of RootObj
     deleted* : bool
   # === Records & subrecords ===
   MWClothData* = object
@@ -262,7 +262,18 @@ type
   MWStartScript* = object of MWRecord
     name* : string
     data* : string # ASCII digits of unknown meaning
+  MWBodyData* = object
+    part*    : uint8 # body part
+    vampire* : uint8
+    flags*   : uint8 # 1 - female, 2 - playable
+    pkind*   : uint8 # body part type
+  MWBody* = object of MWRecord
+    id*    : string
+    model* : string
+    race*  : string
+    data*  : MWBodyData
 
 type
   MWCommonRecord* = MWCloth | MWMisc | MWStatic | MWIngredient  | MWContainer | MWBook       | MWLeveledItem | MWActivator |
-                    MWLight | MWDoor | MWPotion | MWLandTexture | MWRegion    | MWRepairTool | MWApparatus   | MWLock      | MWProbe
+                    MWLight | MWDoor | MWPotion | MWLandTexture | MWRegion    | MWRepairTool | MWApparatus   | MWLock      | MWProbe |
+                    MWBody

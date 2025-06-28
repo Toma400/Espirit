@@ -20,6 +20,7 @@ import mwparsers/mwskil
 import mwparsers/mwscpt
 import mwparsers/mwglob
 import mwparsers/mwsscr
+import mwparsers/mwbody
 import std/strformat
 import std/strutils
 import std/os
@@ -73,6 +74,7 @@ type
     scpt*   : seq[MWScript]      # scripts (see `MWScript` in records.nim for reference)
     glob*   : seq[MWGlobal]      # globals (see `MWGlobal` in records.nim for reference)
     sscr*   : seq[MWStartScript] # start scripts (see `MWStartScript` in records.nim for reference)
+    body*   : seq[MWBody]        # body parts (see `MWBody` in records.nim for reference)
 
 proc `$`* (plugin: MWPlugin): string =
     var deps = ""
@@ -105,6 +107,7 @@ proc `$`* (plugin: MWPlugin): string =
     * scripts:       {plugin.scpt.len}
     * globals:       {plugin.glob.len}
     * start scripts: {plugin.sscr.len}
+    * body parts:    {plugin.body.len}
     """.unindent()
 
 proc newRecordHeader(header_string: string): RecordHeader =
@@ -166,6 +169,7 @@ proc newMWPlugin* (path: string): MWPlugin =
         of "SCPT": result.scpt.add(parseSCPT(fr))
         of "GLOB": result.glob.add(parseGLOB(fr))
         of "SSCR": result.sscr.add(parseSSCR(fr))
+        of "BODY": result.body.add(parseBODY(fr))
         else:
           result.fin = false
           break

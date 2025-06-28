@@ -26,7 +26,7 @@ This is list of records included in .esm/.esp files of Morrowind:
 
 * To do (11/32):
 ** [ ] ARMO (armor)
-** [ ] BODY (body part)
+** [x] BODY (body part)
 ** [ ] BSGN (birthsign)
 ** [ ] CELL (cell)
 ** [ ] CLAS (class)

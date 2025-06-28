@@ -324,3 +324,16 @@ proc info* (record: MWStartScript): string =
     Name: {record.name}
     Data: {record.data}
     """
+
+proc info* (record: MWBody): string =
+    result = fmt"""
+    ID:    {record.id}
+    Model: {record.model}
+    Race:  {record.race}
+    =====
+    Data:
+      Body Part: {record.data.part} [{MWBodyPartType(record.data.part)}]
+      Vampire:   {record.data.vampire}
+      Flags:     {record.data.flags}
+      Type:      {record.data.pkind} [{MWBodyKindType(record.data.pkind)}]
+    """
