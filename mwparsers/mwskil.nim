@@ -1,10 +1,11 @@
 import ../records
+import ../common
 import ../parse
 
 proc parseSKIL* (fr: var string): MWSkill =
   #[ Parses singel SKIL key of .esm/.esp files and returns it as MWSkill object ]#
   # optional handling uses `fr[0..3]` for scouting, instead of `readStr`/other
-  discard readStr(fr, 12) # loose bytes
+  result.header = parseRecordHeader(fr)
 
   if readStr(fr, 4) != "INDX":
     raise newException(ParseError, "No INDX field found for SKIL entry.")

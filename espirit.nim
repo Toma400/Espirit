@@ -145,7 +145,7 @@ proc newMWPlugin* (path: string): MWPlugin =
       if fr.len < 4:
         result.fin = false
         break
-      case readStr(fr, 4):
+      case fr[0..3]: # checks record type (consumed during record header parsing)
         of "MAST": parseMAST(fr, result.deps)
         of "CLOT": result.clot.add(parseCLOT(fr))
         of "STAT": result.stat.add(parseSTAT(fr))
@@ -161,7 +161,7 @@ proc newMWPlugin* (path: string): MWPlugin =
         of "LAND": result.land.add(parseLAND(fr))
         of "LTEX": result.ltex.add(parseLTEX(fr))
         of "REGN": result.regn.add(parseREGN(fr, result.deps))
-        of "CELL": discard readStr(fr, 12 + 29) # for `tesannwyn.esp` compatibility only
+        of "CELL": discard readStr(fr, 12 + 29 + 4) # for `tesannwyn.esp` compatibility only (+4 for "CELL")
         # of "ARMO": discard
         # of "WEAP": discard
         of "REPA": result.repa.add(parseREPA(fr))

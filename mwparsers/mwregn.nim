@@ -1,5 +1,6 @@
 import std/strutils
 import ../records
+import ../common
 import ../parse
 import tables
 
@@ -12,7 +13,7 @@ proc seq32toArray[char] (s: seq[char]): array[32, char] =
 proc parseREGN* (fr: var string, deps: OrderedTable[string, uint64]): MWRegion =
   #[ Parses single REGN key of .esm/.esp files and returns it as MWRegion object ]#
   # optional handling uses `fr[0..3]` for scouting, instead of `readStr`/other
-  discard readStr(fr, 12) # loose bytes
+  result.header = parseRecordHeader(fr)
 
   var exp = (t: false, b: false) # checks if expansion is used
   for f, _ in deps:

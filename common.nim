@@ -8,11 +8,9 @@ import parse
 type
   zstring* = string # used only to differentiate between MW's string and zstring for [T] handling
 
-proc parseRecordHeader* (fr: var string, nm: string): MWRecordHeader = # parses first 12 'loose bytes'
-    # TODO: skips first 4 bytes as they are used in -espirit.nim-
-    # for _ in 1..4:
-    #   result.name.add(readChar(fr))
-    result.name  = nm # remove the argument and this bind (replace by iterator above) once the whole system migrates
+proc parseRecordHeader* (fr: var string): MWRecordHeader = # parses first 12 'loose bytes'
+    for _ in 1..4:
+      result.name.add(readChar(fr))
     result.size  = readUint32(fr)
     result.dummy = readUint32(fr)
     result.flags = readUint32(fr)

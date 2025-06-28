@@ -1,10 +1,11 @@
 import ../records
+import ../common
 import ../parse
 
 proc parseCLOT* (fr: var string): MWCloth =
     #[ Parses singel CLOT key of .esm/.esp files and returns it as MWCloth object ]#
     # optional handling uses `fr[0..3]` for scouting, instead of `readStr`/other
-    discard readStr(fr, 12) # loose bytes
+    result.header = parseRecordHeader(fr)
 
     if readStr(fr, 4) != "NAME":
       raise newException(ParseError, "No NAME field found for CLOT entry.")

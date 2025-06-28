@@ -1,4 +1,5 @@
 import ../records
+import ../common
 import ../parse
 
 # [ helpers to solve seq > array conversion ] #
@@ -45,7 +46,7 @@ proc seq16toArray (s: seq[array[16, uint16]]): array[16, array[16, uint16]] =
 proc parseLAND* (fr: var string): MWLand =
   #[ Parses single LAND key of .esm/.esp files and returns it as MWLand object ]#
   # optional handling uses `fr[0..3]` for scouting, instead of `readStr`/other
-  discard readStr(fr, 12) # loose bytes
+  result.header = parseRecordHeader(fr)
 
   if readStr(fr, 4) != "INTV":
     raise newException(ParseError, "No INTV field found for LAND entry.")

@@ -1,10 +1,11 @@
 import ../records
+import ../common
 import ../parse
 
 proc parseSCPT* (fr: var string): MWScript =
   #[ Parses single SCPT key of .esm/.esp files and returns it as MWScript object ]#
   # optional handling uses `fr[0..3]` for scouting, instead of `readStr`/other
-  discard readStr(fr, 12) # loose bytes
+  result.header = parseRecordHeader(fr)
 
   if readStr(fr, 4) != "SCHD":
     raise newException(ParseError, "No SCHD field found for SCPT entry.")

@@ -1,10 +1,11 @@
 import ../records
+import ../common
 import ../parse
 
 proc parseSSCR* (fr: var string): MWStartScript =
   #[ Parses single SSCR key of .esm/.esp files and returns it as MWStartScript object ]#
   # optional handling uses `fr[0..3]` for scouting, instead of `readStr`/other
-  discard readStr(fr, 12) # loose bytes
+  result.header = parseRecordHeader(fr)
 
   if readStr(fr, 4) != "DATA":
     raise newException(ParseError, "No DATA field found for SSCR entry.")

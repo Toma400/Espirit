@@ -1,10 +1,11 @@
 import ../records
+import ../common
 import ../parse
 
 proc parseAPPA* (fr: var string): MWApparatus =
   #[ Parses single APPA key of .esm/.esp files and returns it as MWApparatus object ]#
   # optional handling uses `fr[0..3]` for scouting, instead of `readStr`/other
-  discard readStr(fr, 12) # loose bytes
+  result.header = parseRecordHeader(fr)
 
   if readStr(fr, 4) != "NAME":
     raise newException(ParseError, "No NAME field found for APPA entry.")
