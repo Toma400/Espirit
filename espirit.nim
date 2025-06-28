@@ -21,6 +21,7 @@ import mwparsers/mwscpt
 import mwparsers/mwglob
 import mwparsers/mwsscr
 import mwparsers/mwbody
+import mwparsers/mwgmst
 import std/strformat
 import std/strutils
 import std/os
@@ -41,13 +42,13 @@ export recordsutils
 # dscd: https://discord.com/channels/210394599246659585/210894929868619778/1211364857169977344
 
 type
-  RecordHeader = object
+  PluginHeader = object
     bytestr* : string
 
   MWPlugin = object
     name*   : string
     master* : bool
-    head*   : RecordHeader
+    head*   : PluginHeader
     deps*   : OrderedTable[string, uint64] # esm dependencies as [.esm file, bytes size]
     fin*    : bool                         # whether it was read fully to the last byte
     rem*    : string                       # remaining string (non-empty only if fin == true)
@@ -75,6 +76,7 @@ type
     glob*   : seq[MWGlobal]      # globals (see `MWGlobal` in records.nim for reference)
     sscr*   : seq[MWStartScript] # start scripts (see `MWStartScript` in records.nim for reference)
     body*   : seq[MWBody]        # body parts (see `MWBody` in records.nim for reference)
+    gmst*   : seq[MWGameSetting] # game settings (see `MWGameSetting` in records.nim for reference)
 
 proc `$`* (plugin: MWPlugin): string =
     var deps = ""
@@ -108,9 +110,10 @@ proc `$`* (plugin: MWPlugin): string =
     * globals:       {plugin.glob.len}
     * start scripts: {plugin.sscr.len}
     * body parts:    {plugin.body.len}
+    * game settings: {plugin.gmst.len}
     """.unindent()
 
-proc newRecordHeader(header_string: string): RecordHeader =
+proc newPluginHeader(header_string: string): PluginHeader =
     result.bytestr = header_string
 
 proc newMWPlugin* (path: string): MWPlugin =
@@ -134,7 +137,7 @@ proc newMWPlugin* (path: string): MWPlugin =
       raise newException(ParseError, fmt"File header for file: {path} not found.")
     discard readStr(fr, 4) # loose bytes
 
-    result.head = newRecordHeader(fr.read(300)) # 300 bytes after initial check (w/o TES3 header)
+    result.head = newPluginHeader(fr.read(300)) # 300 bytes after initial check (w/o TES3 header)
     result.fin  = true                          # default, will be overwritten later if 'false'
 
     # records
@@ -170,6 +173,7 @@ proc newMWPlugin* (path: string): MWPlugin =
         of "GLOB": result.glob.add(parseGLOB(fr))
         of "SSCR": result.sscr.add(parseSSCR(fr))
         of "BODY": result.body.add(parseBODY(fr))
+        of "GMST": result.gmst.add(parseGMST(fr))
         else:
           result.fin = false
           break

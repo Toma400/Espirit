@@ -257,3 +257,14 @@ type
     Skin     = 0
     Clothing = 1
     Armor    = 2
+  MWBodyFlags* = enum
+    NPCMale   = 0 # non-playable
+    NPCFemale = 1
+    Male      = 2 # playable
+    Female    = 3
+
+type
+  FieldType* = enum
+    Float = 'f'
+    Long  = 'l'
+    Short = 's'

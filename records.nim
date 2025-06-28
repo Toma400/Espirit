@@ -1,5 +1,3 @@
-import std/strformat
-import std/strutils
 import indexes
 
 export indexes
@@ -15,7 +13,13 @@ type
 
 type
   # === Base object : all main records inherit from it ===
+  MWRecordHeader* = object
+    name*:  string # formally 'array[4, char]', but it's not particularly practical
+    size*:  uint32
+    dummy*: uint32
+    flags*: uint32
   MWRecord* = object of RootObj
+    header*  : MWRecordHeader
     deleted* : bool
   # === Records & subrecords ===
   MWClothData* = object
@@ -247,7 +251,7 @@ type
     longs*  : seq[string]
     floats* : seq[string]
   MWScript* = object of MWRecord
-    header*   : MWScriptHeader
+    sheader*  : MWScriptHeader
     vars*     : MWScriptVariables # originally as string (reachable by vars.raw); length derived from header (size_lvr)
     cdata*    : seq[uint8]        # compiled script data; seq as it is derived from header (size_sdt)
     text*     : string
@@ -272,6 +276,12 @@ type
     model* : string
     race*  : string
     data*  : MWBodyData
+  MWGameSetting* = object of MWRecord
+    name*   : string  # name[0] directs to type used
+    kind*   : char    # not in plugin file, used as support field for name[0] check
+    valfl*  : float32 # values (optional)
+    vali*   : int32
+    vals*   : string
 
 type
   MWCommonRecord* = MWCloth | MWMisc | MWStatic | MWIngredient  | MWContainer | MWBook       | MWLeveledItem | MWActivator |

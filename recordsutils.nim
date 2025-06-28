@@ -15,9 +15,9 @@ proc `$`* (sk: MWSkill): string =
     result = fmt"Index: {sk.index}"
 
 proc `$`* (scr: MWScript): string =
-    result = fmt"Name: {scr.header.name}"
+    result = fmt"Name: {scr.sheader.name}"
 
-proc `$`* (scr: MWGlobal | MWStartScript): string =
+proc `$`* (scr: MWGlobal | MWStartScript | MWGameSetting): string =
     result = fmt"Name: {scr.name}"
 
 proc info* (record: MWCloth): string =
@@ -295,12 +295,12 @@ proc info* (record: MWScript): string =
             lbreak = true
 
     result = fmt"""
-    Name: {charsToString(record.header.name)}
+    Name: {charsToString(record.sheader.name)}
     =====
     Variables:
-      Shorts [{record.header.numshort}]{listMembers(record.vars.shorts)}
-      Longs [{record.header.numlong}]{listMembers(record.vars.longs)}
-      Floats [{record.header.numfloat}]{listMembers(record.vars.floats)}
+      Shorts [{record.sheader.numshort}]{listMembers(record.vars.shorts)}
+      Longs [{record.sheader.numlong}]{listMembers(record.vars.longs)}
+      Floats [{record.sheader.numfloat}]{listMembers(record.vars.floats)}
     =====
     Script:
     '''{formatScript(record.text)}
@@ -308,11 +308,6 @@ proc info* (record: MWScript): string =
     """
 
 proc info* (record: MWGlobal): string =
-    type
-      FieldType = enum
-        Float = 'f'
-        Long  = 'l'
-        Short = 's'
     result = fmt"""
     Name:  {record.name}
     Type:  {FieldType(record.ftype)}
@@ -334,6 +329,18 @@ proc info* (record: MWBody): string =
     Data:
       Body Part: {record.data.part} [{MWBodyPartType(record.data.part)}]
       Vampire:   {record.data.vampire}
-      Flags:     {record.data.flags}
+      Flags:     {record.data.flags} [{MWBodyFlags(record.data.flags)}]
       Type:      {record.data.pkind} [{MWBodyKindType(record.data.pkind)}]
+    =====
+    """
+
+proc info* (record: MWGameSetting): string =
+    result = fmt"""
+    Name: {record.name}
+    Type: {record.kind} [{FieldType(record.kind)}]
+    =====
+      Float:  {record.valfl}
+      Int:    {record.vali}
+      String: {record.vals}
+    =====
     """
