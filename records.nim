@@ -14,6 +14,10 @@ type
   ParseError* = object of Exception
 
 type
+  # === Base object : all main records inherit from it ===
+  MWRecord* = object
+    deleted* : bool
+  # === Records & subrecords ===
   MWClothData* = object
     kind*   : uint32  # type (please refer to `MWClothType` enum in -indexes.nim-)
     weight* : float32 # weight
@@ -24,7 +28,7 @@ type
     biped* : uint8       # biped object (please refer to `MWClothBipedType` enum in type section below)
     mname* : string = "" # male name for cloth (optional)
     fname* : string = "" # female name for cloth (optional, `mname` used if absent)
-  MWCloth* = object
+  MWCloth* = object of MWRecord
     id*     : string          # ID
     model*  : string          # model name
     name*   : string = ""     # name (optional)
@@ -37,17 +41,17 @@ type
     weight* : float32 # weight
     value*  : uint32  # value
     unkn*   : uint32  # unknown field, only uses 0 and 1, but usually unused
-  MWMisc* = object
+  MWMisc* = object of MWRecord
     id*     : string      # ID
     model*  : string      # model name
     name*   : string = "" # name (optional)
     script* : string = "" # script name (optional)
     icon*   : string = "" # icon name (optional)
     data*   : MWMiscData
-  MWStatic* = object
+  MWStatic* = object of MWRecord
     id*    : string # ID
     model* : string # model name
-  MWContainer* = object
+  MWContainer* = object of MWRecord
     id*       : string      # ID
     model*    : string      # model name
     name*     : string = "" # name (optional)
@@ -55,7 +59,7 @@ type
     weight*   : float32
     flags*    : uint32      # 0x1 = organic, 0x2 = respawns (organic only), 0x8 = unknown, always set
     contents* : seq[(int32, array[32, char])] # see if struct isn't better
-  MWActivator* = object
+  MWActivator* = object of MWRecord
     id*       : string      # ID
     model*    : string      # model name
     name*     : string = "" # name (optional)
@@ -67,7 +71,7 @@ type
     radius*   : uint32
     color*    : (uint8, uint8, uint8, uint8) # rgb(a)?
     flags*    : uint32
-  MWLight* = object
+  MWLight* = object of MWRecord
     id*       : string      # ID
     model*    : string      # model name
     name*     : string = "" # name (optional)
@@ -81,7 +85,7 @@ type
     effindex* : array[4, int32] # effect indexes
     skill*    : array[4, int32] # skill IDs
     attr*     : array[4, int32] # attribute IDs
-  MWIngredient* = object
+  MWIngredient* = object of MWRecord
     id*     : string      # ID
     model*  : string      # model name
     name*   : string = "" # name (optional)
@@ -101,7 +105,7 @@ type
     duration* : uint32
     mmin*     : uint32 # magnitude min
     mmax*     : uint32 # magnitude max
-  MWPotion* = object
+  MWPotion* = object of MWRecord
     id*     : string      # ID
     model*  : string      # model name
     name*   : string = "" # name (optional)
@@ -115,7 +119,7 @@ type
     flags*  : uint32  # if scroll or not
     skill*  : int32   # -1 if none
     ench*   : uint32  # enchantment points
-  MWBook* = object
+  MWBook* = object of MWRecord
     id*     : string      # ID
     model*  : string      # model name
     name*   : string = "" # name (optional)
@@ -124,13 +128,13 @@ type
     text*   : string = "" # text contents (optional)
     icon*   : string = "" # icon name (optional)
     data*   : MWBookData
-  MWLeveledItem* = object
+  MWLeveledItem* = object of MWRecord
     id*     : string      # ID
     data*   : uint32      # flags (0x1 = Calculate for each item in count | 0x2 = Calculate from all levels <= PC's level)
     nnam*   : uint8       # chance none?
     count*  : uint32 = 0  # count of following items (optional)
     items*  : seq[(string, uint16)] # (item name, PC level)
-  MWDoor* = object
+  MWDoor* = object of MWRecord
     id*       : string      # ID
     model*    : string      # model name
     name*     : string = "" # name (optional)
@@ -143,7 +147,7 @@ type
                                            # thus a pixel value of 0 means it has the same height as the last pixel
                                            # note that the Y-direction of the data is from the bottom up
     junk*     : array[3, uint8]
-  MWLand* = object
+  MWLand* = object of MWRecord
     coord*    : (int32, int32)
     data*     : uint32                                   # data types included; if the relevant bit isn't set, the related fields will not be loaded, even if present
                                                            # 0x01 = Includes VNML, VHGT and WNAM
@@ -154,14 +158,14 @@ type
     hgmap*    : array[9,  array[9, uint8]]               # heights for map
     vcolors*  : array[65, array[65, (uint8, uint8, uint8)]]
     vtex*     : array[16, array[16, uint16]]
-  MWLandTexture* = object
+  MWLandTexture* = object of MWRecord
     id*       : string      # ID
     index*    : uint32      # although nominally a uint32, uint16s are used as indices in LAND records, so these are effectively restricted to uint16 values
     tex*      : string
   MWRegionSoundChances* = object
     name*     : array[32, char]
     chance*   : uint8
-  MWRegion* = object
+  MWRegion* = object of MWRecord
     id*       : string                    # ID
     name*     : string                    # name
     weather*  : (uint8, uint8,            # weather
@@ -178,7 +182,7 @@ type
     value*    : uint32
     uses*     : uint32
     quality*  : float32
-  MWRepairTool* = object
+  MWRepairTool* = object of MWRecord
     id*       : string      # ID
     model*    : string      # model name
     name*     : string = "" # name (optional)
@@ -190,7 +194,7 @@ type
     quality*  : float32
     weight*   : float32
     value*    : uint32
-  MWApparatus* = object
+  MWApparatus* = object of MWRecord
     id*       : string      # ID
     model*    : string = "" # model name (optional apparently)
     name*     : string = "" # name (optional)
@@ -202,7 +206,7 @@ type
     value*    : uint32
     quality*  : float32
     uses*     : uint32
-  MWLock* = object
+  MWLock* = object of MWRecord
     id*       : string      # ID
     model*    : string      # model name
     name*     : string = "" # name (optional)
@@ -214,7 +218,7 @@ type
     value*    : uint32
     quality*  : float32
     uses*     : uint32
-  MWProbe* = object
+  MWProbe* = object of MWRecord
     id*       : string      # ID
     model*    : string      # model name
     name*     : string = "" # name (optional)
@@ -226,7 +230,7 @@ type
     spec*     : uint32             # specialisation
     usev*     : (float32, float32, # use values
                  float32, float32)
-  MWSkill* = object
+  MWSkill* = object of MWRecord
     index*    : uint32      # index
     descr*    : string = "" # description
     data*     : MWSkillData
@@ -242,12 +246,12 @@ type
     shorts* : seq[string]
     longs*  : seq[string]
     floats* : seq[string]
-  MWScript* = object
+  MWScript* = object of MWRecord
     header*   : MWScriptHeader
     vars*     : MWScriptVariables # originally as string (reachable by vars.raw); length derived from header (size_lvr)
     cdata*    : seq[uint8]        # compiled script data; seq as it is derived from header (size_sdt)
     text*     : string
-  MWGlobal* = object
+  MWGlobal* = object of MWRecord
     name*     : string
     ftype*    : char     # field type
     value*    : float32  # UESP:
@@ -255,51 +259,10 @@ type
     This creates issues with rounding and a loss of precision when using very large positive or negative long values
     Be sure to convert the value to the specified type before using it
     Integer values like zero are often stored as very small float values, rather than a true zero value ]#
-  MWStartScript* = object
+  MWStartScript* = object of MWRecord
     name* : string
     data* : string # ASCII digits of unknown meaning
 
 type
-  MWRecord* = MWCloth | MWMisc | MWStatic | MWIngredient  | MWContainer | MWBook       | MWLeveledItem | MWActivator |
-              MWLight | MWDoor | MWPotion | MWLandTexture | MWRegion    | MWRepairTool | MWApparatus   | MWLock      | MWProbe
-
-# Enum references
-# type
-#   MWClothType* = enum
-#     Pants      = 0
-#     Shoes      = 1
-#     Shirt      = 2
-#     Belt       = 3
-#     Robe       = 4
-#     RightGlove = 5
-#     LeftGlove  = 6
-#     Skirt      = 7
-#     Ring       = 8
-#     Amulet     = 9
-#   MWClothBipedType* = enum
-#     Head          = 1
-#     Hair          = 2
-#     Cuirass       = 3
-#     Groin         = 4
-#     Skirt         = 5
-#     RightHand     = 6
-#     LeftHang      = 7
-#     RightWrist    = 8
-#     LeftWrist     = 9
-#     Shield        = 10
-#     RightForearm  = 11
-#     LeftForearm   = 12
-#     RightUpperArm = 13
-#     LeftUpperArm  = 14
-#     RightFoot     = 15
-#     LeftFoot      = 16
-#     RightAnkle    = 17
-#     LeftAnkle     = 18
-#     RightKnee     = 19
-#     LeftKnee      = 20
-#     RightUpperLeg = 21
-#     LeftUpperLeg  = 22
-#     RightPauldron = 23
-#     LeftPauldron  = 24
-#     Weapon        = 25
-#     Tail          = 26
+  MWCommonRecord* = MWCloth | MWMisc | MWStatic | MWIngredient  | MWContainer | MWBook       | MWLeveledItem | MWActivator |
+                    MWLight | MWDoor | MWPotion | MWLandTexture | MWRegion    | MWRepairTool | MWApparatus   | MWLock      | MWProbe

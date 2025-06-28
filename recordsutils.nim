@@ -2,7 +2,7 @@ import std/strformat
 import std/strutils
 import records
 
-proc `$`* (record: MWRecord): string =
+proc `$`* (record: MWCommonRecord): string =
     result = record.id
 
 proc `$`* (clobj: MWClothObj): string =
