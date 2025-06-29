@@ -51,11 +51,11 @@ proc requiredField* [T](fr: var string, name: string, entry: string): T = # gene
         elif T is string:  return readStr(fr, length) # must be before zstring, since zstring also catches string
         elif T is zstring: return parseZString(fr)
         elif T is char:    return readChar(fr)
-        else:              discard
+        else:              raise newException(ParseError, fmt"Unsupported type for {name} field for {entry} entry: {T.type}")
 
 proc optionalField* [T](fr: var string, name: string): T = # general proc to handle optional fields; should allow custom handling
     if len(fr) >= 4:
-      if fr[0..3] == name:
+      if fr[0..3] == name:     # [0..3] is used for scouting without consumption
         discard readStr(fr, 4) # consumes field name
         let length = getLength(fr)
         block typeCheck:
@@ -69,4 +69,28 @@ proc optionalField* [T](fr: var string, name: string): T = # general proc to han
             elif T is string:  return readStr(fr, length) # must be before zstring, since zstring also catches string
             elif T is zstring: return parseZString(fr)
             elif T is char:    return readChar(fr)
-            else:              discard
+            else:              raise newException(ParseError, fmt"Unsupported type for {name} field: {T.type}")
+
+proc repeatableField* [T](fr: var string, name: string): seq[T] =
+    while true:
+      if len(fr) >= 4:
+        if fr[0..3] != name:
+          break
+      else: break
+      # if len >= 4 and fr[0..3] == name:
+      result.add(optionalField[T](fr, name))
+
+proc objectField* (fr: var string, name: string, dataobj: var MWRecordData): bool = # checks whether object exists and has proper length available
+    if readStr(fr, 4) != name: # consumes field name
+        raise newException(ParseError, fmt"No {name} field found for {dataobj} object.")
+    dataobj.size = getLength(fr)
+    if len(fr) >= dataobj.size:
+      return true
+    raise newException(ParseError, fmt"Object size for {name} field found for {dataobj} object does not match. Object size: {dataobj.size}. Available bytes: {len(fr)}.")
+
+# proc repeatableObjectField* (fr: var string, name: string, dataobj: var seq[MWRecordData]): bool = #
+#     if len(fr) >= 4:
+#       if fr[0..3] == name:     # [0..3] is used for scouting without consumption
+#         discard readStr(fr, 4) # consumes field name
+#         return true
+#     return false

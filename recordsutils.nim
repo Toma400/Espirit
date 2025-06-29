@@ -5,8 +5,8 @@ import records
 proc `$`* (record: MWCommonRecord): string =
     result = record.id
 
-proc `$`* (clobj: MWClothObj): string =
-    result = fmt"{clobj.biped}: {MWClothBipedType(clobj.biped)} | {clobj.mname}, {clobj.fname}"
+proc `$`* (clobj: MWClothObj | MWArmorObj): string =
+    result = fmt"{clobj.biped}: {MWBipedType(clobj.biped)} | {clobj.mname}, {clobj.fname}"
 
 proc `$`* (land: MWLand): string =
     result = fmt"X: {land.coord[0]}, Y: {land.coord[1]}"
@@ -343,4 +343,57 @@ proc info* (record: MWGameSetting): string =
       Int:    {record.vali}
       String: {record.vals}
     =====
+    """
+
+proc info* (record: MWWeapon): string =
+    var options = ""
+    if record.data.flags != 0:
+      options.add("\n    Flag: " & $MWWeaponFlags(record.data.flags))
+    if record.script != "":
+      options.add("\n    Script:  " & record.script)
+    if record.enchnm != "":
+      options.add("\n    Enchant: " & record.enchnm)
+    result = fmt"""
+    ID:    {record.id}
+    Name:  {record.name}
+    Model: {record.model}
+    Icon:  {record.icon}
+    =====
+      Type:   {record.data.kind} [{MWWeaponType(record.data.kind)}]
+      Weight: {record.data.weight}
+      Value:  {record.data.value}
+      Health: {record.data.health}
+      Speed:  {record.data.speed}
+      Reach:  {record.data.reach}
+      Damage:
+        Chop:   {record.data.chopmin} - {record.data.chopmax}
+        Slash:  {record.data.slshmin} - {record.data.slshmax}
+        Thrust: {record.data.thrsmin} - {record.data.thrsmax}
+      Enchant Points: {record.data.enchpts}
+    ====={options}
+    """
+
+proc info* (record: MWArmor): string =
+    var options = ""
+    if record.script != "":
+      options.add("\n    Script:  " & record.script)
+    if record.enchnm != "":
+      options.add("\n    Enchant: " & record.enchnm)
+    if record.objs.len > 0:
+      options.add("\n    Objects:")
+      for obj in record.objs:
+        options.add("\n    - " & $obj)
+    result = fmt"""
+    ID:    {record.id}
+    Name:  {record.name}
+    Model: {record.model}
+    Icon:  {record.icon}
+    =====
+      Type:   {record.data.kind} [{MWArmorType(record.data.kind)}]
+      Weight: {record.data.weight}
+      Value:  {record.data.value}
+      AR:     {record.data.ar}
+      Health: {record.data.health}
+      Enchant Points: {record.data.enchpts}
+    ====={options}
     """

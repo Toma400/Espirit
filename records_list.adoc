@@ -1,7 +1,8 @@
 === Features
 This is list of records included in .esm/.esp files of Morrowind:
 
-* Done (23/41):
+* Done (25/41):
+** [x] ARMO (armor)
 ** [x] ALCH (potion)
 ** [x] ACTI (activator)
 ** [x] APPA (alchemy apparatus)
@@ -25,9 +26,9 @@ This is list of records included in .esm/.esp files of Morrowind:
 ** [x] SKIL (skill)
 ** [x] SSCR (start script)
 ** [x] STAT (static)
+** [x] WEAP (weapon)
 
-* To do (18/41):
-** [ ] ARMO (armor)
+* To do (16/41):
 ** [ ] BSGN (birthsign)
 ** [ ] CELL (cell)
 ** [ ] CLAS (class)
@@ -44,7 +45,6 @@ This is list of records included in .esm/.esp files of Morrowind:
 ** [ ] SNDG (sound generator)
 ** [ ] SOUN (sound)
 ** [ ] SPEL (spell)
-** [ ] WEAP (weapon)
 
 From other features:
 

@@ -14,22 +14,25 @@ type
 type
   # === Base object : all main records inherit from it ===
   MWRecordHeader* = object
-    name*:  string # formally 'array[4, char]', but it's not particularly practical
-    size*:  uint32
-    dummy*: uint32
-    flags*: uint32
+    name*  : string # formally 'array[4, char]', but it's not particularly practical
+    size*  : uint32
+    dummy* : uint32
+    flags* : uint32
+  MWRecordData* = object of RootObj
+    size* : int # formally uint32, but is parsed into 'int' by 'getLength'
   MWRecord* = object of RootObj
     header*  : MWRecordHeader
     deleted* : bool
+
   # === Records & subrecords ===
-  MWClothData* = object
+  MWClothData* = object of MWRecordData
     kind*   : uint32  # type (please refer to `MWClothType` enum in -indexes.nim-)
     weight* : float32 # weight
     value*  : uint16  # value
     ench*   : uint16  # enchantment points
   MWClothObj* = object
     #[ TODO: Is this a struct with `mname/fname`, or are those separate? Ref: https://en.uesp.net/wiki/Morrowind_Mod:Mod_File_Format/CLOT ]#
-    biped* : uint8       # biped object (please refer to `MWClothBipedType` enum in type section below)
+    biped* : uint8       # biped object (please refer to `MWBipedType` enum in -indexes.nim-)
     mname* : string = "" # male name for cloth (optional)
     fname* : string = "" # female name for cloth (optional, `mname` used if absent)
   MWCloth* = object of MWRecord
@@ -41,7 +44,7 @@ type
     icon*   : string = ""     # icon name (optional)
     data*   : MWClothData
     objs*   : seq[MWClothObj] # objects (repeatable)
-  MWMiscData* = object
+  MWMiscData* = object of MWRecordData
     weight* : float32 # weight
     value*  : uint32  # value
     unkn*   : uint32  # unknown field, only uses 0 and 1, but usually unused
@@ -68,7 +71,7 @@ type
     model*    : string      # model name
     name*     : string = "" # name (optional)
     script*   : string = "" # script name (optional)
-  MWLightData* = object
+  MWLightData* = object of MWRecordData
     weight*   : float32
     value*    : uint32
     time*     : int32
@@ -83,7 +86,7 @@ type
     sound*    : string = "" # sound name (optional)
     icon*     : string = "" # icon name (optional)
     data*     : MWLightData
-  MWIngredientData* = object
+  MWIngredientData* = object of MWRecordData
     weight*   : float32         # weight
     value*    : uint32          # value
     effindex* : array[4, int32] # effect indexes
@@ -96,7 +99,7 @@ type
     script* : string = "" # script name (optional)
     icon*   : string = "" # icon name (optional)
     data*   : MWIngredientData
-  MWPotionData* = object
+  MWPotionData* = object of MWRecordData
     weight*   : float32
     value*    : uint32
     flags*    : uint32 # 0x1 = autocalc
@@ -117,7 +120,7 @@ type
     icon*   : string = "" # icon name (optional)
     data*   : MWPotionData
     ench*   : seq[MWPotionEnch]
-  MWBookData* = object
+  MWBookData* = object of MWRecordData
     weight* : float32 # weight
     value*  : uint32  # value
     flags*  : uint32  # if scroll or not
@@ -145,7 +148,7 @@ type
     script*   : string = "" # script name (optional)
     soundo*   : string = "" # sound name: open (optional)
     soundc*   : string = "" # sound name: close (optional)
-  MWLandHeightData* = object
+  MWLandHeightData* = object of MWRecordData
     hoffset*  : float32
     hdata*    : array[65, array[65, int8]] # height data is not absolute values but uses differences between adjacent pixels
                                            # thus a pixel value of 0 means it has the same height as the last pixel
@@ -181,7 +184,7 @@ type
     map_col*  : (uint8, uint8,            # map colour
                  uint8, uint8)
     sound_ch* : seq[MWRegionSoundChances] # sound chances
-  MWRepairToolData* = object
+  MWRepairToolData* = object of MWRecordData
     weight*   : float32
     value*    : uint32
     uses*     : uint32
@@ -193,7 +196,7 @@ type
     script*   : string = "" # script name (optional)
     icon*     : string = "" # icon name (optional)
     data*     : MWRepairToolData
-  MWApparatusData* = object
+  MWApparatusData* = object of MWRecordData
     kind*     : uint32 # type of apparatus (please refer to `MWApparatusType` enum in -indexes.nim-)
     quality*  : float32
     weight*   : float32
@@ -205,7 +208,7 @@ type
     script*   : string = "" # script name (optional)
     icon*     : string = "" # icon name (optional)
     data*     : MWApparatusData
-  MWLockData* = object
+  MWLockData* = object of MWRecordData
     weight*   : float32
     value*    : uint32
     quality*  : float32
@@ -217,7 +220,7 @@ type
     script*   : string = "" # script name (optional)
     icon*     : string = "" # icon name (optional)
     data*     : MWLockData
-  MWProbeData* = object
+  MWProbeData* = object of MWRecordData
     weight*   : float32
     value*    : uint32
     quality*  : float32
@@ -229,7 +232,7 @@ type
     script*   : string = "" # script name (optional)
     icon*     : string = "" # icon name (optional)
     data*     : MWProbeData
-  MWSkillData* = object
+  MWSkillData* = object of MWRecordData
     attr*     : uint32             # attribute
     spec*     : uint32             # specialisation
     usev*     : (float32, float32, # use values
@@ -266,7 +269,7 @@ type
   MWStartScript* = object of MWRecord
     name* : string
     data* : string # ASCII digits of unknown meaning
-  MWBodyData* = object
+  MWBodyData* = object of MWRecordData
     part*    : uint8 # body part
     vampire* : uint8
     flags*   : uint8 # 1 - female, 2 - playable
@@ -282,8 +285,52 @@ type
     valfl*  : float32 # values (optional)
     vali*   : int32
     vals*   : string
+  MWWeaponData* = object of MWRecordData
+    weight*  : float32
+    value*   : uint32
+    kind*    : uint16 # type (please refer to `MWWeaponType` enum in -indexes.nim-)
+    health*  : uint16
+    speed*   : float32
+    reach*   : float32
+    enchpts* : uint16 # enchantment points
+    chopmin* : uint8  # chop damage
+    chopmax* : uint8
+    slshmin* : uint8  # slash damage
+    slshmax* : uint8
+    thrsmin* : uint8  # thrust damage
+    thrsmax* : uint8
+    flags*   : uint32 # flags, 0 means none (please refer to `MWWeaponFlag` enum in -indexes.nim-)
+  MWWeapon* = object of MWRecord
+    id*       : string      # ID
+    model*    : string      # model name
+    name*     : string = "" # name (optional)
+    script*   : string = "" # script name (optional)
+    enchnm*   : string = "" # enchantment name (optional)
+    icon*     : string = "" # icon name (optional)
+    data*     : MWWeaponData
+  MWArmorData* = object of MWRecordData
+    weight*  : float32
+    value*   : uint32
+    kind*    : uint32 # type (please refer to `MWWeaponType` enum in -indexes.nim-)
+    health*  : uint32
+    enchpts* : uint32 # enchantment points
+    ar*      : uint32 # armor rating
+  MWArmorObj* = object of MWRecordData
+    #[ TODO: Is this a struct with `mname/fname`, or are those separate? Ref: https://en.uesp.net/wiki/Morrowind_Mod:Mod_File_Format/CLOT ]#
+    biped* : uint8       # biped object (please refer to `MWBipedType` enum in -indexes.nim-)
+    mname* : string = "" # male name for cloth (optional)
+    fname* : string = "" # female name for cloth (optional, `mname` used if absent)
+  MWArmor* = object of MWRecord
+    id*       : string      # ID
+    model*    : string      # model name
+    name*     : string = "" # name (optional)
+    script*   : string = "" # script name (optional)
+    enchnm*   : string = "" # enchantment name (optional)
+    icon*     : string = "" # icon name (optional)
+    data*     : MWArmorData
+    objs*     : seq[MWArmorObj] # objects (repeatable)
 
 type
-  MWCommonRecord* = MWCloth | MWMisc | MWStatic | MWIngredient  | MWContainer | MWBook       | MWLeveledItem | MWActivator |
+  MWCommonRecord* = MWCloth | MWMisc | MWStatic | MWIngredient  | MWContainer | MWBook       | MWLeveledItem | MWActivator | MWArmor |
                     MWLight | MWDoor | MWPotion | MWLandTexture | MWRegion    | MWRepairTool | MWApparatus   | MWLock      | MWProbe |
-                    MWBody
+                    MWBody  | MWWeapon

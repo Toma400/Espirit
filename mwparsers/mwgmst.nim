@@ -5,7 +5,6 @@ const field_key = "GMST"
 
 proc parseGMST* (fr: var string): MWGameSetting =
   #[ Parses single GMST key of .esm/.esp files and returns it as MWGameSetting object ]#
-  # optional handling uses `fr[0..3]` for scouting, instead of `readStr`/other
   result.header = parseRecordHeader(fr)
 
   result.name = requiredField[string](fr, "NAME", field_key)

@@ -22,6 +22,8 @@ import mwparsers/mwglob
 import mwparsers/mwsscr
 import mwparsers/mwbody
 import mwparsers/mwgmst
+import mwparsers/mwarmo
+import mwparsers/mwweap
 import std/strformat
 import std/strutils
 import std/os
@@ -77,6 +79,8 @@ type
     sscr*   : seq[MWStartScript] # start scripts (see `MWStartScript` in records.nim for reference)
     body*   : seq[MWBody]        # body parts (see `MWBody` in records.nim for reference)
     gmst*   : seq[MWGameSetting] # game settings (see `MWGameSetting` in records.nim for reference)
+    weap*   : seq[MWWeapon]      # weapons (see `MWWeapon` in records.nim for reference)
+    armo*   : seq[MWArmor]       # armors (see `MWArmor` in records.nim for reference)
 
 proc `$`* (plugin: MWPlugin): string =
     var deps = ""
@@ -93,9 +97,11 @@ proc `$`* (plugin: MWPlugin): string =
     * lights:        {plugin.ligh.len}
     * miscs:         {plugin.misc.len}
     * clothes:       {plugin.clot.len}
+    * armors:        {plugin.armo.len}
     * ingredients:   {plugin.ingr.len}
     * potions:       {plugin.alch.len}
     * books:         {plugin.book.len}
+    * weapons:       {plugin.weap.len}
     * repair tools:  {plugin.repa.len}
     * apparatuses:   {plugin.appa.len}
     * locks:         {plugin.lock.len}
@@ -162,8 +168,8 @@ proc newMWPlugin* (path: string): MWPlugin =
         of "LTEX": result.ltex.add(parseLTEX(fr))
         of "REGN": result.regn.add(parseREGN(fr, result.deps))
         of "CELL": discard readStr(fr, 12 + 29 + 4) # for `tesannwyn.esp` compatibility only (+4 for "CELL")
-        # of "ARMO": discard
-        # of "WEAP": discard
+        of "WEAP": result.weap.add(parseWEAP(fr))
+        of "ARMO": result.armo.add(parseARMO(fr))
         of "REPA": result.repa.add(parseREPA(fr))
         of "APPA": result.appa.add(parseAPPA(fr))
         of "LOCK": result.lock.add(parseLOCK(fr))
