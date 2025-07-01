@@ -1,7 +1,7 @@
 === Features
 This is list of records included in .esm/.esp files of Morrowind:
 
-* Done (25/41):
+* Done (27/41):
 ** [x] ARMO (armor)
 ** [x] ALCH (potion)
 ** [x] ACTI (activator)
@@ -28,10 +28,10 @@ This is list of records included in .esm/.esp files of Morrowind:
 ** [x] STAT (static)
 ** [x] WEAP (weapon)
 
-* To do (16/41):
+* To do (14/41):
 ** [ ] BSGN (birthsign)
 ** [ ] CELL (cell)
-** [ ] CLAS (class)
+** [x] CLAS (class)
 ** [ ] CREA (creature)
 ** [ ] DIAL (dialogue topic)
 ** [ ] ENCH (enchantment)
@@ -41,7 +41,7 @@ This is list of records included in .esm/.esp files of Morrowind:
 ** [ ] MGEF (magic effect)
 ** [ ] NPC_ (npc)
 ** [ ] PGRD (path grid)
-** [ ] RACE (race)
+** [x] RACE (race)
 ** [ ] SNDG (sound generator)
 ** [ ] SOUN (sound)
 ** [ ] SPEL (spell)

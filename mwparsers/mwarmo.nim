@@ -29,26 +29,13 @@ proc parseARMO* (fr: var string): MWArmor =
 
   while true:
     if len(fr) >= 4:
-      if fr[0..3] == "INDX":
-        discard readStr(fr, 4) # INDX
-        discard readStr(fr, 4) # loose bytes
-        var biped = MWArmorObj(biped: readUint8(fr, 1))
-        if len(fr) >= 4: # sometimes INDX is empty, this let us not try to parse new record thinking it's part of INDX
-          if not (fr[0..3] in reserved_records): # <---/
-            if len(fr) >= 4: # redundant, but repeats rule visually
-              if fr[0..3] == "BNAM":
-                discard readStr(fr, 4) # BNAM
-                let length = readUint8(fr, 1).int # length of string
-                discard readStr(fr, 3) # loose bytes
-                biped.mname = readStr(fr, length)
-            if len(fr) >= 4:
-              if fr[0..3] == "CNAM":
-                discard readStr(fr, 4) # CNAM
-                let length = readUint8(fr, 1).int # length of string
-                discard readStr(fr, 3) # loose bytes
-                biped.fname = readStr(fr, length)
+      var biped = MWArmorObj(biped: optionalField[uint8](fr, "INDX"))
+      if len(fr) >= 4: # sometimes INDX is empty, this let us not try to parse new record thinking it's part of INDX
+        if not (fr[0..3] in reserved_records): # <---/
+          biped.mname = optionalField[string](fr, "BNAM") # male name
+          biped.fname = optionalField[string](fr, "CNAM") # female name
 
-        result.objs.add(biped)
+      result.objs.add(biped)
 
     if len(fr) >= 4:
       if fr[0..3] == "INDX":
