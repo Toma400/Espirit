@@ -397,3 +397,45 @@ proc info* (record: MWArmor): string =
       Enchant Points: {record.data.enchpts}
     ====={options}
     """
+
+proc getMinorSkills* (record: MWClass): array[5, uint32] =
+    return [
+        record.data.skill[0][0],
+        record.data.skill[1][0],
+        record.data.skill[2][0],
+        record.data.skill[3][0],
+        record.data.skill[4][0]
+    ]
+
+proc getMajorSkills* (record: MWClass): array[5, uint32] =
+    return [
+        record.data.skill[0][1],
+        record.data.skill[1][1],
+        record.data.skill[2][1],
+        record.data.skill[3][1],
+        record.data.skill[4][1]
+    ]
+
+proc info* (record: MWClass): string =
+    var at = "Primary attributes:"
+    for aa in record.data.attr:
+      at.add("\n" & fmt"      - {aa} [{MWAttributeType(aa)}]")
+    var sk = "Skills:"
+    sk.add("\n      Minor:")
+    for mi in getMinorSkills(record):
+      sk.add("\n" & fmt"      - {mi} [{MWSkillType(mi)}]")
+    sk.add("\n      Major:")
+    for ma in getMajorSkills(record):
+      sk.add("\n" & fmt"      - {ma} [{MWSkillType(ma)}]")
+    result = fmt"""
+    ID:   {record.id}
+    Name: {record.name}
+    =====
+    Playable:       {bool(record.data.flags)}
+    Specialisation: {record.data.spec} [{MWSpecialisationType(record.data.spec)}]
+    {at}
+    {sk}
+    =====
+    Description:
+    {record.descr}
+    """

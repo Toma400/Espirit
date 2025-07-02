@@ -24,6 +24,8 @@ import mwparsers/mwbody
 import mwparsers/mwgmst
 import mwparsers/mwarmo
 import mwparsers/mwweap
+import mwparsers/mwclas
+import mwparsers/mwrace
 import std/strformat
 import std/strutils
 import std/os
@@ -81,6 +83,8 @@ type
     gmst*   : seq[MWGameSetting] # game settings (see `MWGameSetting` in records.nim for reference)
     weap*   : seq[MWWeapon]      # weapons (see `MWWeapon` in records.nim for reference)
     armo*   : seq[MWArmor]       # armors (see `MWArmor` in records.nim for reference)
+    clas*   : seq[MWClass]       # classes (see `MWClass` in records.nim for reference)
+    race*   : seq[MWRace]        # races (see `MWRace` in records.nim for reference)
 
 proc `$`* (plugin: MWPlugin): string =
     var deps = ""
@@ -117,6 +121,8 @@ proc `$`* (plugin: MWPlugin): string =
     * start scripts: {plugin.sscr.len}
     * body parts:    {plugin.body.len}
     * game settings: {plugin.gmst.len}
+    * classes:       {plugin.clas.len}
+    * races:         {plugin.race.len}
     """.unindent()
 
 proc newPluginHeader(header_string: string): PluginHeader =
@@ -180,6 +186,8 @@ proc newMWPlugin* (path: string): MWPlugin =
         of "SSCR": result.sscr.add(parseSSCR(fr))
         of "BODY": result.body.add(parseBODY(fr))
         of "GMST": result.gmst.add(parseGMST(fr))
+        of "CLAS": result.clas.add(parseCLAS(fr))
+        of "RACE": result.race.add(parseRACE(fr))
         else:
           result.fin = false
           break

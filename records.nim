@@ -329,8 +329,20 @@ type
     icon*     : string = "" # icon name (optional)
     data*     : MWArmorData
     objs*     : seq[MWArmorObj] # objects (repeatable)
+  MWClassData* = object of MWRecordData
+    attr*    : array[2, uint32]           # primary attributes
+    spec*    : uint32                     # specialisation
+    skill*   : array[5, array[2, uint32]] # skills (5 sets of [minor, major])
+    flags*   : uint32                     # playability (0 - NPC, 1 - playable)
+    flagsac* : uint32                     # auto-calc trade/services flags
+  MWClass* = object of MWRecord
+    id*    : string      # ID
+    name*  : string      # name
+    data*  : MWClassData
+    descr* : string = "" # description (optional)
+  MWRace* = object of MWRecord
 
 type
   MWCommonRecord* = MWCloth | MWMisc | MWStatic | MWIngredient  | MWContainer | MWBook       | MWLeveledItem | MWActivator | MWArmor |
                     MWLight | MWDoor | MWPotion | MWLandTexture | MWRegion    | MWRepairTool | MWApparatus   | MWLock      | MWProbe |
-                    MWBody  | MWWeapon
+                    MWBody  | MWRace | MWClass  | MWWeapon

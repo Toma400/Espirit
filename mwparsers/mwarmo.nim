@@ -13,7 +13,7 @@ proc parseARMO* (fr: var string): MWArmor =
   result.name   = requiredField[zstring](fr, "FNAM", field_key)
   result.script = optionalField[zstring](fr, "SCRI")
 
-  if objectField(fr, "AODT", result.data):
+  if objectField(fr, "AODT", result.data, result.id):
     result.data = MWArmorData(kind:    readUint32(fr),
                               weight:  readFloat32(fr),
                               value:   readUint32(fr),

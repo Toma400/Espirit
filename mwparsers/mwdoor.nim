@@ -1,42 +1,16 @@
 import ../records
 import ../common
-import ../parse
+
+const field_key = "DOOR"
 
 proc parseDOOR* (fr: var string): MWDoor =
   #[ Parses single DOOR key of .esm/.esp files and returns it as MWDoor object ]#
   # optional handling uses `fr[0..3]` for scouting, instead of `readStr`/other
   result.header = parseRecordHeader(fr)
 
-  if readStr(fr, 4) != "NAME":
-    raise newException(ParseError, "No NAME field found for DOOR entry.")
-  discard readStr(fr, 4) # loose bytes
-  result.id = parseZString(fr)
-
-  if readStr(fr, 4) != "MODL":
-    raise newException(ParseError, "No MODL field found for DOOR entry: " & result.id)
-  discard readStr(fr, 4) # loose bytes
-  result.model = parseZString(fr)
-
-  if fr.len >= 4:
-    if fr[0..3] == "FNAM":
-      discard readStr(fr, 4) # FNAM
-      discard readStr(fr, 4) # loose bytes
-      result.name = parseZString(fr)
-
-  if fr.len >= 4:
-    if fr[0..3] == "SCRI":
-      discard readStr(fr, 4) # SCRI
-      discard readStr(fr, 4) # loose bytes
-      result.script = parseZString(fr)
-
-  if fr.len >= 4:
-    if fr[0..3] == "SNAM":
-      discard readStr(fr, 4) # SCRI
-      discard readStr(fr, 4) # loose bytes
-      result.soundo = parseZString(fr)
-
-  if fr.len >= 4:
-    if fr[0..3] == "ANAM":
-      discard readStr(fr, 4) # SCRI
-      discard readStr(fr, 4) # loose bytes
-      result.soundc = parseZString(fr)
+  result.id     = requiredField[zstring](fr, "NAME", field_key)
+  result.model  = requiredField[zstring](fr, "MODL", field_key)
+  result.name   = optionalField[zstring](fr, "FNAM")
+  result.script = optionalField[zstring](fr, "SCRI")
+  result.soundo = optionalField[zstring](fr, "SNAM")
+  result.soundc = optionalField[zstring](fr, "ANAM")

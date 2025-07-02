@@ -80,9 +80,9 @@ proc repeatableField* [T](fr: var string, name: string): seq[T] =
       # if len >= 4 and fr[0..3] == name:
       result.add(optionalField[T](fr, name))
 
-proc objectField* (fr: var string, name: string, dataobj: var MWRecordData): bool = # checks whether object exists and has proper length available
+proc objectField* (fr: var string, name: string, dataobj: var MWRecordData, id: string = "[]"): bool = # checks whether object exists and has proper length available
     if readStr(fr, 4) != name: # consumes field name
-        raise newException(ParseError, fmt"No {name} field found for {dataobj} object.")
+        raise newException(ParseError, fmt"No {name} field found for {dataobj} entry: {id}")
     dataobj.size = getLength(fr)
     if len(fr) >= dataobj.size:
       return true

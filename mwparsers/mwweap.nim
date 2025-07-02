@@ -12,7 +12,7 @@ proc parseWEAP* (fr: var string): MWWeapon =
   result.model = requiredField[string](fr, "MODL", field_key)
   result.name  = optionalField[string](fr, "FNAM")
 
-  if objectField(fr, "WPDT", result.data):
+  if objectField(fr, "WPDT", result.data, result.id):
     result.data = MWWeaponData(weight:  readFloat32(fr),
                                value:   readUint32(fr),
                                kind:    readUint16(fr),

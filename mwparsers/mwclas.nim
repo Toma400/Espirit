@@ -2,17 +2,26 @@ import ../records
 import ../common
 import ../parse
 
-proc parseSTAT* (fr: var string): MWStatic =
-  #[ Parses single STAT key of .esm/.esp files and returns it as MWStatic object ]#
-  # optional handling uses `fr[0..3]` for scouting, instead of `readStr`/other
+const field_key = "CLAS"
+
+proc parseCLAS* (fr: var string): MWClass =
+  #[ Parses single CLAS key of .esm/.esp files and returns it as MWClass object ]#
   result.header = parseRecordHeader(fr)
 
-  if readStr(fr, 4) != "NAME":
-    raise newException(ParseError, "No NAME field found for STAT entry.")
-  discard readStr(fr, 4) # loose bytes
-  result.id = parseZString(fr)
+  result.id   = requiredField[zstring](fr, "NAME", field_key)
+  result.name = requiredField[zstring](fr, "FNAM", field_key)
 
-  if readStr(fr, 4) != "MODL":
-    raise newException(ParseError, "No MODL field found for STAT entry: " & result.id)
-  discard readStr(fr, 4) # loose bytes
-  result.model = parseZString(fr)
+  if objectField(fr, "CLDT", result.data, result.id):
+    result.data = MWClassData(attr:    [readUint32(fr), readUint32(fr)],
+                              spec:    readUint32(fr),
+                              skill:   [
+                                  [readUint32(fr), readUint32(fr)],
+                                  [readUint32(fr), readUint32(fr)],
+                                  [readUint32(fr), readUint32(fr)],
+                                  [readUint32(fr), readUint32(fr)],
+                                  [readUint32(fr), readUint32(fr)]
+                              ],
+                              flags:   readUint32(fr),
+                              flagsac: readUint32(fr))
+
+  result.descr = optionalField[string](fr, "DESC")
