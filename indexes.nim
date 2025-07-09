@@ -1,6 +1,8 @@
 # [ INDEXES ] #
 # Collect enums that are not usually required by the game data, but allow for easier
 # understanding of content to developers and players
+import std/enumutils
+import std/bitops
 
 type
   MWClothType* = enum
@@ -270,24 +272,25 @@ type
     Combat  = 0
     Magic   = 1
     Stealth = 2
-  MWServicesTradesType* = enum
-    Weapon      = 0x00001 # trades
-    Armor       = 0x00002
-    Books       = 0x00008
-    Ingredients = 0x00010
-    Picks       = 0x00020
-    Probes      = 0x00040
-    Lights      = 0x00080
-    Apparatus   = 0x00100
-    RepairItems = 0x00200
-    Misc        = 0x00400
-    Spells      = 0x00800
-    MagicItems  = 0x01000
-    Potions     = 0x02000
-    Training    = 0x04000 # services
-    Spellmaking = 0x08000
-    Enchanting  = 0x10000
-    Repair      = 0x20000
+  MWServicesTradesType* = enum # originally represented as hexadecimals
+    Weapon      = 1'u32      # 0x00001 | trades
+    Armor       = 2'u32      # 0x00002
+    Clothing    = 4'u32      # 0x00004
+    Books       = 8'u32      # 0x00008
+    Ingredients = 16'u32     # 0x00010
+    Picks       = 32'u32     # 0x00020
+    Probes      = 64'u32     # 0x00040
+    Lights      = 128'u32    # 0x00080
+    Apparatus   = 256'u32    # 0x00100
+    RepairItems = 512'u32    # 0x00200
+    Misc        = 1024'u32   # 0x00400
+    Spells      = 2048'u32   # 0x00800
+    MagicItems  = 4096'u32   # 0x01000
+    Potions     = 8192'u32   # 0x02000
+    Training    = 16384'u32  # 0x04000 | services
+    Spellmaking = 32768'u32  # 0x08000
+    Enchanting  = 65536'u32  # 0x10000
+    #Repair      = 131072'u32 # 0x20000
   MWBodyPartType* = enum
     Head     = 0
     Hair     = 1
@@ -313,9 +316,19 @@ type
     NPCFemale = 1
     Male      = 2 # playable
     Female    = 3
+  MWRaceFlags* = enum
+    NPCHumanLike = 0
+    PCHumanLike  = 1
+    NPCBeast     = 2
+    PCBeast      = 3
 
 type
   FieldType* = enum
     Float = 'f'
     Long  = 'l'
     Short = 's'
+
+proc yieldServicesTrades* (flags: uint32): seq[MWServicesTradesType] =
+  for mi in MWServicesTradesType.items():
+    if mi bitand flags: # check if 'mi' is within 'flags'
+      result.add(mi)

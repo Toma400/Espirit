@@ -340,7 +340,18 @@ type
     name*  : string      # name
     data*  : MWClassData
     descr* : string = "" # description (optional)
+  MWRaceData* = object of MWRecordData
+    skill*  : array[7, (int32, int32)]   # skill bonuses (ID, bonus) [ID:-1 - empty]
+    attr*   : array[8, array[2, uint32]] # attributes (8 IDs of [male, female])
+    height* : (float32, float32)         # height (male, female)
+    weight* : (float32, float32)         # weight (male, female)
+    flags*  : uint32                     # playable/beast
   MWRace* = object of MWRecord
+    id*    : string               # ID
+    name*  : string = ""          # name (optional)
+    power* : seq[array[32, char]] # special power/ability
+    descr* : string = ""          # description (optional)
+    data*  : MWRaceData
 
 type
   MWCommonRecord* = MWCloth | MWMisc | MWStatic | MWIngredient  | MWContainer | MWBook       | MWLeveledItem | MWActivator | MWArmor |

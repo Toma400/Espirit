@@ -8,6 +8,7 @@ This is list of records included in .esm/.esp files of Morrowind:
 ** [x] APPA (alchemy apparatus)
 ** [x] BODY (body part)
 ** [x] BOOK (book)
+** [x] CLAS (class)
 ** [x] CLOT (cloth)
 ** [x] DOOR (door)
 ** [x] GLOB (global)
@@ -31,7 +32,6 @@ This is list of records included in .esm/.esp files of Morrowind:
 * To do (14/41):
 ** [ ] BSGN (birthsign)
 ** [ ] CELL (cell)
-** [x] CLAS (class)
 ** [ ] CREA (creature)
 ** [ ] DIAL (dialogue topic)
 ** [ ] ENCH (enchantment)

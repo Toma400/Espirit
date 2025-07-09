@@ -6,7 +6,6 @@ const field_key = "MISC"
 
 proc parseMISC* (fr: var string): MWMisc =
   #[ Parses single MISC key of .esm/.esp files and returns it as MWMisc object ]#
-  # optional handling uses `fr[0..3]` for scouting, instead of `readStr`/other
   result.header = parseRecordHeader(fr)
 
   result.id    = requiredField[zstring](fr, "NAME", field_key)

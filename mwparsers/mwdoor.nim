@@ -5,7 +5,6 @@ const field_key = "DOOR"
 
 proc parseDOOR* (fr: var string): MWDoor =
   #[ Parses single DOOR key of .esm/.esp files and returns it as MWDoor object ]#
-  # optional handling uses `fr[0..3]` for scouting, instead of `readStr`/other
   result.header = parseRecordHeader(fr)
 
   result.id     = requiredField[zstring](fr, "NAME", field_key)

@@ -2,27 +2,18 @@ import ../records
 import ../common
 import ../parse
 
+const field_key = "BODY"
+
 proc parseBODY* (fr: var string): MWBody =
   #[ Parses single BODY key of .esm/.esp files and returns it as MWBody object ]#
-  # optional handling uses `fr[0..3]` for scouting, instead of `readStr`/other
   result.header = parseRecordHeader(fr)
 
-  if readStr(fr, 4) != "NAME":
-    raise newException(ParseError, "No NAME field found for BODY entry.")
-  discard readStr(fr, 4) # loose bytes
-  result.id = parseZString(fr)
+  result.id    = requiredField[zstring](fr, "NAME", field_key)
+  result.model = requiredField[zstring](fr, "MODL", field_key)
+  result.name  = requiredField[zstring](fr, "FNAM", field_key)
 
-  if readStr(fr, 4) != "MODL":
-    raise newException(ParseError, "No MODL field found for BODY entry: " & result.id)
-  discard readStr(fr, 4) # loose bytes
-  result.model = parseZString(fr)
-
-  if readStr(fr, 4) != "FNAM":
-    raise newException(ParseError, "No FNAM field found for BODY entry: " & result.id)
-  discard readStr(fr, 4) # loose bytes
-  result.race = parseZString(fr)
-
-  if readStr(fr, 4) != "BYDT":
-    raise newException(ParseError, "No BYDT field found for BODY entry: " & result.id)
-  discard readStr(fr, 4) # loose bytes
-  result.data = MWBodyData(part: readUint8(fr), vampire: readUint8(fr), flags: readUint8(fr), pkind: readUint8(fr))
+  if objectField(fr, "BYDT", result.data, result.id):
+    result.data = MWBodyData(part:    readUint8(fr),
+                             vampire: readUint8(fr),
+                             flags:   readUint8(fr),
+                             pkind:   readUint8(fr))

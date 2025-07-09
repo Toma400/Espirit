@@ -5,7 +5,6 @@ const field_key = "GLOB"
 
 proc parseGLOB* (fr: var string): MWGlobal =
   #[ Parses single GLOB key of .esm/.esp files and returns it as MWGlobal object ]#
-  # optional handling uses `fr[0..3]` for scouting, instead of `readStr`/other
   result.header = parseRecordHeader(fr)
 
   result.name  = requiredField[zstring](fr, "NAME", field_key)

@@ -7,6 +7,7 @@ import parse
 
 type
   zstring* = string # used only to differentiate between MW's string and zstring for [T] handling
+  char32*  = char
 
 proc parseRecordHeader* (fr: var string): MWRecordHeader = # parses first 12 'loose bytes'
     for _ in 1..4:
@@ -51,6 +52,7 @@ proc requiredField* [T](fr: var string, name: string, entry: string): T = # gene
         elif T is string:  return readStr(fr, length) # must be before zstring, since zstring also catches string
         elif T is zstring: return parseZString(fr)
         elif T is char:    return readChar(fr)
+        elif T is char32:  return read32Chars(fr)
         else:              raise newException(ParseError, fmt"Unsupported type for {name} field for {entry} entry: {T.type}")
 
 proc optionalField* [T](fr: var string, name: string): T = # general proc to handle optional fields; should allow custom handling
@@ -69,6 +71,7 @@ proc optionalField* [T](fr: var string, name: string): T = # general proc to han
             elif T is string:  return readStr(fr, length) # must be before zstring, since zstring also catches string
             elif T is zstring: return parseZString(fr)
             elif T is char:    return readChar(fr)
+            elif T is char32:  return read32Chars(fr)
             else:              raise newException(ParseError, fmt"Unsupported type for {name} field: {T.type}")
 
 proc repeatableField* [T](fr: var string, name: string): seq[T] =
@@ -88,9 +91,22 @@ proc objectField* (fr: var string, name: string, dataobj: var MWRecordData, id: 
       return true
     raise newException(ParseError, fmt"Object size for {name} field found for {dataobj} object does not match. Object size: {dataobj.size}. Available bytes: {len(fr)}.")
 
-# proc repeatableObjectField* (fr: var string, name: string, dataobj: var seq[MWRecordData]): bool = #
-#     if len(fr) >= 4:
-#       if fr[0..3] == name:     # [0..3] is used for scouting without consumption
-#         discard readStr(fr, 4) # consumes field name
-#         return true
-#     return false
+proc optionalObjectField* (fr: var string, name: string, dataobj: var MWRecordData): bool =
+    # use `if` as a condition that allows you to use a constructor
+    if len(fr) >= 4:
+      if fr[0..3] == name:
+        discard readStr(fr, 4) # consumes field name
+        dataobj.size = getLength(fr)
+        if len(fr) >= dataobj.size:
+          return true
+    return false
+
+proc repeatableObjectField* (fr: var string, name: string, length: var int): bool =
+    # use `while` as a condition that allows you yo use a constructor | 'length' should be separate variable provided before loop and used later in constructor (ref: ALCH)
+    if len(fr) >= 4:
+      if fr[0..3] == name:
+        discard readStr(fr, 4) # consumes field name
+        length = getLength(fr)
+        if len(fr) >= length:
+          return true
+    return false

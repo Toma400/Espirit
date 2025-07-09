@@ -2,28 +2,20 @@ import ../records
 import ../common
 import ../parse
 
+const field_key = "SKIL"
+
 proc parseSKIL* (fr: var string): MWSkill =
   #[ Parses singel SKIL key of .esm/.esp files and returns it as MWSkill object ]#
-  # optional handling uses `fr[0..3]` for scouting, instead of `readStr`/other
   result.header = parseRecordHeader(fr)
 
-  if readStr(fr, 4) != "INDX":
-    raise newException(ParseError, "No INDX field found for SKIL entry.")
-  discard readStr(fr, 4) # loose bytes
-  result.index = readUint32(fr)
+  result.index = requiredField[uint32](fr, "INDX", field_key)
 
-  if readStr(fr, 4) != "SKDT":
-    raise newException(ParseError, "No SKDT field found for SKIL entry: " & $result.index)
-  discard readStr(fr, 4) # loose bytes
-  result.data = MWSkillData(attr: readUint32(fr),
-                            spec: readUint32(fr),
-                            usev: (readFloat32(fr),
-                                   readFloat32(fr),
-                                   readFloat32(fr),
-                                   readFloat32(fr)))
+  if objectField(fr, "SKDT", result.data):
+    result.data = MWSkillData(attr: readUint32(fr),
+                              spec: readUint32(fr),
+                              usev: (readFloat32(fr),
+                                     readFloat32(fr),
+                                     readFloat32(fr),
+                                     readFloat32(fr)))
 
-  if len(fr) >= 4:
-    if fr[0..3] == "DESC":
-      discard readStr(fr, 4) # DESC
-      discard readStr(fr, 4) # loose bytes
-      result.descr = parseZString(fr)
+  result.descr = optionalField[zstring](fr, "DESC")

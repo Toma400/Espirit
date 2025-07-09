@@ -417,6 +417,14 @@ proc getMajorSkills* (record: MWClass): array[5, uint32] =
     ]
 
 proc info* (record: MWClass): string =
+    let fg = yieldServicesTrades(record.data.flagsac)
+    var ft = "Trades:"
+    var fs = "Services:"
+    for f in fg:
+        if f <= 16384'u32:
+            ft.add("\n" & fmt"      - {f} [{MWServicesTradesType(f)}]")
+        else:
+            fs.add("\n" & fmt"      - {f} [{MWServicesTradesType(f)}]")
     var at = "Primary attributes:"
     for aa in record.data.attr:
       at.add("\n" & fmt"      - {aa} [{MWAttributeType(aa)}]")
@@ -435,6 +443,8 @@ proc info* (record: MWClass): string =
     Specialisation: {record.data.spec} [{MWSpecialisationType(record.data.spec)}]
     {at}
     {sk}
+    {ft}
+    {fs}
     =====
     Description:
     {record.descr}
