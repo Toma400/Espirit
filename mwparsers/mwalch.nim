@@ -29,4 +29,4 @@ proc parseALCH* (fr: var string): MWPotion =
                                  duration: readUint32(fr),
                                  mmin:     readUint32(fr),
                                  mmax:     readUint32(fr),
-                                 length:   enam))
+                                 size:     enam))

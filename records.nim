@@ -103,7 +103,7 @@ type
     weight*   : float32
     value*    : uint32
     flags*    : uint32 # 0x1 = autocalc
-  MWPotionEnch* = object
+  MWPotionEnch* = object of MWRecordData
     effindex* : uint16
     skill*    : int8   # skill affected (-1 if not applicable)
     attr*     : int8   # attribute affected (-1 if not applicable)

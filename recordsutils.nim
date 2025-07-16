@@ -1,3 +1,4 @@
+import system/iterators
 import std/strformat
 import std/strutils
 import records
@@ -421,7 +422,7 @@ proc info* (record: MWClass): string =
     var ft = "Trades:"
     var fs = "Services:"
     for f in fg:
-        if f <= 16384'u32:
+        if f notin SERVICES:
             ft.add("\n" & fmt"      - {f} [{MWServicesTradesType(f)}]")
         else:
             fs.add("\n" & fmt"      - {f} [{MWServicesTradesType(f)}]")
@@ -445,6 +446,31 @@ proc info* (record: MWClass): string =
     {sk}
     {ft}
     {fs}
+    =====
+    Description:
+    {record.descr}
+    """
+
+proc info* (record: MWRace): string =
+    var at = "Attributes:"
+    at.add("\n      Male") # male attrs
+    for i, aa in pairs(record.data.attr):
+      at.add("\n" & fmt"      - {aa[0]} | {MWAttributeType(i)}")
+    at.add("\n      Female") # female attrs
+    for i, aa in pairs(record.data.attr):
+      at.add("\n" & fmt"      - {aa[1]} | {MWAttributeType(i)}")
+    var sk = "Skills:"
+    for ss in record.data.skill:
+      sk.add("\n" & fmt"      - {ss[0]} [{MWSkillType(ss[0])}]: +{ss[1]}")
+    result = fmt"""
+    ID:   {record.id}
+    Name: {record.name}
+    =====
+    Type/playability: {MWRaceFlags(record.data.flags)}
+    Height: M {record.data.height[0]} | F {record.data.height[1]}
+    Weight: M {record.data.weight[0]} | F {record.data.weight[1]}
+    {at}
+    {sk}
     =====
     Description:
     {record.descr}

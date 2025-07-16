@@ -241,6 +241,7 @@ type
     Personality  = 6
     Luck         = 7
   MWSkillType* = enum
+    None        = -1
     Block       = 0
     Armorer     = 1
     MediumArmor = 2
@@ -317,10 +318,12 @@ type
     Male      = 2 # playable
     Female    = 3
   MWRaceFlags* = enum
-    NPCHumanLike = 0
-    PCHumanLike  = 1
-    NPCBeast     = 2
-    PCBeast      = 3
+    NonplayableHumanLike = 0
+    PlayableHumanLike    = 1
+    NonplayableBeast     = 2
+    PlayableBeast        = 3
+
+const SERVICES* = [Training, Spellmaking, Enchanting]
 
 type
   FieldType* = enum
@@ -329,6 +332,6 @@ type
     Short = 's'
 
 proc yieldServicesTrades* (flags: uint32): seq[MWServicesTradesType] =
-  for mi in MWServicesTradesType.items():
-    if mi bitand flags: # check if 'mi' is within 'flags'
+  for mi in MWServicesTradesType:
+    if uint32(mi.ord) == bitand(uint32(mi.ord), flags): # check if 'mi' is within 'flags'
       result.add(mi)
