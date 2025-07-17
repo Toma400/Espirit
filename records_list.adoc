@@ -1,7 +1,7 @@
 === Features
 This is list of records included in .esm/.esp files of Morrowind:
 
-* Done (29/41):
+* Done (30/41):
 ** [x] ARMO (armor)
 ** [x] ALCH (potion)
 ** [x] ACTI (activator)
@@ -12,6 +12,7 @@ This is list of records included in .esm/.esp files of Morrowind:
 ** [x] CLAS (class)
 ** [x] CLOT (cloth)
 ** [x] DOOR (door)
+** [x] ENCH (enchantment)
 ** [x] GLOB (global)
 ** [x] GMST (game setting)
 ** [x] LAND (land)
@@ -32,11 +33,10 @@ This is list of records included in .esm/.esp files of Morrowind:
 ** [x] STAT (static)
 ** [x] WEAP (weapon)
 
-* To do (12/41):
+* To do (11/41):
 ** [ ] CELL (cell)
 ** [ ] CREA (creature)
 ** [ ] DIAL (dialogue topic)
-** [x] ENCH (enchantment)
 ** [ ] FACT (faction)
 ** [ ] INFO (dialogue response)
 ** [ ] LEVC (leveled creature)
@@ -49,3 +49,5 @@ This is list of records included in .esm/.esp files of Morrowind:
 From other features:
 
 * [ ] Recognition of record deletion
+* [ ] Allow subrecords to be read in any order (compatibility matters)
+* [ ] Allow `AND` on plugins to produce new plugin (comparable to merge)

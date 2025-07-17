@@ -510,6 +510,26 @@ proc info* (record: MWBirthsign): string =
     {record.descr}
     """
 
+proc info* (record: MWEnchantment): string =
+    var ench = "Enchantments:"
+    for e in record.ench:
+      ench.add("\n" & fmt"      - {MWEffectType(e.effindex)}")
+      ench.add("\n" & fmt"        - Range:     {MWEnchantmentRange(e.range)}")
+      ench.add("\n" & fmt"        - Area:      {e.area}")
+      ench.add("\n" & fmt"        - Duration:  {e.duration}")
+      ench.add("\n" & fmt"        - Magnitude: {e.mmin} - {e.mmax}")
+      ench.add("\n" & fmt"        - Affects:   Attribute [{MWAttributeType(e.attr)}] | Skill [{MWSkillType(e.skill)}]")
+    result = fmt"""
+    ID:   {record.id}
+    =====
+    Type:   {record.data.kind} [{MWEnchantmentType(record.data.kind)}]
+    Cost:   {record.data.cost}
+    Charge: {record.data.charge}
+    =====
+    {ench}
+    """
+    # TODO: flags are left out
+
 proc info* (record: MWSpell): string =
     let flags = checkFlags(record)
     var f     = "Flags: None"

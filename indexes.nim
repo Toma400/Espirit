@@ -334,6 +334,11 @@ type
     AutoCalc       = 1 # 0x1
     PCStart        = 2 # 0x2
     AlwaysSucceeds = 4 # 0x4
+  MWEnchantmentType* = enum
+    CastOnce       = 0
+    CastStrikes    = 1
+    CastWhenUsed   = 2
+    ConstantEffect = 3
   MWEnchantmentRange* = enum
     Self   = 0
     Touch  = 1

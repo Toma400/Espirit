@@ -22,7 +22,7 @@ type
     size* : int # formally uint32, but is parsed into 'int' by 'getLength'
   MWRecord* = object of RootObj
     header*  : MWRecordHeader
-    deleted* : bool
+    deleted* : bool # TODO: afaik this is not being setup during header reading, so by default is always false
 
   # === Records & subrecords ===
   MWClothData* = object of MWRecordData
@@ -352,12 +352,14 @@ type
     power* : seq[array[32, char]] # special power/ability
     descr* : string = ""          # description (optional)
     data*  : MWRaceData
-  MWSpellData* = object of MWRecordData
-    kind*  : uint32
-    cost*  : uint32
-    flags* : uint32
+  MWBirthsign* = object of MWRecord
+    id*      : string               # ID
+    name*    : string = ""          # name (optional)
+    spell*   : seq[array[32, char]] # spells
+    texture* : string = ""          # filename (optional)
+    descr*   : string = ""          # description (optional)
   MWSpellEnch* = object of MWRecordData
-    effindex* : uint16
+    effindex* : uint16 # effect index (please refer to `MWEffectType` enum in -indexes.nim-)
     skill*    : int8   # skill affected (-1 if not applicable)
     attr*     : int8   # attribute affected (-1 if not applicable)
     range*    : uint32 # 0 = self, 1 = touch, 2 = target
@@ -365,19 +367,26 @@ type
     duration* : uint32
     mmin*     : uint32 # magnitude min
     mmax*     : uint32 # magnitude max
+  MWEnchantmentData* = object of MWRecordData
+    kind*   : uint32 # type (please refer to `MWEnchantmentType` enum in -indexes.nim-)
+    cost*   : uint32
+    charge* : uint32
+    flags*  : uint32 # 0x1 - autocalc
+  MWEnchantment* = object of MWRecord
+    id*   : string
+    data* : MWEnchantmentData
+    ench* : seq[MWSpellEnch]
+  MWSpellData* = object of MWRecordData
+    kind*  : uint32
+    cost*  : uint32
+    flags* : uint32
   MWSpell* = object of MWRecord
     id*   : string           # ID
     name* : string = ""      # name (optional)
     data* : MWSpellData
     ench* : seq[MWSpellEnch]
-  MWBirthsign* = object of MWRecord
-    id*      : string               # ID
-    name*    : string = ""          # name (optional)
-    spell*   : seq[array[32, char]] # spells
-    texture* : string = ""          # filename (optional)
-    descr*   : string = ""          # description (optional)
 
 type
-  MWCommonRecord* = MWCloth | MWMisc | MWStatic | MWIngredient  | MWContainer | MWBook       | MWLeveledItem | MWActivator | MWArmor |
-                    MWLight | MWDoor | MWPotion | MWLandTexture | MWRegion    | MWRepairTool | MWApparatus   | MWLock      | MWProbe |
-                    MWBody  | MWRace | MWClass  | MWWeapon      | MWBirthsign | MWSpell
+  MWCommonRecord* = MWCloth | MWMisc | MWStatic | MWIngredient  | MWContainer | MWBook        | MWLeveledItem | MWActivator | MWArmor |
+                    MWLight | MWDoor | MWPotion | MWLandTexture | MWRegion    | MWRepairTool  | MWApparatus   | MWLock      | MWProbe |
+                    MWBody  | MWRace | MWClass  | MWWeapon      | MWBirthsign | MWEnchantment | MWSpell
