@@ -370,8 +370,14 @@ type
     name* : string = ""      # name (optional)
     data* : MWSpellData
     ench* : seq[MWSpellEnch]
+  MWBirthsign* = object of MWRecord
+    id*      : string               # ID
+    name*    : string = ""          # name (optional)
+    spell*   : seq[array[32, char]] # spells
+    texture* : string = ""          # filename (optional)
+    descr*   : string = ""          # description (optional)
 
 type
   MWCommonRecord* = MWCloth | MWMisc | MWStatic | MWIngredient  | MWContainer | MWBook       | MWLeveledItem | MWActivator | MWArmor |
                     MWLight | MWDoor | MWPotion | MWLandTexture | MWRegion    | MWRepairTool | MWApparatus   | MWLock      | MWProbe |
-                    MWBody  | MWRace | MWClass  | MWWeapon
+                    MWBody  | MWRace | MWClass  | MWWeapon      | MWBirthsign | MWSpell

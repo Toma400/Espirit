@@ -21,6 +21,11 @@ proc `$`* (scr: MWScript): string =
 proc `$`* (scr: MWGlobal | MWStartScript | MWGameSetting): string =
     result = fmt"Name: {scr.name}"
 
+proc `$`* (ch: array[32, char]): string =
+    result = newStringOfCap(32)
+    for c in ch:
+      add(result, c)
+
 # TODO: make this actually work
 #proc checkFlags* (record: MWClass): seq[MWServicesTradesType] =
 #    return checkFlagsData[MWServicesTradesType, uint32](record.data.flagsac)
@@ -469,6 +474,11 @@ proc info* (record: MWRace): string =
     var sk = "Skills:"
     for ss in record.data.skill:
       sk.add("\n" & fmt"      - {ss[0]} [{MWSkillType(ss[0])}]: +{ss[1]}")
+    var pw = "Powers: None"
+    if len(record.power) > 0:
+      pw = pw.replace(" None", "")
+      for p in record.power:
+        pw.add("\n" & fmt"      - {$p}")
     result = fmt"""
     ID:   {record.id}
     Name: {record.name}
@@ -478,6 +488,23 @@ proc info* (record: MWRace): string =
     Weight: M {record.data.weight[0]} | F {record.data.weight[1]}
     {at}
     {sk}
+    {pw}
+    =====
+    Description:
+    {record.descr}
+    """
+
+proc info* (record: MWBirthsign): string =
+    var sp = "\n    Spells:       None"
+    if len(record.spell) > 0:
+      sp = sp.replace("       None", "")
+      for s in record.spell:
+        sp.add("\n" & fmt"      - {$s}")
+    result = fmt"""
+    ID:   {record.id}
+    Name: {record.name}
+    =====
+    Texture path: {record.texture}{sp}
     =====
     Description:
     {record.descr}

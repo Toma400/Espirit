@@ -26,6 +26,7 @@ import mwparsers/mwarmo
 import mwparsers/mwweap
 import mwparsers/mwclas
 import mwparsers/mwrace
+import mwparsers/mwbsgn
 import mwparsers/mwspel
 import std/strformat
 import std/strutils
@@ -86,6 +87,7 @@ type
     armo*   : seq[MWArmor]       # armors (see `MWArmor` in records.nim for reference)
     clas*   : seq[MWClass]       # classes (see `MWClass` in records.nim for reference)
     race*   : seq[MWRace]        # races (see `MWRace` in records.nim for reference)
+    bsgn*   : seq[MWBirthsign]   # birthsigns (see `MWBirthsign` in records.nim for reference)
     spel*   : seq[MWSpell]       # spells (see `MWSpell` in records.nim for reference)
 
 proc `$`* (plugin: MWPlugin): string =
@@ -125,6 +127,7 @@ proc `$`* (plugin: MWPlugin): string =
     * body parts:    {plugin.body.len}
     * classes:       {plugin.clas.len}
     * races:         {plugin.race.len}
+    * birthsigns:    {plugin.bsgn.len}
     * spells:        {plugin.spel.len}
     """.unindent()
 
@@ -192,6 +195,7 @@ proc newMWPlugin* (path: string): MWPlugin =
         of "CLAS": result.clas.add(parseCLAS(fr))
         of "RACE": result.race.add(parseRACE(fr))
         of "SPEL": result.spel.add(parseSPEL(fr))
+        of "BSGN": result.bsgn.add(parseBSGN(fr))
         else:
           result.fin = false
           break
