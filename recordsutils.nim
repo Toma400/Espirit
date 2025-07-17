@@ -21,6 +21,13 @@ proc `$`* (scr: MWScript): string =
 proc `$`* (scr: MWGlobal | MWStartScript | MWGameSetting): string =
     result = fmt"Name: {scr.name}"
 
+# TODO: make this actually work
+#proc checkFlags* (record: MWClass): seq[MWServicesTradesType] =
+#    return checkFlagsData[MWServicesTradesType, uint32](record.data.flagsac)
+
+proc checkFlags* (record: MWSpell): seq[MWSpellDataFlags] =
+    return checkFlagsData[MWSpellDataFlags, uint32](record.data.flags)
+
 proc info* (record: MWCloth): string =
     var options = ""
     if record.script != "":
@@ -474,4 +481,30 @@ proc info* (record: MWRace): string =
     =====
     Description:
     {record.descr}
+    """
+
+proc info* (record: MWSpell): string =
+    let flags = checkFlags(record)
+    var f     = "Flags: None"
+    if len(flags) > 0:
+      f = f.replace(" None", "")
+      for fi in flags:
+        f.add("\n" & fmt"      - {fi}")
+    var ench = "Enchantments:"
+    for e in record.ench:
+      ench.add("\n" & fmt"      - {MWEffectType(e.effindex)}")
+      ench.add("\n" & fmt"        - Range:     {MWEnchantmentRange(e.range)}")
+      ench.add("\n" & fmt"        - Area:      {e.area}")
+      ench.add("\n" & fmt"        - Duration:  {e.duration}")
+      ench.add("\n" & fmt"        - Magnitude: {e.mmin} - {e.mmax}")
+      ench.add("\n" & fmt"        - Affects:   Attribute [{MWAttributeType(e.attr)}] | Skill [{MWSkillType(e.skill)}]")
+    result = fmt"""
+    ID:   {record.id}
+    Name: {record.name}
+    =====
+    Type: {record.data.kind} [{MWSpellType(record.data.kind)}]
+    Cost: {record.data.cost}
+    {f}
+    =====
+    {ench}
     """

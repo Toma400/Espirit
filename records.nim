@@ -352,6 +352,24 @@ type
     power* : seq[array[32, char]] # special power/ability
     descr* : string = ""          # description (optional)
     data*  : MWRaceData
+  MWSpellData* = object of MWRecordData
+    kind*  : uint32
+    cost*  : uint32
+    flags* : uint32
+  MWSpellEnch* = object of MWRecordData
+    effindex* : uint16
+    skill*    : int8   # skill affected (-1 if not applicable)
+    attr*     : int8   # attribute affected (-1 if not applicable)
+    range*    : uint32 # 0 = self, 1 = touch, 2 = target
+    area*     : uint32
+    duration* : uint32
+    mmin*     : uint32 # magnitude min
+    mmax*     : uint32 # magnitude max
+  MWSpell* = object of MWRecord
+    id*   : string           # ID
+    name* : string = ""      # name (optional)
+    data* : MWSpellData
+    ench* : seq[MWSpellEnch]
 
 type
   MWCommonRecord* = MWCloth | MWMisc | MWStatic | MWIngredient  | MWContainer | MWBook       | MWLeveledItem | MWActivator | MWArmor |

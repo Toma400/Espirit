@@ -232,6 +232,7 @@ type
     Calcinator      = 2
     Retort          = 3
   MWAttributeType* = enum
+    None         = -1
     Strength     = 0
     Intelligence = 1
     Willpower    = 2
@@ -291,7 +292,7 @@ type
     Training    = 16384'u32  # 0x04000 | services
     Spellmaking = 32768'u32  # 0x08000
     Enchanting  = 65536'u32  # 0x10000
-    #Repair      = 131072'u32 # 0x20000
+    # TODO: Repair      = 131072'u32 # 0x20000
   MWBodyPartType* = enum
     Head     = 0
     Hair     = 1
@@ -322,6 +323,21 @@ type
     PlayableHumanLike    = 1
     NonplayableBeast     = 2
     PlayableBeast        = 3
+  MWSpellType* = enum
+    Spell   = 0
+    Ability = 1
+    Blight  = 2
+    Disease = 3
+    Curse   = 4 # unused
+    Power   = 5
+  MWSpellDataFlags* = enum
+    AutoCalc       = 1 # 0x1
+    PCStart        = 2 # 0x2
+    AlwaysSucceeds = 4 # 0x4
+  MWEnchantmentRange* = enum
+    Self   = 0
+    Touch  = 1
+    Target = 2
 
 const SERVICES* = [Training, Spellmaking, Enchanting]
 
@@ -334,4 +350,12 @@ type
 proc yieldServicesTrades* (flags: uint32): seq[MWServicesTradesType] =
   for mi in MWServicesTradesType:
     if uint32(mi.ord) == bitand(uint32(mi.ord), flags): # check if 'mi' is within 'flags'
+      result.add(mi)
+
+proc checkFlagsData* [T, I](flags: I): seq[T] =
+  # abstracted proc to check what enum values are hold in `flags` value
+  # T = enum type
+  # I = type casted/checked value against
+  for mi in T.items():
+    if cast[I](mi.ord) == bitand(cast[I](mi.ord), flags): # check if enum item (mi) is within 'flags'
       result.add(mi)

@@ -21,6 +21,7 @@ This is list of records included in .esm/.esp files of Morrowind:
 ** [x] INGR (ingredient)
 ** [x] MISC (misc)
 ** [x] PROB (probe item)
+** [x] RACE (race)
 ** [x] REGN (region)
 ** [x] REPA (repair item)
 ** [x] SCPT (script)
@@ -30,21 +31,20 @@ This is list of records included in .esm/.esp files of Morrowind:
 ** [x] WEAP (weapon)
 
 * To do (14/41):
-** [ ] BSGN (birthsign)
+** [x] BSGN (birthsign)
 ** [ ] CELL (cell)
 ** [ ] CREA (creature)
 ** [ ] DIAL (dialogue topic)
-** [ ] ENCH (enchantment)
+** [x] ENCH (enchantment)
 ** [ ] FACT (faction)
 ** [ ] INFO (dialogue response)
 ** [ ] LEVC (leveled creature)
-** [ ] MGEF (magic effect)
+** [x] MGEF (magic effect)
 ** [ ] NPC_ (npc)
 ** [ ] PGRD (path grid)
-** [x] RACE (race)
 ** [ ] SNDG (sound generator)
 ** [ ] SOUN (sound)
-** [ ] SPEL (spell)
+** [x] SPEL (spell)
 
 From other features:
 

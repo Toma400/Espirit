@@ -26,6 +26,7 @@ import mwparsers/mwarmo
 import mwparsers/mwweap
 import mwparsers/mwclas
 import mwparsers/mwrace
+import mwparsers/mwspel
 import std/strformat
 import std/strutils
 import std/os
@@ -85,6 +86,7 @@ type
     armo*   : seq[MWArmor]       # armors (see `MWArmor` in records.nim for reference)
     clas*   : seq[MWClass]       # classes (see `MWClass` in records.nim for reference)
     race*   : seq[MWRace]        # races (see `MWRace` in records.nim for reference)
+    spel*   : seq[MWSpell]       # spells (see `MWSpell` in records.nim for reference)
 
 proc `$`* (plugin: MWPlugin): string =
     var deps = ""
@@ -119,10 +121,11 @@ proc `$`* (plugin: MWPlugin): string =
     * scripts:       {plugin.scpt.len}
     * globals:       {plugin.glob.len}
     * start scripts: {plugin.sscr.len}
-    * body parts:    {plugin.body.len}
     * game settings: {plugin.gmst.len}
+    * body parts:    {plugin.body.len}
     * classes:       {plugin.clas.len}
     * races:         {plugin.race.len}
+    * spells:        {plugin.spel.len}
     """.unindent()
 
 proc newPluginHeader(header_string: string): PluginHeader =
@@ -188,6 +191,7 @@ proc newMWPlugin* (path: string): MWPlugin =
         of "GMST": result.gmst.add(parseGMST(fr))
         of "CLAS": result.clas.add(parseCLAS(fr))
         of "RACE": result.race.add(parseRACE(fr))
+        of "SPEL": result.spel.add(parseSPEL(fr))
         else:
           result.fin = false
           break
