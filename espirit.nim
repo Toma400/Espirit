@@ -27,8 +27,10 @@ import mwparsers/mwweap
 import mwparsers/mwclas
 import mwparsers/mwrace
 import mwparsers/mwbsgn
+import mwparsers/mwmgef
 import mwparsers/mwench
 import mwparsers/mwspel
+import mwparsers/mwfact
 import std/strformat
 import std/strutils
 import std/os
@@ -89,8 +91,10 @@ type
     clas*   : seq[MWClass]       # classes (see `MWClass` in records.nim for reference)
     race*   : seq[MWRace]        # races (see `MWRace` in records.nim for reference)
     bsgn*   : seq[MWBirthsign]   # birthsigns (see `MWBirthsign` in records.nim for reference)
+    mgef*   : seq[MWMagicEffect] # magic effects (see `MWMagicEffect` in records.nim for reference)
     ench*   : seq[MWEnchantment] # enchantments (see `MWEnchantment` in records.nim for reference)
     spel*   : seq[MWSpell]       # spells (see `MWSpell` in records.nim for reference)
+    fact*   : seq[MWFaction]     # factions (see `MWFaction` in records.nim for reference)
 
 proc `$`* (plugin: MWPlugin): string =
     var deps = ""
@@ -130,8 +134,10 @@ proc `$`* (plugin: MWPlugin): string =
     * classes:       {plugin.clas.len}
     * races:         {plugin.race.len}
     * birthsigns:    {plugin.bsgn.len}
+    * magic effects: {plugin.mgef.len}
     * enchantments:  {plugin.ench.len}
     * spells:        {plugin.spel.len}
+    * factions:      {plugin.fact.len}
     """.unindent()
 
 proc newPluginHeader(header_string: string): PluginHeader =
@@ -199,7 +205,9 @@ proc newMWPlugin* (path: string): MWPlugin =
         of "RACE": result.race.add(parseRACE(fr))
         of "SPEL": result.spel.add(parseSPEL(fr))
         of "ENCH": result.ench.add(parseENCH(fr))
+        of "MGEF": result.mgef.add(parseMGEF(fr))
         of "BSGN": result.bsgn.add(parseBSGN(fr))
+        of "FACT": result.fact.add(parseFACT(fr))
         else:
           result.fin = false
           break

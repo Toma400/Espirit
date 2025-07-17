@@ -1,6 +1,7 @@
 import system/iterators
 import std/strformat
 import std/strutils
+import std/unicode
 import records
 
 proc `$`* (record: MWCommonRecord): string =
@@ -12,7 +13,7 @@ proc `$`* (clobj: MWClothObj | MWArmorObj): string =
 proc `$`* (land: MWLand): string =
     result = fmt"X: {land.coord[0]}, Y: {land.coord[1]}"
 
-proc `$`* (sk: MWSkill): string =
+proc `$`* (sk: MWSkill | MWMagicEffect): string =
     result = fmt"Index: {sk.index}"
 
 proc `$`* (scr: MWScript): string =
@@ -29,6 +30,9 @@ proc `$`* (ch: array[32, char]): string =
 # TODO: make this actually work
 #proc checkFlags* (record: MWClass): seq[MWServicesTradesType] =
 #    return checkFlagsData[MWServicesTradesType, uint32](record.data.flagsac)
+
+proc checkFlags* (record: MWMagicEffect): seq[MWMagicEffectFlags] =
+    return checkFlagsData[MWMagicEffectFlags, uint32](record.data.flags)
 
 proc checkFlags* (record: MWSpell): seq[MWSpellDataFlags] =
     return checkFlagsData[MWSpellDataFlags, uint32](record.data.flags)
@@ -510,6 +514,45 @@ proc info* (record: MWBirthsign): string =
     {record.descr}
     """
 
+proc info* (record: MWMagicEffect): string =
+    var name: string
+    if record.index <= MWEffectType.high.ord:
+        name = fmt" [{MWEffectType(record.index)}]"
+    let flags = checkFlags(record)
+    var f     = "Flags: None"
+    if len(flags) > 0:
+      f = f.replace(" None", "")
+      for fi in flags:
+        f.add("\n" & fmt"      - {fi}")
+    result = fmt"""
+    Index:  {record.index}{name}
+    School: {MWMagicSchoolType(record.data.school)}
+    =====
+    Base Cost: {record.data.bcost}
+    Colour:    {record.data.red} {record.data.green} {record.data.blue}
+    SpeedX:    {record.data.speedx}
+    SizeX:     {record.data.sizex}
+    SizeCap:   {record.data.sizecap}
+    Textures:
+      - Icon     | {record.icon}
+      - Particle | {record.partc}
+    {f}
+    =====
+    Sounds:
+      - Bolt    | {record.sndb}
+      - Casting | {record.sndc}
+      - Hit     | {record.sndh}
+      - Area    | {record.snda}
+    Visuals:
+      - Bolt    | {record.visb}
+      - Casting | {record.visc}
+      - Hit     | {record.vish}
+      - Area    | {record.visa}
+    =====
+    Description:
+    {record.descr}
+    """
+
 proc info* (record: MWEnchantment): string =
     var ench = "Enchantments:"
     for e in record.ench:
@@ -554,4 +597,37 @@ proc info* (record: MWSpell): string =
     {f}
     =====
     {ench}
+    """
+
+proc info* (record: MWFaction): string =
+    var rans: string
+    for r, rank in record.ranks.pairs:
+      rans.add("\n" & fmt"        - {r+1} | {rank}")
+      if r < 10:
+        let rdata = record.data.rankdata[r]
+        rans.add("\n" & fmt"          - Attribute          | M: {rdata.attr_mod[0]} | F: {rdata.attr_mod[1]}")
+        rans.add("\n" & fmt"          - Primary Skill      | {rdata.pr_skill}")
+        rans.add("\n" & fmt"          - Favoured Skill     | {rdata.fv_skill}")
+        rans.add("\n" & fmt"          - Faction Reputation | {rdata.fact_rc}")
+    var rels: string
+    for rel in record.relations:
+      rels.add("\n" & fmt"        - {rel[0]}: {rel[1]}")
+    var fsk: string
+    for s in record.data.skill:
+      if s != -1:
+        fsk.add("\n" & fmt"    - {MWSkillType(s)}")
+    result = fmt"""
+    ID:   {record.id}
+    Name: {record.name}
+    =====
+    Favoured Attributes and Skills:
+    -----
+    {MWAttributeType(record.data.attr[0])} | {MWAttributeType(record.data.attr[1])}
+    -----{fsk}
+    =====
+    Ranks:{rans}
+    =====
+    Relations:{rels}
+    =====
+    Is visible? {capitalize($(record.data.flags == 0))}
     """

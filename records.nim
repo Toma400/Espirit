@@ -358,6 +358,30 @@ type
     spell*   : seq[array[32, char]] # spells
     texture* : string = ""          # filename (optional)
     descr*   : string = ""          # description (optional)
+  MWMagicEffectData* = object of MWRecordData
+    school*  : uint32  # magic school
+    bcost*   : float32 # base cost
+    flags*   : uint32
+    red*     : uint32
+    green*   : uint32
+    blue*    : uint32
+    speedx*  : float32
+    sizex*   : float32
+    sizecap* : float32
+  MWMagicEffect* = object of MWRecord
+    index* : uint32
+    icon*  : string            # icon texture
+    partc* : string            # particle texture
+    sndb*  : string            # sounds: bolt
+    sndc*  : string            #         casting
+    sndh*  : string            #         hit
+    snda*  : string            #         area
+    visb*  : string            # visual: bolt    | missing visual effects default to VFX_DefaultArea, VFX_DefaultBolt, etc.
+    visc*  : string            #         casting
+    vish*  : string            #         hit
+    visa*  : string            #         area
+    descr* : string = ""
+    data*  : MWMagicEffectData
   MWSpellEnch* = object of MWRecordData
     effindex* : uint16 # effect index (please refer to `MWEffectType` enum in -indexes.nim-)
     skill*    : int8   # skill affected (-1 if not applicable)
@@ -385,8 +409,24 @@ type
     name* : string = ""      # name (optional)
     data* : MWSpellData
     ench* : seq[MWSpellEnch]
+  MWRankData* = object of MWRecordData
+    attr_mod* : (uint32, uint32) # attribute modifier
+    pr_skill* : uint32           # primary skill
+    fv_skill* : uint32           # favoured skill
+    fact_rc*  : uint32           # faction reaction modifier
+  MWFactionData* = object of MWRecordData
+    attr*     : (uint32, uint32)
+    rankdata* : array[10, MWRankData]
+    skill*    : array[7, int32]
+    flags*    : uint32                # 1 = hidden from player
+  MWFaction* = object of MWRecord
+    id*        : string               # ID
+    name*      : string               # name
+    ranks*     : seq[string]          # rank names (technically 10 are always used, but not required)
+    relations* : seq[(string, int32)] # (faction ID, reaction value [usually between -3..+3])
+    data*      : MWFactionData
 
 type
   MWCommonRecord* = MWCloth | MWMisc | MWStatic | MWIngredient  | MWContainer | MWBook        | MWLeveledItem | MWActivator | MWArmor |
                     MWLight | MWDoor | MWPotion | MWLandTexture | MWRegion    | MWRepairTool  | MWApparatus   | MWLock      | MWProbe |
-                    MWBody  | MWRace | MWClass  | MWWeapon      | MWBirthsign | MWEnchantment | MWSpell
+                    MWBody  | MWRace | MWClass  | MWWeapon      | MWBirthsign | MWEnchantment | MWSpell       | MWFaction

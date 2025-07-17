@@ -52,6 +52,7 @@ proc requiredField* [T](fr: var string, name: string, entry: string): T = # gene
         elif T is zstring: return parseZString(fr)
         elif T is char:    return readChar(fr)
         elif T is array[32, char]: return read32Chars(fr)
+        elif T is (string, int32): return (readStr(fr, length), readInt32(fr))
         else:                      raise newException(ParseError, fmt"Unsupported type for {name} field for {entry} entry: {T.type}")
 
 proc optionalField* [T](fr: var string, name: string): T = # general proc to handle optional fields; should allow custom handling
@@ -71,6 +72,7 @@ proc optionalField* [T](fr: var string, name: string): T = # general proc to han
             elif T is zstring: return parseZString(fr)
             elif T is char:    return readChar(fr)
             elif T is array[32, char]: return read32Chars(fr)
+            elif T is (string, int32): return (readStr(fr, length), readInt32(fr))
             else:                      raise newException(ParseError, fmt"Unsupported type for {name} field: {T.type}")
 
 proc repeatableField* [T](fr: var string, name: string): seq[T] =
@@ -109,3 +111,19 @@ proc repeatableObjectField* (fr: var string, name: string, length: var int): boo
         if len(fr) >= length:
           return true
     return false
+
+proc optionalPairField* [T, Y](fr: var string, names: array[2, string]): (T, Y) =
+    if len(fr) >= 4:
+      for i, name in names.pairs:
+        if fr[0..3] == name:
+          case i:
+            of 0: result[0] = optionalField[T](fr, name)
+            of 1: result[1] = optionalField[Y](fr, name)
+
+proc repeatablePairField* [T, Y](fr: var string, names: array[2, string]): seq[(T, Y)] =
+    while true:
+      if len(fr) >= 4:
+        if fr[0..3] notin names:
+          break
+      else: break
+      result.add(optionalPairField[T, Y](fr, names))
