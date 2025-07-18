@@ -533,9 +533,15 @@ type
                (int, MWAIPackageFollow),
                (int, MWAIPackageTravel),
                (int, MWAIPackageWander))
+  MWLeveledCreature* = object of MWRecord
+    id*      : string
+    flags*   : uint32                # 0x1 (1) = calculate from all levels <= PC's level
+    nchance* : uint8
+    count*   : uint32                # count of following creatures
+    crea*    : seq[(string, uint16)] # list of (creature ID, PC level)
 
 type
   MWCommonRecord* = MWCloth | MWMisc | MWStatic | MWIngredient  | MWContainer | MWBook        | MWLeveledItem | MWActivator | MWArmor |
                     MWLight | MWDoor | MWPotion | MWLandTexture | MWRegion    | MWRepairTool  | MWApparatus   | MWLock      | MWProbe |
                     MWBody  | MWRace | MWClass  | MWWeapon      | MWBirthsign | MWEnchantment | MWSpell       | MWFaction   | MWSound |
-                    MWCreature | MWSoundGenerator
+                    MWCreature | MWLeveledCreature | MWSoundGenerator

@@ -708,3 +708,17 @@ proc info* (record: MWCreature): string =
     Carried items:{cr}{sp}{dt}
     ====={options}
     """
+
+proc info* (record: MWLeveledCreature): string =
+    var cr = ""
+    for c in record.crea:
+      cr.add("\n" & fmt"    - {c[0]} | PC Level: {c[1]}")
+    result = fmt"""
+    ID: {record.id}
+    =====
+    Calculate PC's level? {capitalize($(record.flags == 1))}
+    Chance None           {record.nchance}
+    =====
+    Count: {record.count}
+    Creatures:{cr}
+    """

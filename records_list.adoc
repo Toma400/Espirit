@@ -1,7 +1,7 @@
 === Features
 This is list of records included in .esm/.esp files of Morrowind:
 
-* Done (35/41):
+* Done (36/41):
 ** [x] ARMO (armor)
 ** [x] ALCH (potion)
 ** [x] ACTI (activator)
@@ -18,6 +18,7 @@ This is list of records included in .esm/.esp files of Morrowind:
 ** [x] GLOB (global)
 ** [x] GMST (game setting)
 ** [x] LAND (land)
+** [x] LEVC (leveled creature)
 ** [x] LEVI (leveled item)
 ** [x] LIGH (light)
 ** [x] LOCK (lockpicking item)
@@ -38,11 +39,10 @@ This is list of records included in .esm/.esp files of Morrowind:
 ** [x] STAT (static)
 ** [x] WEAP (weapon)
 
-* To do (6/41):
+* To do (5/41):
 ** [ ] CELL (cell)
 ** [ ] DIAL (dialogue topic)
 ** [ ] INFO (dialogue response)
-** [ ] LEVC (leveled creature)
 ** [ ] NPC_ (npc)
 ** [ ] PGRD (path grid)
 
