@@ -5,11 +5,11 @@ image:espirit.png[]
 *Espirit* is simple parser of Morrowind .esp & .esm files, written entirely in
 Nim language.
 
-Currently, it is in very early development stage, thus it is not stable enough
-for projects where that matters. For complete list of parsable records, check
+Currently, it is in development stage, thus it is not recommended for serious
+use. For complete list of parsable records, check
 link:records_list.adoc[this list].  +
-Make sure to check it out in few months however, as I will strive to make it
-fairly complete by that time.
+Work on Espirit however goes steadily forward, so you can expect its version
+1.0 being finished soon.
 
 === Installing and use
 You can install Espirit by using standard Nimble installation:
@@ -23,10 +23,21 @@ import espirit
 
 let esp = newMWPlugin("your_mod_file.esp")
 ----
-You can find reference to the object in *espirit.nim* file.
+*MWPlugin* is struct that collects all records from said file, allowing
+you to get all the data. You can see code reference in *espirit.nim* file.
+[source,ruby]
+----
+# stringified plugin yields dependencies and counts of all records
+echo $esp
+
+# shows information on all game settings (GMST)
+for i in esp.gmst:
+   echo i.info
+----
+All records' references are stored in *records.nim*.
 
 Right now, Espirit allows you to parse .esm and .esp files which have
-only fields supported by the library - with other files being parsed
+only records supported by the library - with other files being parsed
 in random extent. +
 The feature plan is to allow Espirit to parse every file into custom
 MWPlugin struct and potentially also export it to JSON format at will.

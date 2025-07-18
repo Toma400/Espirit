@@ -425,8 +425,23 @@ type
     ranks*     : seq[string]          # rank names (technically 10 are always used, but not required)
     relations* : seq[(string, int32)] # (faction ID, reaction value [usually between -3..+3])
     data*      : MWFactionData
+  MWSoundData* = object of MWRecordData
+    volume*    : uint8 # (0=0.00, 255=1.00)
+    range_min* : uint8
+    range_max* : uint8
+  MWSound* = object of MWRecord
+    id*    : string      # ID
+    fname* : string      # file name
+    data*  : MWSoundData
+  MWSoundGenerator* = object of MWRecord
+    id*     : string # ID | UESP: this appears to be generated from the creature name (or DEFAULT) combined with the type formatted as a four-digit number
+                                # with leading zeroes (e.g., the ID for an alit scream is alit0006).
+    kind*   : uint32
+    crea*   : string # creature
+    snd_id* : string # sound ID
 
 type
   MWCommonRecord* = MWCloth | MWMisc | MWStatic | MWIngredient  | MWContainer | MWBook        | MWLeveledItem | MWActivator | MWArmor |
                     MWLight | MWDoor | MWPotion | MWLandTexture | MWRegion    | MWRepairTool  | MWApparatus   | MWLock      | MWProbe |
-                    MWBody  | MWRace | MWClass  | MWWeapon      | MWBirthsign | MWEnchantment | MWSpell       | MWFaction
+                    MWBody  | MWRace | MWClass  | MWWeapon      | MWBirthsign | MWEnchantment | MWSpell       | MWFaction   | MWSound |
+                    MWSoundGenerator

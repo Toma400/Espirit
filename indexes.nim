@@ -369,6 +369,15 @@ type
     Self   = 0
     Touch  = 1
     Target = 2
+  MWSoundGeneratorType* = enum
+    LeftFoot  = 0
+    RightFoot = 1
+    SwimLeft  = 2
+    SwimRight = 3
+    Moan      = 4
+    Roar      = 5
+    Scream    = 6
+    Land      = 7
 
 const SERVICES* = [Training, Spellmaking, Enchanting]
 

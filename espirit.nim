@@ -31,6 +31,8 @@ import mwparsers/mwmgef
 import mwparsers/mwench
 import mwparsers/mwspel
 import mwparsers/mwfact
+import mwparsers/mwsoun
+import mwparsers/mwsndg
 import std/strformat
 import std/strutils
 import std/os
@@ -62,39 +64,41 @@ type
     fin*    : bool                         # whether it was read fully to the last byte
     rem*    : string                       # remaining string (non-empty only if fin == true)
     # Plugin regular records
-    clot*   : seq[MWCloth]       # clothes (see `MWCloth` in records.nim for reference)
-    misc*   : seq[MWMisc]        # misc items (see `MWMisc` in records.nim for reference)
-    stat*   : seq[MWStatic]      # statics (see `MWStatic` in records.nim for reference)
-    cont*   : seq[MWContainer]   # containers (see `MWContainer` in records.nim for reference)
-    acti*   : seq[MWActivator]   # activators (see `MWActivator` in records.nim for reference)
-    ligh*   : seq[MWLight]       # lights (see `MWLight` in records.nim for reference)
-    ingr*   : seq[MWIngredient]  # ingredients (see `MWIngredient` in records.nim for reference)
-    alch*   : seq[MWPotion]      # potion (see `MWPotion` in records.nim for reference)
-    book*   : seq[MWBook]        # books (see `MWBook` in records.nim for reference)
-    repa*   : seq[MWRepairTool]  # repair tools (see `MWRepairTool` in records.nim for reference)
-    appa*   : seq[MWApparatus]   # apparatuses (see `MWApparatus` in records.nim for reference)
-    lock*   : seq[MWLock]        # locks (see `MWLock` in records.nim for reference)
-    prob*   : seq[MWProbe]       # probes (see `MWProbe` in records.nim for reference)
-    levi*   : seq[MWLeveledItem] # leveled items (see `MWLeveledItem` in records.nim for reference)
-    door*   : seq[MWDoor]        # doors (see `MWDoor` in records.nim for reference)
-    land*   : seq[MWLand]        # lands (see `MWLand` in records.nim for reference)
-    ltex*   : seq[MWLandTexture] # land textures (see `MWLandTexture` in records.nim for reference)
-    regn*   : seq[MWRegion]      # regions (see `MWRegion` in records.nim for reference)
-    skil*   : seq[MWSkill]       # skills (see `MWSkill` in records.nim for reference)
-    scpt*   : seq[MWScript]      # scripts (see `MWScript` in records.nim for reference)
-    glob*   : seq[MWGlobal]      # globals (see `MWGlobal` in records.nim for reference)
-    sscr*   : seq[MWStartScript] # start scripts (see `MWStartScript` in records.nim for reference)
-    body*   : seq[MWBody]        # body parts (see `MWBody` in records.nim for reference)
-    gmst*   : seq[MWGameSetting] # game settings (see `MWGameSetting` in records.nim for reference)
-    weap*   : seq[MWWeapon]      # weapons (see `MWWeapon` in records.nim for reference)
-    armo*   : seq[MWArmor]       # armors (see `MWArmor` in records.nim for reference)
-    clas*   : seq[MWClass]       # classes (see `MWClass` in records.nim for reference)
-    race*   : seq[MWRace]        # races (see `MWRace` in records.nim for reference)
-    bsgn*   : seq[MWBirthsign]   # birthsigns (see `MWBirthsign` in records.nim for reference)
-    mgef*   : seq[MWMagicEffect] # magic effects (see `MWMagicEffect` in records.nim for reference)
-    ench*   : seq[MWEnchantment] # enchantments (see `MWEnchantment` in records.nim for reference)
-    spel*   : seq[MWSpell]       # spells (see `MWSpell` in records.nim for reference)
-    fact*   : seq[MWFaction]     # factions (see `MWFaction` in records.nim for reference)
+    clot*   : seq[MWCloth]          # clothes (see `MWCloth` in records.nim for reference)
+    misc*   : seq[MWMisc]           # misc items (see `MWMisc` in records.nim for reference)
+    stat*   : seq[MWStatic]         # statics (see `MWStatic` in records.nim for reference)
+    cont*   : seq[MWContainer]      # containers (see `MWContainer` in records.nim for reference)
+    acti*   : seq[MWActivator]      # activators (see `MWActivator` in records.nim for reference)
+    ligh*   : seq[MWLight]          # lights (see `MWLight` in records.nim for reference)
+    ingr*   : seq[MWIngredient]     # ingredients (see `MWIngredient` in records.nim for reference)
+    alch*   : seq[MWPotion]         # potion (see `MWPotion` in records.nim for reference)
+    book*   : seq[MWBook]           # books (see `MWBook` in records.nim for reference)
+    repa*   : seq[MWRepairTool]     # repair tools (see `MWRepairTool` in records.nim for reference)
+    appa*   : seq[MWApparatus]      # apparatuses (see `MWApparatus` in records.nim for reference)
+    lock*   : seq[MWLock]           # locks (see `MWLock` in records.nim for reference)
+    prob*   : seq[MWProbe]          # probes (see `MWProbe` in records.nim for reference)
+    levi*   : seq[MWLeveledItem]    # leveled items (see `MWLeveledItem` in records.nim for reference)
+    door*   : seq[MWDoor]           # doors (see `MWDoor` in records.nim for reference)
+    land*   : seq[MWLand]           # lands (see `MWLand` in records.nim for reference)
+    ltex*   : seq[MWLandTexture]    # land textures (see `MWLandTexture` in records.nim for reference)
+    regn*   : seq[MWRegion]         # regions (see `MWRegion` in records.nim for reference)
+    skil*   : seq[MWSkill]          # skills (see `MWSkill` in records.nim for reference)
+    scpt*   : seq[MWScript]         # scripts (see `MWScript` in records.nim for reference)
+    glob*   : seq[MWGlobal]         # globals (see `MWGlobal` in records.nim for reference)
+    sscr*   : seq[MWStartScript]    # start scripts (see `MWStartScript` in records.nim for reference)
+    body*   : seq[MWBody]           # body parts (see `MWBody` in records.nim for reference)
+    gmst*   : seq[MWGameSetting]    # game settings (see `MWGameSetting` in records.nim for reference)
+    weap*   : seq[MWWeapon]         # weapons (see `MWWeapon` in records.nim for reference)
+    armo*   : seq[MWArmor]          # armors (see `MWArmor` in records.nim for reference)
+    clas*   : seq[MWClass]          # classes (see `MWClass` in records.nim for reference)
+    race*   : seq[MWRace]           # races (see `MWRace` in records.nim for reference)
+    bsgn*   : seq[MWBirthsign]      # birthsigns (see `MWBirthsign` in records.nim for reference)
+    mgef*   : seq[MWMagicEffect]    # magic effects (see `MWMagicEffect` in records.nim for reference)
+    ench*   : seq[MWEnchantment]    # enchantments (see `MWEnchantment` in records.nim for reference)
+    spel*   : seq[MWSpell]          # spells (see `MWSpell` in records.nim for reference)
+    fact*   : seq[MWFaction]        # factions (see `MWFaction` in records.nim for reference)
+    soun*   : seq[MWSound]          # sounds (see `MWSound` in records.nim for reference)
+    sndg*   : seq[MWSoundGenerator] # sound generators (see `MWSoundGenerator` in records.nim for reference)
 
 proc `$`* (plugin: MWPlugin): string =
     var deps = ""
@@ -105,39 +109,41 @@ proc `$`* (plugin: MWPlugin): string =
     Dependencies: {deps}
 
     Data:
-    * statics:       {plugin.stat.len}
-    * containers:    {plugin.cont.len}
-    * activators:    {plugin.acti.len}
-    * lights:        {plugin.ligh.len}
-    * miscs:         {plugin.misc.len}
-    * clothes:       {plugin.clot.len}
-    * armors:        {plugin.armo.len}
-    * ingredients:   {plugin.ingr.len}
-    * potions:       {plugin.alch.len}
-    * books:         {plugin.book.len}
-    * weapons:       {plugin.weap.len}
-    * repair tools:  {plugin.repa.len}
-    * apparatuses:   {plugin.appa.len}
-    * locks:         {plugin.lock.len}
-    * probes:        {plugin.prob.len}
-    * leveled items: {plugin.levi.len}
-    * doors:         {plugin.door.len}
-    * land:          {plugin.land.len}
-    * land textures: {plugin.ltex.len}
-    * regions:       {plugin.regn.len}
-    * skills:        {plugin.skil.len}
-    * scripts:       {plugin.scpt.len}
-    * globals:       {plugin.glob.len}
-    * start scripts: {plugin.sscr.len}
-    * game settings: {plugin.gmst.len}
-    * body parts:    {plugin.body.len}
-    * classes:       {plugin.clas.len}
-    * races:         {plugin.race.len}
-    * birthsigns:    {plugin.bsgn.len}
-    * magic effects: {plugin.mgef.len}
-    * enchantments:  {plugin.ench.len}
-    * spells:        {plugin.spel.len}
-    * factions:      {plugin.fact.len}
+    * statics:          {plugin.stat.len}
+    * containers:       {plugin.cont.len}
+    * activators:       {plugin.acti.len}
+    * lights:           {plugin.ligh.len}
+    * miscs:            {plugin.misc.len}
+    * clothes:          {plugin.clot.len}
+    * armors:           {plugin.armo.len}
+    * ingredients:      {plugin.ingr.len}
+    * potions:          {plugin.alch.len}
+    * books:            {plugin.book.len}
+    * weapons:          {plugin.weap.len}
+    * repair tools:     {plugin.repa.len}
+    * apparatuses:      {plugin.appa.len}
+    * locks:            {plugin.lock.len}
+    * probes:           {plugin.prob.len}
+    * leveled items:    {plugin.levi.len}
+    * doors:            {plugin.door.len}
+    * land:             {plugin.land.len}
+    * land textures:    {plugin.ltex.len}
+    * regions:          {plugin.regn.len}
+    * skills:           {plugin.skil.len}
+    * scripts:          {plugin.scpt.len}
+    * globals:          {plugin.glob.len}
+    * start scripts:    {plugin.sscr.len}
+    * game settings:    {plugin.gmst.len}
+    * body parts:       {plugin.body.len}
+    * classes:          {plugin.clas.len}
+    * races:            {plugin.race.len}
+    * birthsigns:       {plugin.bsgn.len}
+    * magic effects:    {plugin.mgef.len}
+    * enchantments:     {plugin.ench.len}
+    * spells:           {plugin.spel.len}
+    * factions:         {plugin.fact.len}
+    * sounds:           {plugin.soun.len}
+    * sound generators: {plugin.sndg.len}
     """.unindent()
 
 proc newPluginHeader(header_string: string): PluginHeader =
@@ -208,6 +214,8 @@ proc newMWPlugin* (path: string): MWPlugin =
         of "MGEF": result.mgef.add(parseMGEF(fr))
         of "BSGN": result.bsgn.add(parseBSGN(fr))
         of "FACT": result.fact.add(parseFACT(fr))
+        of "SOUN": result.soun.add(parseSOUN(fr))
+        of "SNDG": result.sndg.add(parseSNDG(fr))
         else:
           result.fin = false
           break

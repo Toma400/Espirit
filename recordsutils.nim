@@ -631,3 +631,20 @@ proc info* (record: MWFaction): string =
     =====
     Is visible? {capitalize($(record.data.flags == 0))}
     """
+
+proc info* (record: MWSound): string =
+    result = fmt"""
+    ID:       {record.id}
+    Filename: {record.fname}
+    Data:
+       - Volume: {record.data.volume}
+       - Range:  {record.data.range_min} - {record.data.range_max}
+    """
+
+proc info* (record: MWSoundGenerator): string =
+    result = fmt"""
+    ID:       {record.id}
+    Type:     {MWSoundGeneratorType(record.kind)}
+    Creature: {record.crea}
+    Sound ID: {record.snd_id}
+    """
