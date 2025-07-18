@@ -648,3 +648,63 @@ proc info* (record: MWSoundGenerator): string =
     Creature: {record.crea}
     Sound ID: {record.snd_id}
     """
+
+proc info* (record: MWCreature): string =
+    # TODO: flags*  : uint32   # creature flags
+    # TODO: whole AIData
+    # TODO: AIPackages
+    var options = "" # options
+    var ay      = "" # attributes
+    var cr      = "" # carried items
+    var sp      = "" # spells
+    var dt      = "" # destinations
+    # [ ATTRIBUTES ] #
+    for ai in MWAttributeType.low..MWAttributeType.high:
+      if ai.ord != -1:
+        ay.add("\n" & fmt"        - {ai}: {record.data.attr[ai.ord]}")
+    # [ CARRIED ITEMS ] #
+    for it in record.carry:
+      cr.add("\n" & fmt"    - {$it.name}: {it.count}")
+    # [ SPELLS ] #
+    if len(record.spells) > 0:
+      sp.add("\n    Spells:")
+      for s in record.spells:
+        sp.add("\n" & fmt"    - {$s}")
+    # [ DESTINATIONS ] #
+    if len(record.dest) > 0:
+       dt.add("\n=====\n    Destinations:")
+       for d in record.dest:
+          dt.add("\n" & fmt"    - X: {d.pos_x} Y: {d.pos_y} Z: {d.pos_z} | Rotations: [{d.rot_x}, {d.rot_y}, {d.rot_z}]")
+          if d.prv_dest != "":
+            dt.add(fmt" | From cell: {d.prv_dest}")
+    # [ OPTIONS ] #
+    if record.script != "":
+      options.add("\n    Script:  " & record.script)
+    result = fmt"""
+    ID:   {record.id}
+    Name: {record.name}
+    =====
+    Data:
+      - Type:    {MWCreatureType(record.data.kind)}
+      - HP:      {record.data.health}
+      - MP:      {record.data.mana}
+      - Fatigue: {record.data.fatigue}
+      - Level:   {record.data.level}
+      - Scale:   {record.scale}
+      - Soul:    {record.data.soul}
+      - Gold:    {record.data.gold}
+      - Combat:  {record.data.combat}
+      - Magic:   {record.data.magic}
+      - Stealth: {record.data.stealth}
+      - Attributes:{ay}
+      - Attacks:
+        - Chop:   {record.data.att1_min} - {record.data.att1_max}
+        - Slash:  {record.data.att2_min} - {record.data.att2_max}
+        - Thrust: {record.data.att3_min} - {record.data.att3_max}
+    =====
+    Model path:        {record.model}
+    Soundgen creature: {record.sgen}
+    =====
+    Carried items:{cr}{sp}{dt}
+    ====={options}
+    """

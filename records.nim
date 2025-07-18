@@ -439,9 +439,103 @@ type
     kind*   : uint32
     crea*   : string # creature
     snd_id* : string # sound ID
+  MWCreatureData* = object of MWRecordData
+    kind*     : uint32
+    level*    : uint32
+    attr*     : array[8, uint32] # attributes (in order of Attribute ID, as found in MWAttributeType enum in -indexes.nim-)
+    health*   : uint32           # health points
+    mana*     : uint32           # magic points
+    fatigue*  : uint32           # fatigue points
+    soul*     : uint32
+    combat*   : uint32
+    magic*    : uint32
+    stealth*  : uint32
+    att1_min* : uint32
+    att1_max* : uint32
+    att2_min* : uint32
+    att2_max* : uint32
+    att3_min* : uint32
+    att3_max* : uint32
+    gold*     : uint32
+  MWCarriedObject* = object of MWRecordData
+    count* : uint32
+    name*  : array[32, char]
+  MWAIData* = object of MWRecordData
+    hello*   : uint8
+    unknown* : uint8
+    fight*   : uint8
+    flee*    : uint8
+    alarm*   : uint8
+    alg_pad* : (uint8, uint8, uint8) # alignment padding (junk)
+    flags*   : uint32                # represented by MWServicesTradesType enum in -indexes.nim-
+  MWCellTravelDestination* = object of MWRecordData
+    pos_x*    : float32
+    pos_y*    : float32
+    pos_z*    : float32
+    rot_x*    : float32
+    rot_y*    : float32
+    rot_z*    : float32
+    prv_dest* : string  # previous destination cell name (if interior)
+  # [ AI Packages ] #
+  # Note: duration parameters in all packages are in hours
+  # Any value greater than 24 should be divided by 100, and set to 24 if still greater than 24
+  # The unknown value for each package seems to be an end-of-data marker; it is always a byte
+  # value set to 1 with any remaining data in the structure undefined and ignored.
+  MWAIPackageActivate* = object of MWRecordData
+    name*    : array[32, char]
+    unknown* : uint8
+  MWAIPackageEscort* = object of MWRecordData
+    pos_x*    : float32
+    pos_y*    : float32
+    pos_z*    : float32
+    duration* : uint16
+    id*       : array[32, char]
+    unknown*  : uint8
+    unused*   : uint8
+    cell*     : string = ""
+  MWAIPackageFollow* = object of MWRecordData
+    pos_x*    : float32
+    pos_y*    : float32
+    pos_z*    : float32
+    duration* : uint16
+    id*       : array[32, char]
+    unknown*  : uint8
+    unused*   : uint8
+    cell*     : string = ""
+  MWAIPackageTravel* = object of MWRecordData
+    pos_x*    : float32
+    pos_y*    : float32
+    pos_z*    : float32
+    unknown*  : uint8
+    unused*   : uint8
+  MWAIPackageWander* = object of MWRecordData
+    distance* : uint16
+    duration* : uint16
+    daytime*  : uint8  # time of day
+    idles*    : (uint8, uint8, uint8, uint8,
+                 uint8, uint8, uint8, uint8)
+    unknown*  : uint8
+  MWCreature* = object of MWRecord
+    id*     : string   # ID
+    name*   : string   # name
+    model*  : string   # model name
+    sgen*   : string   # sound gen creature
+    script* : string   # script
+    flags*  : uint32   # creature flags
+    scale*  : float32  # (1.0 if missing)
+    carry*  : seq[MWCarriedObject]
+    spells* : seq[array[32, char]]
+    dest*   : seq[MWCellTravelDestination]
+    data*   : MWCreatureData
+    aidata* : MWAIData
+    aipkg*  : ((int, MWAIPackageActivate), # int in tuple is order number (1..5), if not found it is -1
+               (int, MWAIPackageEscort),
+               (int, MWAIPackageFollow),
+               (int, MWAIPackageTravel),
+               (int, MWAIPackageWander))
 
 type
   MWCommonRecord* = MWCloth | MWMisc | MWStatic | MWIngredient  | MWContainer | MWBook        | MWLeveledItem | MWActivator | MWArmor |
                     MWLight | MWDoor | MWPotion | MWLandTexture | MWRegion    | MWRepairTool  | MWApparatus   | MWLock      | MWProbe |
                     MWBody  | MWRace | MWClass  | MWWeapon      | MWBirthsign | MWEnchantment | MWSpell       | MWFaction   | MWSound |
-                    MWSoundGenerator
+                    MWCreature | MWSoundGenerator

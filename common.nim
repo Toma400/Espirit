@@ -127,3 +127,65 @@ proc repeatablePairField* [T, Y](fr: var string, names: array[2, string]): seq[(
           break
       else: break
       result.add(optionalPairField[T, Y](fr, names))
+
+proc processAIPackage* (fr: var string): ((int, MWAIPackageActivate),
+                                          (int, MWAIPackageEscort),
+                                          (int, MWAIPackageFollow),
+                                          (int, MWAIPackageTravel),
+                                          (int, MWAIPackageWander)) =
+    # returns tuple[5] of tuples (int, AIPackage)
+    # int value in each tuple is order by which they appear in record (-1 means package wasn't found)
+    const keys = ["AI_A", "AI_E", "AI_F", "AI_T", "AI_W", "CNDT"]
+    for o in result.fields: # sets each AIPackage as non-existent by default (will be overwritten later if found)
+      o[0] = -1
+    for i in 1..5:
+      if len(fr) <= 4:
+        break
+      case fr[0..3]:
+        of keys[0]:
+           discard readStr(fr, 4) # consumes AI_A
+           result[0] = (i, MWAIPackageActivate(name:    read32Chars(fr),
+                                               unknown: readUint8(fr)))
+        of keys[1]:
+           discard readStr(fr, 4) # consumes AI_E
+           result[1] = (i, MWAIPackageEscort(size:     getLength(fr),
+                                             pos_x:    readFloat32(fr),
+                                             pos_y:    readFloat32(fr),
+                                             pos_z:    readFloat32(fr),
+                                             duration: readUint16(fr),
+                                             id:       read32Chars(fr),
+                                             unknown:  readUint8(fr),
+                                             unused:   readUint8(fr),
+                                             cell:     optionalField[zstring](fr, "CNDT")))
+        of keys[2]:
+           discard readStr(fr, 4) # consumes AI_F
+           result[2] = (i, MWAIPackageFollow(size:     getLength(fr),
+                                             pos_x:    readFloat32(fr),
+                                             pos_y:    readFloat32(fr),
+                                             pos_z:    readFloat32(fr),
+                                             duration: readUint16(fr),
+                                             id:       read32Chars(fr),
+                                             unknown:  readUint8(fr),
+                                             unused:   readUint8(fr),
+                                             cell:     optionalField[zstring](fr, "CNDT")))
+        of keys[3]:
+           discard readStr(fr, 4) # consumes AI_T
+           result[3] = (i, MWAIPackageTravel(size:     getLength(fr),
+                                             pos_x:    readFloat32(fr),
+                                             pos_y:    readFloat32(fr),
+                                             pos_z:    readFloat32(fr),
+                                             unknown:  readUint8(fr),
+                                             unused:   readUint8(fr)))
+        of keys[4]:
+           discard readStr(fr, 4) # consumes AI_W
+           result[4] = (i, MWAIPackageWander(size:     getLength(fr),
+                                             distance: readUint16(fr),
+                                             duration: readUint16(fr),
+                                             daytime:  readUint8(fr),
+                                             idles:  (readUint8(fr), readUint8(fr),
+                                                      readUint8(fr), readUint8(fr),
+                                                      readUint8(fr), readUint8(fr),
+                                                      readUint8(fr), readUint8(fr)),
+                                             unknown: readUint8(fr)))
+        of keys[5]: raise newException(ParseError, fmt"CNDT field appearing out of order in AIPackage!") # should not appear without 0-4 preceeding
+        else: break

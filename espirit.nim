@@ -33,6 +33,7 @@ import mwparsers/mwspel
 import mwparsers/mwfact
 import mwparsers/mwsoun
 import mwparsers/mwsndg
+import mwparsers/mwcrea
 import std/strformat
 import std/strutils
 import std/os
@@ -99,6 +100,7 @@ type
     fact*   : seq[MWFaction]        # factions (see `MWFaction` in records.nim for reference)
     soun*   : seq[MWSound]          # sounds (see `MWSound` in records.nim for reference)
     sndg*   : seq[MWSoundGenerator] # sound generators (see `MWSoundGenerator` in records.nim for reference)
+    crea*   : seq[MWCreature]       # creatures (see `MWCreature` in records.nim for reference)
 
 proc `$`* (plugin: MWPlugin): string =
     var deps = ""
@@ -144,6 +146,7 @@ proc `$`* (plugin: MWPlugin): string =
     * factions:         {plugin.fact.len}
     * sounds:           {plugin.soun.len}
     * sound generators: {plugin.sndg.len}
+    * creatures:        {plugin.crea.len}
     """.unindent()
 
 proc newPluginHeader(header_string: string): PluginHeader =
@@ -216,6 +219,7 @@ proc newMWPlugin* (path: string): MWPlugin =
         of "FACT": result.fact.add(parseFACT(fr))
         of "SOUN": result.soun.add(parseSOUN(fr))
         of "SNDG": result.sndg.add(parseSNDG(fr))
+        of "CREA": result.crea.add(parseCREA(fr))
         else:
           result.fin = false
           break

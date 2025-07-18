@@ -378,6 +378,11 @@ type
     Roar      = 5
     Scream    = 6
     Land      = 7
+  MWCreatureType* = enum
+    Creature = 0
+    Daedra   = 1
+    Undead   = 2
+    Humanoid = 3
 
 const SERVICES* = [Training, Spellmaking, Enchanting]
 
