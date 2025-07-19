@@ -226,6 +226,20 @@ type
   MWWeaponFlags* = enum
     IgnoreNormalWeaponResistance = 1
     Silver                       = 2
+  MWContainerFlags* = enum
+    Organic  = 1 # 0x1
+    Respawns = 2 # 0x2 | organic only
+    Unknown  = 8 # 0x8 | always set
+  MWLightFlags* = enum
+    Dynamic      = 1   # 0x0001
+    CanCarry     = 2   # 0x0002
+    Negative     = 4   # 0x0004
+    Flicker      = 8   # 0x0008
+    Fire         = 16  # 0x0010
+    OffByDefault = 32  # 0x0020
+    FlickerSlow  = 64  # 0x0040
+    Pulse        = 128 # 0x0080
+    PulseSlow    = 256 # 0x0100
   MWApparatusType* = enum
     MortarAndPestle = 0
     Alembic         = 1
@@ -391,6 +405,11 @@ type
     Autocalc      = 16   # 0x0010
     BloodSkeleton = 1024 # 0x0400 | Blood Texture: Skeleton
     BloodMetal    = 2048 # 0x0800 | Blood Texture: Metal Sparks
+  MWCellFlags* = enum
+    Interior       = 1   # 0x01
+    HasWater       = 2   # 0x02
+    IllegalToSleep = 4   # 0x04
+    BehaveLikeExt  = 128 # 0x80
 
 const SERVICES* = [Training, Spellmaking, Enchanting]
 

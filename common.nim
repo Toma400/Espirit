@@ -6,7 +6,9 @@ import records
 import parse
 
 type
-  zstring* = string # used only to differentiate between MW's string and zstring for [T] handling
+  # [ FILTER TYPES ] | Do not use below types in records' fields, only in [T] of procs below!
+  zstring* = string                   # used only to differentiate between MW's string and zstring for [T] handling
+  rgb*     = (int8, int8, int8, int8) # shortcut
 
 proc parseRecordHeader* (fr: var string): MWRecordHeader = # parses first 12 'loose bytes'
     for _ in 1..4:
@@ -51,6 +53,7 @@ proc requiredField* [T](fr: var string, name: string, entry: string): T = # gene
         elif T is string:  return readStr(fr, length) # must be before zstring, since zstring also catches string
         elif T is zstring: return parseZString(fr)
         elif T is char:    return readChar(fr)
+        elif T is rgb:     return readRGB(fr)
         elif T is array[32, char]: return read32Chars(fr)
         elif T is (string, int32): return (readStr(fr, length), readInt32(fr))
         else:                      raise newException(ParseError, fmt"Unsupported type for {name} field for {entry} entry: {T.type}")
@@ -71,6 +74,7 @@ proc optionalField* [T](fr: var string, name: string): T = # general proc to han
             elif T is string:  return readStr(fr, length) # must be before zstring, since zstring also catches string
             elif T is zstring: return parseZString(fr)
             elif T is char:    return readChar(fr)
+            elif T is rgb:     return readRGB(fr)
             elif T is array[32, char]: return read32Chars(fr)
             elif T is (string, int32): return (readStr(fr, length), readInt32(fr))
             else:                      raise newException(ParseError, fmt"Unsupported type for {name} field: {T.type}")

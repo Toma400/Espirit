@@ -36,6 +36,9 @@ for i in esp.gmst:
 ----
 All records' references are stored in *records.nim*.
 
+*Note:* when parsing large files, using `-d:release` for your compiled
+executable is recommended.
+
 Right now, Espirit allows you to parse .esm and .esp files which have
 only records supported by the library - with other files being parsed
 in random extent. +

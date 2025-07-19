@@ -2,42 +2,22 @@ import ../records
 import ../common
 import ../parse
 
+const field_key = "PROB"
+
 proc parsePROB* (fr: var string): MWProbe =
-  #[ Parses single PROB key of .esm/.esp files and returns it as MWProbe object ]#
-  # optional handling uses `fr[0..3]` for scouting, instead of `readStr`/other
-  result.header = parseRecordHeader(fr)
+    #[ Parses single PROB key of .esm/.esp files and returns it as MWProbe object ]#
+    # optional handling uses `fr[0..3]` for scouting, instead of `readStr`/other
+    result.header = parseRecordHeader(fr)
 
-  if readStr(fr, 4) != "NAME":
-    raise newException(ParseError, "No NAME field found for PROB entry.")
-  discard readStr(fr, 4) # loose bytes
-  result.id = parseZString(fr)
+    result.id    = requiredField[zstring](fr, "NAME", field_key)
+    result.model = requiredField[zstring](fr, "MODL", field_key)
+    result.name  = optionalField[zstring](fr, "FNAM")
 
-  if readStr(fr, 4) != "MODL":
-    raise newException(ParseError, "No MODL field found for PROB entry: " & result.id)
-  discard readStr(fr, 4) # loose bytes
-  result.model = parseZString(fr)
+    if objectField(fr, "PBDT", result.data, result.id):
+      result.data = MWProbeData(weight:  readFloat32(fr),
+                                value:   readUint32(fr),
+                                quality: readFloat32(fr),
+                                uses:    readUint32(fr))
 
-  if fr[0..3] == "FNAM":
-    discard readStr(fr, 4) # FNAM
-    discard readStr(fr, 4) # loose bytes
-    result.name = parseZString(fr)
-
-  if readStr(fr, 4) != "PBDT":
-    raise newException(ParseError, "No PBDT field found for PROB entry: " & result.id)
-  discard readStr(fr, 4) # loose bytes
-  result.data = MWProbeData(weight:  readFloat32(fr),
-                            value:   readUint32(fr),
-                            quality: readFloat32(fr),
-                            uses:    readUint32(fr))
-
-  if len(fr) >= 4:
-    if fr[0..3] == "ITEX":
-      discard readStr(fr, 4) # ITEX
-      discard readStr(fr, 4) # loose bytes
-      result.icon = parseZString(fr)
-
-  if len(fr) >= 4:
-    if fr[0..3] == "SCRI":
-      discard readStr(fr, 4) # SCRI
-      discard readStr(fr, 4) # loose bytes
-      result.script = parseZString(fr)
+    result.icon   = optionalField[zstring](fr, "ITEX")
+    result.script = optionalField[zstring](fr, "SCRI")

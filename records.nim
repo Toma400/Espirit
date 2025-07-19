@@ -21,8 +21,10 @@ type
   MWRecordData* = object of RootObj
     size* : int # formally uint32, but is parsed into 'int' by 'getLength'
   MWRecord* = object of RootObj
-    header*  : MWRecordHeader
-    deleted* : bool # TODO: afaik this is not being setup during header reading, so by default is always false
+    header*   : MWRecordHeader
+    deleted*  : bool # TODO: afaik this is not being setup during header reading, so by default is always false
+    disabled* : bool # TODO: as above # initially disabled (only used internally, but see CELL)
+    blocked*  : bool # TODO: as above
 
   # === Records & subrecords ===
   MWClothData* = object of MWRecordData
@@ -58,6 +60,9 @@ type
   MWStatic* = object of MWRecord
     id*    : string # ID
     model* : string # model name
+  MWContainerObject* = object of MWRecordData
+    name*  : array[32, char]
+    count* : int32
   MWContainer* = object of MWRecord
     id*       : string      # ID
     model*    : string      # model name
@@ -65,7 +70,7 @@ type
     script*   : string = "" # script name (optional)
     weight*   : float32
     flags*    : uint32      # 0x1 = organic, 0x2 = respawns (organic only), 0x8 = unknown, always set
-    contents* : seq[(int32, array[32, char])] # see if struct isn't better
+    contents* : seq[MWContainerObject]
   MWActivator* = object of MWRecord
     id*       : string      # ID
     model*    : string      # model name
@@ -581,6 +586,63 @@ type
                 (int, MWAIPackageFollow),
                 (int, MWAIPackageTravel),
                 (int, MWAIPackageWander))
+  MWCellData* = object of MWRecordData
+    flags*  : uint32
+    grid_x* : int32
+    grid_y* : int32
+  MWAmbientLight* = object of MWRecordData
+    ambcol* : (uint8, uint8, # ambient colour
+               uint8, uint8)
+    suncol* : (uint8, uint8, # sunlight colour
+               uint8, uint8)
+    fogcol* : (uint8, uint8, # fog colour
+               uint8, uint8)
+    fogden* : float32        # fog density
+  MWReferencePosition* = object of MWRecordData
+    pos_x*    : float32
+    pos_y*    : float32
+    pos_z*    : float32
+    rot_x*    : float32
+    rot_y*    : float32
+  MWFormReference* = object of MWRecordData
+    ref_id*   : uint32           # reference ID
+    obj_id*   : string           # object ID / PlayerSaveGame
+    blocked*  : uint8            # value is always 0; present if Blocked is set in the reference's record header, otherwise absent
+    scale*    : float32          # scale, if applicable and not 1.0
+    npc*      : (string, string) # (NPC ID [if applicable], variable)
+    faction*  : (string, string) # (Faction ID [not light, NPC, or static], rank)
+    soul*     : string           # ID of soul in gem (soul gems only)
+    charge*   : float32          # enchantment charge (charged items with non-zero charges)
+    rem*      : (uint32,         # remaining usages (dependent on type) | health remaining (weapons and armor)
+                uint32,                                              # | uses remaining (locks, probes, repair items)
+                float32)                                             # | time remaining (lights)
+    value*    : uint32
+    dest*     : seq[MWCellTravelDestination]
+    lockdif*  : uint32           # lock difficulty
+    keyname*  : string           # key name
+    trpname*  : string           # trap name
+    disabled* : uint8            # reference is disabled (always 0). Like UNAM ('blocked'), this will be emitted if the relevant flag is set in the reference's
+                                 # record header; this may only be possible via scripting
+                                 # also, even if present in the file, the field appears to be ignored on loading
+    pos*      : MWReferencePosition
+  MWMovedReference* = object of MWRecordData
+    ref_id*  : uint32          # the same as reference in 'ref_obj'
+    cell*    : string          # name of the cell the reference was moved to (interior cells only)
+    coords*  : (int32, int32)  # coordinates of the cell the reference was moved to (exterior cells only)
+    ref_obj* : MWFormReference
+  MWCell* = object of MWRecord
+    name*    : string         # unlike other NAME fields, this is the localized, human-readable name of the cell, not a language-agnostic ID string
+                              # exterior regions are mostly empty strings; for these, the region name is used in the Construction Set
+    region*  : string         # region name (exterior and like-exterior only)
+    mapcol*  : (uint8, uint8, # map color   (exterior and like-exterior only)
+                uint8, uint8)
+    waterh*  : float32               # water height (interior only)
+    light*   : MWAmbientLight
+    ref_mv*  : seq[MWMovedReference] # moved references
+    ch_pers* : seq[MWFormReference]  # persistent children
+    ch_temp* : seq[MWFormReference]  # temporary children
+    ch_tcnt* : uint32                # temporary children (count)
+    data*    : MWCellData
 
 type
   MWCommonRecord* = MWCloth | MWMisc | MWStatic | MWIngredient  | MWContainer | MWBook        | MWLeveledItem | MWActivator | MWArmor |

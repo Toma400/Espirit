@@ -19,7 +19,7 @@ proc `$`* (sk: MWSkill | MWMagicEffect): string =
 proc `$`* (scr: MWScript): string =
     result = fmt"Name: {scr.sheader.name}"
 
-proc `$`* (scr: MWGlobal | MWStartScript | MWGameSetting): string =
+proc `$`* (scr: MWGlobal | MWStartScript | MWGameSetting | MWCell): string =
     result = fmt"Name: {scr.name}"
 
 proc `$`* (ch: array[32, char]): string =
@@ -30,6 +30,15 @@ proc `$`* (ch: array[32, char]): string =
 # TODO: make this actually work
 #proc checkFlags* (record: MWClass): seq[MWServicesTradesType] =
 #    return checkFlagsData[MWServicesTradesType, uint32](record.data.flagsac)
+
+proc checkFlags* (record: MWCell): seq[MWCellFlags] =
+    return checkFlagsData[MWCellFlags, uint32](record.data.flags)
+
+proc checkFlags* (record: MWContainer): seq[MWContainerFlags] =
+    return checkFlagsData[MWContainerFlags, uint32](record.flags)
+
+proc checkFlags* (record: MWLight): seq[MWLightFlags] =
+    return checkFlagsData[MWLightFlags, uint32](record.data.flags)
 
 proc checkFlags* (record: MWMagicEffect): seq[MWMagicEffectFlags] =
     return checkFlagsData[MWMagicEffectFlags, uint32](record.data.flags)
@@ -102,24 +111,30 @@ proc info* (record: MWIngredient): string =
     """
 
 proc info* (record: MWContainer): string =
-    proc getID(a: array[32, char]): string =
-      for i in a:
-        if i != '\0': result.add(i)
-
+    let flags = checkFlags(record)
     var options = ""
+    var flag    = "Flags: None"
+    # [ FLAGS ] #
+    if len(flags) > 1: # MWContainerFlags.Unknown is always true
+      flag = flag.replace(" None", "")
+      for fi in flags:
+        if fi != MWContainerFlags.Unknown:
+          flag.add("\n" & fmt"        - {fi}")
+    # [ OPTIONS ] #
     if record.script != "":
       options.add("\n    Script:  " & record.script)
+    # [ CONTENTS ] #
     if record.contents.len > 0:
       options.add("\n    Contents:")
       for it in record.contents:
-        options.add("\n" & fmt"    - {it[1].getID} [{it[0]}]")
-    # TODO: lacks some flags info
+        options.add("\n" & fmt"    - {$it.name} [{it.count}]")
     result = fmt"""
     ID:    {record.id}
     Name:  {record.name}
     Model: {record.model}
     =====
       Weight: {record.weight}
+      {flag}
     ====={options}
     """
 
@@ -135,7 +150,15 @@ proc info* (record: MWActivator | MWDoor): string =
     """
 
 proc info* (record: MWLight): string =
+    let flags = checkFlags(record)
     var options = ""
+    var flag    = "Flags: None"
+    # [ FLAGS ] #
+    if len(flags) > 0:
+      flag = flag.replace(" None", "")
+      for fi in flags:
+         flag.add("\n" & fmt"      - {fi}")
+    # [ OTHER ] #
     if record.script != "":
       options.add("\n    Script:  " & record.script)
     if record.sound != "":
@@ -152,6 +175,7 @@ proc info* (record: MWLight): string =
       Time:   {record.data.time}
       Radius: {record.data.radius}
       Color:  {record.data.color}
+      {flag}
     ====={options}
     """
 
@@ -798,4 +822,17 @@ proc info* (record: MWNPC): string =
     =====
     Carried items:{cr}{sp}{dt}
     ====={options}
+    """
+
+proc info* (record: MWCell): string =
+    let flags = checkFlags(record)
+    var flag  = "Flags: None"
+    # [ FLAGS ] #
+    if len(flags) > 0:
+      flag = flag.replace(" None", "")
+      for fi in flags:
+         flag.add("\n" & fmt"      - {fi}")
+    result = fmt"""
+    Name: {record.name}
+    {flag}
     """

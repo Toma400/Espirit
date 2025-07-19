@@ -39,6 +39,9 @@ proc readUint8* (s: var string, v: int = 1): uint8 =
 proc readFloat32* (s: var string, v: int = 4): float32 =
     return readFloat32(s.read(v), 0)
 
+proc readRGB* (s: var string): (int8, int8, int8, int8) =
+    return (readInt8(s), readInt8(s), readInt8(s), readInt8(s))
+
 proc parseZString* (fr: var string): string =
     #[ Reads from string pseudo-stream until finds end of string ]#
     while true:

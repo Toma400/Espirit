@@ -1,3 +1,4 @@
+import mwparsers/mwcell
 import mwparsers/mwstat
 import mwparsers/mwmisc
 import mwparsers/mwingr
@@ -38,6 +39,8 @@ import mwparsers/mwlevc
 import mwparsers/mwnpc
 import std/strformat
 import std/strutils
+import std/times
+import std/math
 import std/os
 import formats
 import records
@@ -67,6 +70,7 @@ type
     fin*    : bool                         # whether it was read fully to the last byte
     rem*    : string                       # remaining string (non-empty only if fin == true)
     # Plugin regular records
+    cell*   : seq[MWCell]            # cells (see `MWCell` in records.nim for reference)
     clot*   : seq[MWCloth]           # clothes (see `MWCloth` in records.nim for reference)
     misc*   : seq[MWMisc]            # misc items (see `MWMisc` in records.nim for reference)
     stat*   : seq[MWStatic]          # statics (see `MWStatic` in records.nim for reference)
@@ -115,6 +119,7 @@ proc `$`* (plugin: MWPlugin): string =
     Dependencies: {deps}
 
     Data:
+    * cells:             {plugin.cell.len}
     * statics:           {plugin.stat.len}
     * containers:        {plugin.cont.len}
     * activators:        {plugin.acti.len}
@@ -158,9 +163,13 @@ proc `$`* (plugin: MWPlugin): string =
 proc newPluginHeader(header_string: string): PluginHeader =
     result.bytestr = header_string
 
-proc newMWPlugin* (path: string): MWPlugin =
+proc newMWPlugin* (path: string, echo_index = false, echo_details = false): MWPlugin =
+    # echo arguments allow you to track parsing of MWPlugin (mostly useful for big files)
     let fs : FileStream = newFileStream(path)
     var fr : string     = fs.readAll()        # file read: string here == seq[bytes]
+    # echo variables
+    var ei : int        = 0
+    var em : string     = ""
 
     if readStr(fr, 4) != "TES3": # initial .esp check
       raise newException(ParseError, fmt"File scanned does not follow correct Morrowind .esp/.esm plugin record format. File path: {path}.")
@@ -187,6 +196,9 @@ proc newMWPlugin* (path: string): MWPlugin =
       if fr.len < 4:
         result.fin = false
         break
+      let time = cpuTime()
+      if echo_index and echo_details:
+        em = fmt"| Type: {fr[0..3]} | Remaining bits: {len(fr)}"
       case fr[0..3]: # checks record type (consumed during record header parsing)
         of "MAST": parseMAST(fr, result.deps)
         of "CLOT": result.clot.add(parseCLOT(fr))
@@ -203,7 +215,8 @@ proc newMWPlugin* (path: string): MWPlugin =
         of "LAND": result.land.add(parseLAND(fr))
         of "LTEX": result.ltex.add(parseLTEX(fr))
         of "REGN": result.regn.add(parseREGN(fr, result.deps))
-        of "CELL": discard readStr(fr, 12 + 29 + 4) # for `tesannwyn.esp` compatibility only (+4 for "CELL")
+        of "CELL": result.cell.add(parseCELL(fr))
+        # of "CELL": discard readStr(fr, 12 + 29 + 4) # for `tesannwyn.esp` compatibility only (+4 for "CELL")
         of "WEAP": result.weap.add(parseWEAP(fr))
         of "ARMO": result.armo.add(parseARMO(fr))
         of "REPA": result.repa.add(parseREPA(fr))
@@ -231,5 +244,9 @@ proc newMWPlugin* (path: string): MWPlugin =
         else:
           result.fin = false
           break
+
+      if echo_index:
+        ei += 1
+        echo fmt"Record {ei} parsed! Time: {trunc(cpuTime() - time)}s{em}"
 
     if result.fin == false: result.rem = fr

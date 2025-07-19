@@ -2,54 +2,22 @@ import ../records
 import ../common
 import ../parse
 
+const field_key = "CONT"
+
 proc parseCONT* (fr: var string): MWContainer =
-  #[ Parses single CONT key of .esm/.esp files and returns it as MWContainer object ]#
-  # optional handling uses `fr[0..3]` for scouting, instead of `readStr`/other
-  result.header = parseRecordHeader(fr)
+    #[ Parses single CONT key of .esm/.esp files and returns it as MWContainer object ]#
+    result.header = parseRecordHeader(fr)
 
-  if readStr(fr, 4) != "NAME":
-    raise newException(ParseError, "No NAME field found for CONT entry.")
-  discard readStr(fr, 4) # loose bytes
-  result.id = parseZString(fr)
+    result.id     = requiredField[zstring](fr, "NAME", field_key)
+    result.model  = requiredField[zstring](fr, "MODL", field_key)
+    result.name   = optionalField[zstring](fr, "FNAM")
+    result.weight = requiredField[float32](fr, "CNDT", field_key)
+    result.flags  = requiredField[uint32](fr, "FLAG", field_key)
 
-  if readStr(fr, 4) != "MODL":
-    raise newException(ParseError, "No MODL field found for CONT entry: " & result.id)
-  discard readStr(fr, 4) # loose bytes
-  result.model = parseZString(fr)
+    var npco: int
+    while repeatableObjectField(fr, "NPCO", npco):
+      result.contents.add(MWContainerObject(count:  readInt32(fr),
+                                            name:   read32Chars(fr),
+                                            length: npco))
 
-  if fr[0..3] == "FNAM":
-    discard readStr(fr, 4) # FNAM
-    discard readStr(fr, 4) # loose bytes
-    result.name = parseZString(fr)
-
-  if readStr(fr, 4) != "CNDT":
-    raise newException(ParseError, "No CNDT field found for CONT entry: " & result.id)
-  discard readStr(fr, 4) # loose bytes
-  result.weight = readFloat32(fr, 4)
-
-  if readStr(fr, 4) != "FLAG":
-    raise newException(ParseError, "No FLAG field found for CONT entry: " & result.id)
-  discard readStr(fr, 4) # loose bytes
-  result.flags = readUint32(fr, 4)
-
-  while true:
-    if len(fr) >= 4:
-      if fr[0..3] == "NPCO":
-        proc makeArray(size: static int, frb: var string): array[size, char] =
-          for x in result.mitems:
-            x = readChar(frb)
-
-        discard readStr(fr, 4) # NPCO
-        discard readStr(fr, 4) # loose bytes
-        result.contents.add((readInt32(fr, 4), makeArray(32, fr)))
-
-    if len(fr) >= 4:
-      if fr[0..3] == "NPCO":
-        continue
-    break # if nothing, SCRI or new record is found
-
-  if len(fr) >= 4:
-    if fr[0..3] == "SCRI":
-      discard readStr(fr, 4) # SCRI
-      discard readStr(fr, 4) # loose bytes
-      result.script = parseZString(fr)
+    result.script = optionalField[zstring](fr, "SCRI")

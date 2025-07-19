@@ -23,23 +23,11 @@ proc parseARMO* (fr: var string): MWArmor =
 
   result.icon = optionalField[zstring](fr, "ITEX")
 
-  # while repeatableObjectField(fr, "INDX", result.objs):
-  #   let biped_type = readUint8(fr); readStr(fr, 3) # 'biped' apparently allows for uint32, but only uses first byte in practice
-  #   result.objs.add(MWArmorObj(biped: biped_type, mname: readStr()), fname: )
-
-  while true:
-    if len(fr) >= 4:
-      var biped = MWArmorObj(biped: optionalField[uint8](fr, "INDX"))
-      if len(fr) >= 4: # sometimes INDX is empty, this let us not try to parse new record thinking it's part of INDX
-        if not (fr[0..3] in reserved_records): # <---/
-          biped.mname = optionalField[string](fr, "BNAM") # male name
-          biped.fname = optionalField[string](fr, "CNAM") # female name
-
-      result.objs.add(biped)
-
-    if len(fr) >= 4:
-      if fr[0..3] == "INDX":
-        continue
-    break # if nothing, ENAM or new record is found
+  var indx: int
+  while repeatableObjectField(fr, "INDX", indx):
+    result.objs.add(MWArmorObj(biped: readUint8(fr), # INDX is consumed during loop
+                               mname: optionalField[string](fr, "BNAM"),
+                               fname: optionalField[string](fr, "CNAM"),
+                               size:  indx))
 
   result.enchnm = optionalField[zstring](fr, "ENAM")
