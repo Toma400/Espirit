@@ -50,7 +50,7 @@ proc parseCREA* (fr: var string): MWCreature =
 
   result.spells = repeatableField[array[32, char]](fr, "NPCS")
 
-  if objectField(fr, "AIDT", result.data, result.id):
+  if objectField(fr, "AIDT", result.aidata, result.id):
     result.aidata = MWAIData(hello:   readUint8(fr),
                              unknown: readUint8(fr),
                              fight:   readUint8(fr),

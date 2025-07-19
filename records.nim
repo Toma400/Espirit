@@ -539,9 +539,51 @@ type
     nchance* : uint8
     count*   : uint32                # count of following creatures
     crea*    : seq[(string, uint16)] # list of (creature ID, PC level)
+  MWNPCDataACSet* = object of MWRecordData
+    level*   : uint16
+    disp*    : uint8
+    rep*     : uint8
+    rank*    : uint8
+    alg_pad* : uint8
+    gold*    : uint32
+  MWNPCDataACClear* = object of MWRecordData
+    level*   : uint16
+    attr*    : array[8, uint8]
+    skill*   : array[27, uint8]
+    alg_pad* : uint8
+    hp*      : uint16
+    mp*      : uint16
+    fatigue* : uint16
+    disp*    : uint8
+    rep*     : uint8
+    rank*    : uint8
+    alg_p2d* : uint8
+    gold*    : uint32
+  MWNPC* = object of MWRecord
+    id*      : string       # ID
+    name*    : string = ""  # name (optional)
+    model*   : string = ""  # model name (optional)
+    race*    : string
+    class*   : string
+    faction* : string
+    head*    : string
+    hair*    : string
+    script*  : string
+    flags*   : uint32
+    auc*     : bool         # additional check for whether `data` has autocalc set or not (used to check flags)
+    carry*   : seq[MWCarriedObject]
+    spells*  : seq[array[32, char]]
+    dest*    : seq[MWCellTravelDestination]
+    data*    : (MWNPCDataACClear, MWNPCDataACSet) # whether first or second is used is decided by 'autocalc' in flags
+    aidata*  : MWAIData
+    aipkg*   : ((int, MWAIPackageActivate), # int in tuple is order number (1..5), if not found it is -1
+                (int, MWAIPackageEscort),
+                (int, MWAIPackageFollow),
+                (int, MWAIPackageTravel),
+                (int, MWAIPackageWander))
 
 type
   MWCommonRecord* = MWCloth | MWMisc | MWStatic | MWIngredient  | MWContainer | MWBook        | MWLeveledItem | MWActivator | MWArmor |
                     MWLight | MWDoor | MWPotion | MWLandTexture | MWRegion    | MWRepairTool  | MWApparatus   | MWLock      | MWProbe |
                     MWBody  | MWRace | MWClass  | MWWeapon      | MWBirthsign | MWEnchantment | MWSpell       | MWFaction   | MWSound |
-                    MWCreature | MWLeveledCreature | MWSoundGenerator
+                              MWNPC             | MWCreature    | MWLeveledCreature | MWSoundGenerator

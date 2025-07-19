@@ -37,6 +37,9 @@ proc checkFlags* (record: MWMagicEffect): seq[MWMagicEffectFlags] =
 proc checkFlags* (record: MWSpell): seq[MWSpellDataFlags] =
     return checkFlagsData[MWSpellDataFlags, uint32](record.data.flags)
 
+proc checkFlags* (record: MWNPC): seq[MWNPCFlags] =
+    return checkFlagsData[MWNPCFlags, uint32](record.flags)
+
 proc info* (record: MWCloth): string =
     var options = ""
     if record.script != "":
@@ -721,4 +724,78 @@ proc info* (record: MWLeveledCreature): string =
     =====
     Count: {record.count}
     Creatures:{cr}
+    """
+
+proc info* (record: MWNPC): string =
+    # TODO: result.data[...] stuffs
+    # TODO: whole AIData
+    # TODO: AIPackages
+    let flags = checkFlags(record)
+    var options = "" # options
+    var ay      = "" # attributes
+    var sy      = "" # skills
+    var cr      = "" # carried items
+    var sp      = "" # spells
+    var dt      = "" # destinations
+    var rank    = "" # rank (to be overwritten later)
+    var fact    = "None"
+    var flag    = "Flags: None"
+    if len(record.faction) > 1: # overwrites faction if not None
+      fact = record.faction
+    if record.auc:
+      # [ ATTRIBUTES ] #
+      for ai in MWAttributeType.low..MWAttributeType.high:
+        if ai.ord != -1:
+          ay.add("\n" & fmt"        - {ai}: {record.data[0].attr[ai.ord]}")
+      # [ SKILLS ] #
+      for si in MWSkillType.low..MWSkillType.high:
+        if si.ord != -1:
+          sy.add("\n" & fmt"        - {si}: {record.data[0].skill[si.ord]}")
+      rank = $record.data[0].rank
+    else: # autocalc set
+      ay.add(" Autocalc")
+      sy.add(" Autocalc")
+      rank = $record.data[1].rank
+    # [ CARRIED ITEMS ] #
+    for it in record.carry:
+      cr.add("\n" & fmt"    - {$it.name}: {it.count}")
+    # [ SPELLS ] #
+    if len(record.spells) > 0:
+      sp.add("\n    Spells:")
+      for s in record.spells:
+        sp.add("\n" & fmt"    - {$s}")
+    # [ DESTINATIONS ] #
+    if len(record.dest) > 0:
+       dt.add("\n=====\n    Destinations:")
+       for d in record.dest:
+          dt.add("\n" & fmt"    - X: {d.pos_x} Y: {d.pos_y} Z: {d.pos_z} | Rotations: [{d.rot_x}, {d.rot_y}, {d.rot_z}]")
+          if d.prv_dest != "":
+            dt.add(fmt" | From cell: {d.prv_dest}")
+    # [ FLAGS ] #
+    if len(flags) > 1: # MWNPCFlags.Unknown is always true
+      flag = flag.replace(" None", "")
+      for fi in flags:
+        if fi != MWNPCFlags.Unknown:
+          flag.add("\n" & fmt"      - {fi}")
+    # [ OPTIONS ] #
+    if record.script != "":
+      options.add("\n    Script:  " & record.script)
+    result = fmt"""
+    ID:      {record.id}
+    Name:    {record.name}
+    Race:    {record.race}
+    Class:   {record.class}
+    Faction: {fact} [Rank: {rank}]
+    =====
+    Data:
+      - Attributes:{ay}
+      - Skills:    {sy}
+    {flag}
+    =====
+    Model path: {record.model}
+    Head:       {record.head}
+    Hair:       {record.hair}
+    =====
+    Carried items:{cr}{sp}{dt}
+    ====={options}
     """

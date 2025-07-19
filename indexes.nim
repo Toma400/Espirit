@@ -383,6 +383,14 @@ type
     Daedra   = 1
     Undead   = 2
     Humanoid = 3
+  MWNPCFlags* = enum
+    Female        = 1    # 0x0001
+    Essential     = 2    # 0x0002
+    Respawn       = 4    # 0x0004
+    Unknown       = 8    # 0x0008 | Always true
+    Autocalc      = 16   # 0x0010
+    BloodSkeleton = 1024 # 0x0400 | Blood Texture: Skeleton
+    BloodMetal    = 2048 # 0x0800 | Blood Texture: Metal Sparks
 
 const SERVICES* = [Training, Spellmaking, Enchanting]
 

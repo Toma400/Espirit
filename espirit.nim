@@ -35,6 +35,7 @@ import mwparsers/mwsoun
 import mwparsers/mwsndg
 import mwparsers/mwcrea
 import mwparsers/mwlevc
+import mwparsers/mwnpc
 import std/strformat
 import std/strutils
 import std/os
@@ -103,6 +104,7 @@ type
     sndg*   : seq[MWSoundGenerator]  # sound generators (see `MWSoundGenerator` in records.nim for reference)
     crea*   : seq[MWCreature]        # creatures (see `MWCreature` in records.nim for reference)
     levc*   : seq[MWLeveledCreature] # leveled creatures (see `MWLeveledCreature` in records.nim for reference)
+    npc*    : seq[MWNPC]             # NPCs (see `MWNPC` in records.nim for reference)
 
 proc `$`* (plugin: MWPlugin): string =
     var deps = ""
@@ -150,6 +152,7 @@ proc `$`* (plugin: MWPlugin): string =
     * sound generators:  {plugin.sndg.len}
     * creatures:         {plugin.crea.len}
     * leveled creatures: {plugin.levc.len}
+    * NPCs:              {plugin.npc.len}
     """.unindent()
 
 proc newPluginHeader(header_string: string): PluginHeader =
@@ -224,6 +227,7 @@ proc newMWPlugin* (path: string): MWPlugin =
         of "SNDG": result.sndg.add(parseSNDG(fr))
         of "CREA": result.crea.add(parseCREA(fr))
         of "LEVC": result.levc.add(parseLEVC(fr))
+        of "NPC_": result.npc.add(parseNPC(fr))
         else:
           result.fin = false
           break
