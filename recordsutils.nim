@@ -34,6 +34,9 @@ proc `$`* (ch: array[32, char]): string =
 proc checkFlags* (record: MWCell): seq[MWCellFlags] =
     return checkFlagsData[MWCellFlags, uint32](record.data.flags)
 
+proc checkFlags* (record: MWLeveledItem): seq[MWLeveledItemFlags] =
+    return checkFlagsData[MWLeveledItemFlags, uint32](record.flags)
+
 proc checkFlags* (record: MWContainer): seq[MWContainerFlags] =
     return checkFlagsData[MWContainerFlags, uint32](record.flags)
 
@@ -208,15 +211,23 @@ proc read* (record: MWBook): string =
     return mwFormat(record.text)
 
 proc info* (record: MWLeveledItem): string =
+    let flags = checkFlags(record)
     var items = ""
+    var flag  = "Flags: None"
     if record.count > 0:
       items.add("\n    Count: " & $record.count)
     if record.items.len > 0:
       items.add("\n    Items:")
     for i in record.items:
       items.add("\n    - " & fmt"{i[0]}: {i[1]}")
+    # [ FLAGS ] #
+    if len(flags) > 0:
+      flag = flag.replace(" None", "")
+      for fi in flags:
+         flag.add("\n" & fmt"      - {fi}")
     result = fmt"""
     ID:    {record.id}
+    {flag}
     ====={items}
     =====
     """
@@ -244,11 +255,57 @@ proc info* (record: MWLandTexture): string =
     Texture: {record.tex}
     """
 
-proc info* (record: MWLand): string =
+proc info* (record: MWLand, hgcell = false, hgmap = false, vtex = false, vcol = false, vtexn = false): string =
+    # TODO: flags
+    var tex_ind = "" # texture indices ('vtex')
+    var hg_wmap = "" # height for worldmap ('hgmap'/'wnam')
+    var hg_dcll = "" # height data for cell ('hgcell'/'vhgt'[1])
+    var vx_col  = "" # vertex colours
+    var vx_nmls = "" # vertex normals
+    var temp    = ""
+    if hgmap:
+      hg_wmap.add("\nWorldmap heights:")
+      for h in record.hgmap:
+        for hi in h:
+          temp.add($hi & "|")
+        hg_wmap.add("\n" & temp)
+        temp = ""
+    if hgcell:
+      hg_dcll.add("\nCell height data:")
+      for h in record.hgdata.hdata:
+        for hi in h:
+          temp.add($hi & "|")
+        hg_dcll.add("\n"); for _ in 1..len(temp): hg_dcll.add("-")
+        hg_dcll.add("\n" & temp)
+        temp = ""
+    if vtex:
+      tex_ind.add("\nTexture indices:")
+      for v in record.vtex:
+        for vi in v:
+          temp.add($vi & "|")
+        tex_ind.add("\n" & temp)
+        temp = ""
+    if vtexn:
+      vx_nmls.add("\nVertex normals (X, Y, Z):")
+      for v in record.vnormals:
+        for vi in v:
+          temp.add($vi & "|")
+        vx_nmls.add("\n"); for _ in 1..len(temp): vx_nmls.add("-")
+        vx_nmls.add("\n" & temp)
+        temp = ""
+    if vcol:
+      vx_col.add("\nVertex colours (RGB without alpha):")
+      for v in record.vcolors:
+        for vi in v:
+          temp.add($vi & "|")
+        vx_col.add("\n"); for _ in 1..30: vx_col.add("-")
+        vx_col.add("\n" & temp)
+        temp = ""
     result = fmt"""
     Coords: X: {record.coord[0]}
             Y: {record.coord[1]}
     Offset: {record.hgdata.hoffset}
+    ===={hg_wmap}{hg_dcll}{tex_ind}{vx_col}{vx_nmls}
     """
 
 proc info* (record: MWRegion): string =

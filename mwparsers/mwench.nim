@@ -6,7 +6,7 @@ const field_key = "ENCH"
 
 proc parseENCH* (fr: var string): MWEnchantment =
     #[ Parses single ENCH key of .esm/.esp files and returns it as MWEnchantment object ]#
-    result.header = parseRecordHeader(fr)
+    result.header = parseRecordHeader(fr, result)
 
     result.id    = requiredField[zstring](fr, "NAME", field_key)
 

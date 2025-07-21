@@ -6,7 +6,7 @@ const field_key = "ALCH"
 
 proc parseALCH* (fr: var string): MWPotion =
     #[ Parses single ALCH key of .esm/.esp files and returns it as MWPotion object ]#
-    result.header = parseRecordHeader(fr)
+    result.header = parseRecordHeader(fr, result)
 
     result.id     = requiredField[zstring](fr, "NAME", field_key)
     result.model  = optionalField[zstring](fr, "MODL")

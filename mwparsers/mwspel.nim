@@ -6,7 +6,7 @@ const field_key = "SPEL"
 
 proc parseSPEL* (fr: var string): MWSpell =
     #[ Parses single SPEL key of .esm/.esp files and returns it as MWSpell object ]#
-    result.header = parseRecordHeader(fr)
+    result.header = parseRecordHeader(fr, result)
 
     result.id   = requiredField[zstring](fr, "NAME", field_key)
     result.name = optionalField[zstring](fr, "FNAM")

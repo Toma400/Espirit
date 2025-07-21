@@ -198,7 +198,7 @@ proc newMWPlugin* (path: string, echo_index = false, echo_details = false): MWPl
         break
       let time = cpuTime()
       if echo_index and echo_details:
-        em = fmt"| Type: {fr[0..3]} | Remaining bits: {len(fr)}"
+        em = fmt" | Type: {fr[0..3]} | Remaining bytes: {len(fr)}"
       case fr[0..3]: # checks record type (consumed during record header parsing)
         of "MAST": parseMAST(fr, result.deps)
         of "CLOT": result.clot.add(parseCLOT(fr))

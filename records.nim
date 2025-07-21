@@ -22,9 +22,10 @@ type
     size* : int # formally uint32, but is parsed into 'int' by 'getLength'
   MWRecord* = object of RootObj
     header*   : MWRecordHeader
-    deleted*  : bool # TODO: afaik this is not being setup during header reading, so by default is always false
-    disabled* : bool # TODO: as above # initially disabled (only used internally, but see CELL)
-    blocked*  : bool # TODO: as above
+    deleted*  : bool
+    disabled* : bool
+    blocked*  : bool
+    persrf*   : bool # persistent reference
 
   # === Records & subrecords ===
   MWClothData* = object of MWRecordData
@@ -32,7 +33,7 @@ type
     weight* : float32 # weight
     value*  : uint16  # value
     ench*   : uint16  # enchantment points
-  MWClothObj* = object
+  MWClothObj* = object of MWRecordData
     #[ TODO: Is this a struct with `mname/fname`, or are those separate? Ref: https://en.uesp.net/wiki/Morrowind_Mod:Mod_File_Format/CLOT ]#
     biped* : uint8       # biped object (please refer to `MWBipedType` enum in -indexes.nim-)
     mname* : string = "" # male name for cloth (optional)
@@ -141,11 +142,11 @@ type
     icon*   : string = "" # icon name (optional)
     data*   : MWBookData
   MWLeveledItem* = object of MWRecord
-    id*     : string      # ID
-    data*   : uint32      # flags (0x1 = Calculate for each item in count | 0x2 = Calculate from all levels <= PC's level)
-    nnam*   : uint8       # chance none?
-    count*  : uint32 = 0  # count of following items (optional)
-    items*  : seq[(string, uint16)] # (item name, PC level)
+    id*      : string      # ID
+    flags*   : uint32      # flags (0x1 = Calculate for each item in count | 0x2 = Calculate from all levels <= PC's level)
+    nchance* : uint8       # chance none?
+    count*   : uint32 = 0  # count of following items (optional)
+    items*   : seq[(string, uint16)] # (item name, PC level)
   MWDoor* = object of MWRecord
     id*       : string      # ID
     model*    : string      # model name
@@ -161,20 +162,20 @@ type
     junk*     : array[3, uint8]
   MWLand* = object of MWRecord
     coord*    : (int32, int32)
-    data*     : uint32                                   # data types included; if the relevant bit isn't set, the related fields will not be loaded, even if present
-                                                           # 0x01 = Includes VNML, VHGT and WNAM
-                                                           # 0x02 = Includes VCLR
-                                                           # 0x04 = Includes VTEX
-    vnormals* : array[65, array[65, (int8, int8, int8)]] # (x, y, z); y-direction of the data is from the bottom up
-    hgdata*   : MWLandHeightData                         # heights for terrain
-    hgmap*    : array[9,  array[9, uint8]]               # heights for map
-    vcolors*  : array[65, array[65, (uint8, uint8, uint8)]]
+    flags*    : uint32         # data types included; if the relevant bit isn't set, the related fields will not be loaded, even if present
+                                 # 0x01 = Includes VNML, VHGT and WNAM
+                                 # 0x02 = Includes VCLR
+                                 # 0x04 = Includes VTEX
+    vnormals* : array[65, array[65, (int8, int8, int8)]]    # (x, y, z); y-direction of the data is from the bottom up
+    hgdata*   : MWLandHeightData                            # heights for terrain
+    hgmap*    : array[9,  array[9, uint8]]                  # heights for map
+    vcolors*  : array[65, array[65, (uint8, uint8, uint8)]] # doesn't contain alpha
     vtex*     : array[16, array[16, uint16]]
   MWLandTexture* = object of MWRecord
     id*       : string      # ID
     index*    : uint32      # although nominally a uint32, uint16s are used as indices in LAND records, so these are effectively restricted to uint16 values
     tex*      : string
-  MWRegionSoundChances* = object
+  MWRegionSoundChances* = object of MWRecordData
     name*     : array[32, char]
     chance*   : uint8
   MWRegion* = object of MWRecord
@@ -246,14 +247,14 @@ type
     index*    : uint32      # index
     descr*    : string = "" # description
     data*     : MWSkillData
-  MWScriptHeader* = object
+  MWScriptHeader* = object of MWRecordData
     name*     : array[32, char]
     numshort* : uint32 # NumShorts
     numlong*  : uint32 # NumLongs
     numfloat* : uint32 # NumFloats
     size_sdt* : uint32 # ScriptDataSize (same as size of SCDT)
     size_lvr* : uint32 # LocalVarSize (same as size of SCVR)
-  MWScriptVariables* = object
+  MWScriptVariables* = object of MWRecordData
     raw*    : string # raw string representation
     shorts* : seq[string]
     longs*  : seq[string]
@@ -604,18 +605,19 @@ type
     pos_z*    : float32
     rot_x*    : float32
     rot_y*    : float32
+    rot_z*    : float32
   MWFormReference* = object of MWRecordData
     ref_id*   : uint32           # reference ID
     obj_id*   : string           # object ID / PlayerSaveGame
     blocked*  : uint8            # value is always 0; present if Blocked is set in the reference's record header, otherwise absent
     scale*    : float32          # scale, if applicable and not 1.0
     npc*      : (string, string) # (NPC ID [if applicable], variable)
-    faction*  : (string, string) # (Faction ID [not light, NPC, or static], rank)
+    faction*  : (string, uint32) # (Faction ID [not light, NPC, or static], rank)
     soul*     : string           # ID of soul in gem (soul gems only)
     charge*   : float32          # enchantment charge (charged items with non-zero charges)
-    rem*      : (uint32,         # remaining usages (dependent on type) | health remaining (weapons and armor)
-                uint32,                                              # | uses remaining (locks, probes, repair items)
-                float32)                                             # | time remaining (lights)
+    rem*      : string           # remaining usages (dependent on type) | uint32  | health remaining (weapons and armor)
+                                 # string contains bytes                | uint32  | uses remaining (locks, probes, repair items)
+                                 # to be converted later                | float32 | time remaining (lights)
     value*    : uint32
     dest*     : seq[MWCellTravelDestination]
     lockdif*  : uint32           # lock difficulty

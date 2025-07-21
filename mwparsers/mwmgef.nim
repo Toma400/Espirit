@@ -6,7 +6,7 @@ const field_key = "MGEF"
 
 proc parseMGEF* (fr: var string): MWMagicEffect =
     #[ Parses single MGEF key of .esm/.esp files and returns it as MWMagicEffect object ]#
-    result.header = parseRecordHeader(fr)
+    result.header = parseRecordHeader(fr, result)
 
     result.index = requiredField[uint32](fr, "INDX", field_key)
 

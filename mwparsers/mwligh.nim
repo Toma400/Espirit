@@ -7,7 +7,7 @@ const field_key = "LIGH"
 proc parseLIGH* (fr: var string): MWLight =
     #[ Parses singel LIGH key of .esm/.esp files and returns it as MWLight object ]#
     # optional handling uses `fr[0..3]` for scouting, instead of `readStr`/other
-    result.header = parseRecordHeader(fr)
+    result.header = parseRecordHeader(fr, result)
 
     result.id     = requiredField[zstring](fr, "NAME", field_key)
     result.model  = requiredField[zstring](fr, "MODL", field_key)

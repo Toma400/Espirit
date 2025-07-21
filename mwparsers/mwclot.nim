@@ -6,7 +6,7 @@ const field_key = "CLOT"
 
 proc parseCLOT* (fr: var string): MWCloth =
     #[ Parses singel CLOT key of .esm/.esp files and returns it as MWCloth object ]#
-    result.header = parseRecordHeader(fr)
+    result.header = parseRecordHeader(fr, result)
 
     result.id    = requiredField[zstring](fr, "NAME", field_key)
     result.model = requiredField[zstring](fr, "MODL", field_key)
@@ -23,7 +23,7 @@ proc parseCLOT* (fr: var string): MWCloth =
 
     var indx: int
     while repeatableObjectField(fr, "INDX", indx):
-      result.objs.add(MWArmorObj(biped: readUint8(fr), # INDX is consumed during loop
+      result.objs.add(MWClothObj(biped: readUint8(fr), # INDX is consumed during loop
                                  mname: optionalField[string](fr, "BNAM"),
                                  fname: optionalField[string](fr, "CNAM"),
                                  size:  indx))

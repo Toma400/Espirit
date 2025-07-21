@@ -5,6 +5,11 @@ import std/enumutils
 import std/bitops
 
 type
+  MWRecordFlags* = enum
+    Deleted       = 32   # | 0x0020 = used internally, usually flagged in files by DELE field instead
+    PersistentRef = 1024 # | 0x0400 = persistent reference
+    DisabledInit  = 2048 # | 0x0800 = initially disabled (only used internally, but see CELL)
+    Blocked       = 8192 # | 0x2000
   MWClothType* = enum
     Pants      = 0
     Shoes      = 1
@@ -199,6 +204,9 @@ type
     sEffectSummonCreature03         = 140 # Call Bonewolf (BM)
     sEffectSummonCreature04         = 141 # BM/TR
     sEffectSummonCreature05         = 142 # BM/TR
+  MWLeveledItemFlags* = enum
+    CalculateEachItemInCount        = 1 # | 0x1
+    CalculateFromAllLevelsVSPCLevel = 2 # | 0x2
   MWLightType* = enum
     Dynamic      = 1
     CanCarry     = 2

@@ -13,7 +13,7 @@ proc getRankData(fr: var string): array[10, MWRankData] =
 
 proc parseFACT* (fr: var string): MWFaction =
     #[ Parses single FACT key of .esm/.esp files and returns it as MWFaction object ]#
-    result.header = parseRecordHeader(fr)
+    result.header = parseRecordHeader(fr, result)
 
     result.id    = requiredField[zstring](fr, "NAME", field_key)
     result.name  = requiredField[zstring](fr, "FNAM", field_key)

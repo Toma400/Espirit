@@ -8,7 +8,7 @@ const field_key = "NPC_"
 
 proc parseNPC* (fr: var string): MWNPC =
     #[ Parses single NPC_ key of .esm/.esp files and returns it as MWNPC object ]#
-    result.header = parseRecordHeader(fr)
+    result.header = parseRecordHeader(fr, result)
 
     result.id      = requiredField[zstring](fr, "NAME", field_key)
     result.model   = optionalField[zstring](fr, "MODL")

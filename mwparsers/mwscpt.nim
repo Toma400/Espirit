@@ -7,7 +7,7 @@ const field_key = "SCPT"
 proc parseSCPT* (fr: var string): MWScript =
     #[ Parses single SCPT key of .esm/.esp files and returns it as MWScript object ]#
     # optional handling uses `fr[0..3]` for scouting, instead of `readStr`/other
-    result.header = parseRecordHeader(fr)
+    result.header = parseRecordHeader(fr, result)
 
     if objectField(fr, "SCHD", result.sheader):
       result.sheader = MWScriptHeader(name:     read32Chars(fr),

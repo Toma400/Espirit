@@ -6,7 +6,7 @@ const field_key = "RACE"
 
 proc parseRACE* (fr: var string): MWRace =
     #[ Parses single RACE key of .esm/.esp files and returns it as MWRace object ]#
-    result.header = parseRecordHeader(fr)
+    result.header = parseRecordHeader(fr, result)
 
     result.id   = requiredField[zstring](fr, "NAME", field_key)
     result.name = optionalField[zstring](fr, "FNAM")

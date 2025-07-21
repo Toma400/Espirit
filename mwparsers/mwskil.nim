@@ -6,7 +6,7 @@ const field_key = "SKIL"
 
 proc parseSKIL* (fr: var string): MWSkill =
     #[ Parses singel SKIL key of .esm/.esp files and returns it as MWSkill object ]#
-    result.header = parseRecordHeader(fr)
+    result.header = parseRecordHeader(fr, result)
 
     result.index = requiredField[uint32](fr, "INDX", field_key)
 

@@ -2,20 +2,27 @@
 # Collect common procedures that will be used in future Espirit versions
 # to ensure better code practices & readability
 import strformat
+import indexes
 import records
 import parse
 
 type
   # [ FILTER TYPES ] | Do not use below types in records' fields, only in [T] of procs below!
-  zstring* = string                   # used only to differentiate between MW's string and zstring for [T] handling
-  rgb*     = (int8, int8, int8, int8) # shortcut
+  zstring* = string                       # used only to differentiate between MW's string and zstring for [T] handling
+  rgb*     = (uint8, uint8, uint8, uint8) # shortcut
 
-proc parseRecordHeader* (fr: var string): MWRecordHeader = # parses first 12 'loose bytes'
+proc parseRecordHeader* (fr: var string, rc: var MWRecord): MWRecordHeader = # parses first 12 'loose bytes'
     for _ in 1..4:
       result.name.add(readChar(fr))
     result.size  = readUint32(fr)
     result.dummy = readUint32(fr)
     result.flags = readUint32(fr)
+
+    let flags = checkFlagsData[MWRecordFlags, uint32](result.flags)
+    rc.deleted  = Deleted       in flags
+    rc.disabled = DisabledInit  in flags
+    rc.blocked  = Blocked       in flags
+    rc.persrf   = PersistentRef in flags
 
 proc getLength* (fr: var string): int = # to handle the commonly discarded 'loose bytes', usually containing lengths
     return int(readUint32(fr))
@@ -55,6 +62,7 @@ proc requiredField* [T](fr: var string, name: string, entry: string): T = # gene
         elif T is char:    return readChar(fr)
         elif T is rgb:     return readRGB(fr)
         elif T is array[32, char]: return read32Chars(fr)
+        elif T is (int32, int32):  return (readInt32(fr), readInt32(fr))
         elif T is (string, int32): return (readStr(fr, length), readInt32(fr))
         else:                      raise newException(ParseError, fmt"Unsupported type for {name} field for {entry} entry: {T.type}")
 
@@ -76,6 +84,7 @@ proc optionalField* [T](fr: var string, name: string): T = # general proc to han
             elif T is char:    return readChar(fr)
             elif T is rgb:     return readRGB(fr)
             elif T is array[32, char]: return read32Chars(fr)
+            elif T is (int32, int32):  return (readInt32(fr), readInt32(fr))
             elif T is (string, int32): return (readStr(fr, length), readInt32(fr))
             else:                      raise newException(ParseError, fmt"Unsupported type for {name} field: {T.type}")
 

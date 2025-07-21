@@ -6,7 +6,7 @@ const field_key = "ARMO"
 
 proc parseARMO* (fr: var string): MWArmor =
   #[ Parses single ARMO key of .esm/.esp files and returns it as MWArmor object ]#
-  result.header = parseRecordHeader(fr)
+  result.header = parseRecordHeader(fr, result)
 
   result.id     = requiredField[zstring](fr, "NAME", field_key)
   result.model  = requiredField[zstring](fr, "MODL", field_key)

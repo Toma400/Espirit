@@ -5,7 +5,7 @@ const field_key = "BSGN"
 
 proc parseBSGN* (fr: var string): MWBirthsign =
     #[ Parses single BSGN key of .esm/.esp files and returns it as MWBirthsign object ]#
-    result.header = parseRecordHeader(fr)
+    result.header = parseRecordHeader(fr, result)
 
     result.id      = requiredField[zstring](fr, "NAME", field_key)
     result.name    = optionalField[zstring](fr, "FNAM")
