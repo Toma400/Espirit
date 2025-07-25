@@ -4,14 +4,15 @@ import espirit/mwparsers/[
     mwsscr, mwbody, mwgmst, mwarmo, mwweap, mwclas, mwrace, mwbsgn, mwmgef, mwench, mwspel,
     mwfact, mwsoun, mwsndg, mwcrea, mwlevc, mwdial, mwpgrd, mwnpc
 ]
-import espirit/[formats, records, recordsutils, parse]
+import espirit/[formats, records, recordsutils, indexes, parse]
 import std/[strformat, strutils, times, math, os]
 import streams
 import tables
 
+export espirit/records
+export espirit/recordsutils
+export espirit/indexes
 export tables
-export records
-export recordsutils
 
 type
   PluginHeader = object
