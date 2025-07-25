@@ -178,14 +178,21 @@ type
   MWRegionSoundChances* = object of MWRecordData
     name*     : array[32, char]
     chance*   : uint8
+  MWRegionWeatherChances* = object of MWRecordData
+    clear*    : uint8
+    cloudy*   : uint8
+    foggy*    : uint8
+    overcast* : uint8
+    rain*     : uint8
+    thunder*  : uint8
+    ash*      : uint8
+    blight*   : uint8
+    snow*     : uint8 # Bloodmoon/Tribunal only, set to 0 if not available
+    blizzard* : uint8 # Bloodmoon/Tribunal only, set to 0 if not available
   MWRegion* = object of MWRecord
     id*       : string                    # ID
     name*     : string                    # name
-    weather*  : (uint8, uint8,            # weather
-                 uint8, uint8,
-                 uint8, uint8,
-                 uint8, uint8,
-                 uint8, uint8)              # Bloodmoon/Tribunal only, set to 0 if not available
+    weather*  : MWRegionWeatherChances
     sleep_cr* : string                    # sleep creature
     map_col*  : (uint8, uint8,            # map colour
                  uint8, uint8)

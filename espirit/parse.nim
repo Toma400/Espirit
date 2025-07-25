@@ -1,6 +1,4 @@
 import flatty/binny
-import std/strutils
-import std/parseutils
 
 # yields fragment of string [0..i] then removes it
 proc read* (s: var string, i: int): string =

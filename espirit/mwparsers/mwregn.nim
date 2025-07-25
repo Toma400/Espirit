@@ -21,17 +21,27 @@ proc parseREGN* (fr: var string, deps: OrderedTable[string, uint64]): MWRegion =
 
     if objectField(fr, "WEAT", result.weather, result.id):
       if exp[0] or exp[1]:
-        result.weather = (readUint8(fr), readUint8(fr),
-                          readUint8(fr), readUint8(fr),
-                          readUint8(fr), readUint8(fr),
-                          readUint8(fr), readUint8(fr),
-                          readUint8(fr), readUint8(fr))
+        result.weather = MWRegionWeatherChances(clear:    readUint8(fr),
+                                                cloudy:   readUint8(fr),
+                                                foggy:    readUint8(fr),
+                                                overcast: readUint8(fr),
+                                                rain:     readUint8(fr),
+                                                thunder:  readUint8(fr),
+                                                ash:      readUint8(fr),
+                                                blight:   readUint8(fr),
+                                                snow:     readUint8(fr),
+                                                blizzard: readUint8(fr))
       else:
-        result.weather = (readUint8(fr), readUint8(fr),
-                          readUint8(fr), readUint8(fr),
-                          readUint8(fr), readUint8(fr),
-                          readUint8(fr), readUint8(fr),
-                          0,             0)
+        result.weather = MWRegionWeatherChances(clear:    readUint8(fr),
+                                                cloudy:   readUint8(fr),
+                                                foggy:    readUint8(fr),
+                                                overcast: readUint8(fr),
+                                                rain:     readUint8(fr),
+                                                thunder:  readUint8(fr),
+                                                ash:      readUint8(fr),
+                                                blight:   readUint8(fr),
+                                                snow:     0,
+                                                blizzard: 0)
 
     result.sleep_cr = optionalField[zstring](fr, "BNAM")
     result.map_col  = requiredField[rgb](fr, "CNAM", field_key)

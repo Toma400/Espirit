@@ -313,16 +313,16 @@ proc info* (record: MWRegion): string =
     ID:      {record.id}
     Name:    {record.name}
     Weather:
-      - Clear    [{record.weather[0]}]
-      - Cloudy   [{record.weather[1]}]
-      - Foggy    [{record.weather[2]}]
-      - Overcast [{record.weather[3]}]
-      - Rain     [{record.weather[4]}]
-      - Thunder  [{record.weather[5]}]
-      - Ash      [{record.weather[6]}]
-      - Blight   [{record.weather[7]}]
-      - Snow     [{record.weather[8]}]
-      - Blizzard [{record.weather[9]}]
+      - Clear    [{record.weather.clear}]
+      - Cloudy   [{record.weather.cloudy}]
+      - Foggy    [{record.weather.foggy}]
+      - Overcast [{record.weather.overcast}]
+      - Rain     [{record.weather.rain}]
+      - Thunder  [{record.weather.thunder}]
+      - Ash      [{record.weather.ash}]
+      - Blight   [{record.weather.blight}]
+      - Snow     [{record.weather.snow}]
+      - Blizzard [{record.weather.blizzard}]
     Map: (R: {record.map_col[0]}, G: {record.map_col[1]}, B: {record.map_col[2]}, A: {record.map_col[3]})
     """
     # TODO: Not all values added # SOUND CHANCES / SLEEP CREATURE? !!!
