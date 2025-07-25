@@ -52,6 +52,12 @@ proc checkFlags* (record: MWSpell): seq[MWSpellDataFlags] =
 proc checkFlags* (record: MWNPC): seq[MWNPCFlags] =
     return checkFlagsData[MWNPCFlags, uint32](record.flags)
 
+proc info* (record: MWStatic): string =
+    result = fmt"""
+    ID:    {record.id}
+    Model: {record.model}
+    """
+
 proc info* (record: MWCloth): string =
     var options = ""
     if record.script != "":
@@ -885,14 +891,33 @@ proc info* (record: MWCell): string =
     # TODO: I bet there's more data to CELL record
     let flags = checkFlags(record)
     var flag  = "Flags: None"
+    var data  = ""
     # [ FLAGS ] #
     if len(flags) > 0:
       flag = flag.replace(" None", "")
       for fi in flags:
          flag.add("\n" & fmt"      - {fi}")
+    if (Interior notin flags) or (BehaveLikeExt in flags):
+      data.add(fmt"""
+      Region:     {record.region}
+      Map Colour: {record.mapcol}
+      """.dedent(2))
+    if Interior in flags:
+      data.add(fmt"""
+      Water Height: {record.waterh}
+      Ambient Light:
+        - Ambient Colour:  {record.light.ambcol}
+        - Sunlight Colour: {record.light.suncol}
+        - Fog Colour:      {record.light.fogcol}
+        - Fog Density:     {record.light.fogden}
+      """.dedent(2))
     result = fmt"""
-    Name: {record.name}
+    Name: {record.name}{data}
     {flag}
+    References:
+      - Moved References:    {len(record.ref_mv)}
+      - Persistent Children: {len(record.ch_pers)}
+      - Temporary Children:  {len(record.ch_temp)} (expected: {record.ch_tcnt})
     """
 
 proc info* (record: MWPathgrid): string =
