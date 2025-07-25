@@ -1,0 +1,64 @@
+== Todo
+While the base features of Espirit are done, there's still some features that
+Espirit could get to improve its experience. Below is (fairly loose) planning
+on what next versions of the library may get.
+
+=== Features
+* MVP
+** [x] Recognition of record deletion
+** [ ] Allow subrecords to be read in any order (compatibility matters)
+** [ ] Improve performance, especially on bigger files
+*** [ ] Make parsing through multiple processes (e.g. process pool)
+* High priority, but not required
+** [ ] Allow `AND` on plugins to produce new plugin (comparable to merge)
+** [ ] Export/serialize .esm/.esp (e.g. after changes)
+** [ ] Convert between .esm/.esp
+** [ ] JSONify plugin data
+* Nice-to-have
+** [ ] Make all records/subrecords have their length included
+** [ ] Abstract the records even more, so the code can be cleaner and more modular
+
+=== Records
+This is list of records included in .esm/.esp files of Morrowind:
+
+* [x] ARMO (armor)
+* [x] ALCH (potion)
+* [x] ACTI (activator)
+* [x] APPA (alchemy apparatus)
+* [x] BODY (body part)
+* [x] BOOK (book)
+* [x] BSGN (birthsign)
+* [x] CELL (cell)
+* [x] CLAS (class)
+* [x] CLOT (cloth)
+* [x] CREA (creature)
+* [x] DIAL (dialogue topic)
+* [x] DOOR (door)
+* [x] ENCH (enchantment)
+* [x] FACT (faction)
+* [x] GLOB (global)
+* [x] GMST (game setting)
+* [x] INFO (dialogue response)
+* [x] LAND (land)
+* [x] LEVC (leveled creature)
+* [x] LEVI (leveled item)
+* [x] LIGH (light)
+* [x] LOCK (lockpicking item)
+* [x] LTEX (land texture)
+* [x] INGR (ingredient)
+* [x] MGEF (magic effect)
+* [x] MISC (misc)
+* [x] NPC_ (npc)
+* [x] PGRD (path grid)
+* [x] PROB (probe item)
+* [x] RACE (race)
+* [x] REGN (region)
+* [x] REPA (repair item)
+* [x] SCPT (script)
+* [x] SKIL (skill)
+* [x] SNDG (sound generator)
+* [x] SOUN (sound)
+* [x] SPEL (spell)
+* [x] SSCR (start script)
+* [x] STAT (static)
+* [x] WEAP (weapon)

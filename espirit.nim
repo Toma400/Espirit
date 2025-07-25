@@ -36,6 +36,8 @@ import mwparsers/mwsoun
 import mwparsers/mwsndg
 import mwparsers/mwcrea
 import mwparsers/mwlevc
+import mwparsers/mwdial
+import mwparsers/mwpgrd
 import mwparsers/mwnpc
 import std/strformat
 import std/strutils
@@ -53,11 +55,6 @@ export tables
 export records
 export recordsutils
 
-# srcs: https://stackoverflow.com/questions/33107332/writing-reading-binary-file-in-nim
-#       https://stackoverflow.com/questions/26845538/parsing-a-binary-file-what-is-a-modern-way
-# uesp: https://en.uesp.net/wiki/Morrowind_Mod:Mod_File_Format
-# dscd: https://discord.com/channels/210394599246659585/210894929868619778/1211364857169977344
-
 type
   PluginHeader = object
     bytestr* : string
@@ -68,7 +65,7 @@ type
     head*   : PluginHeader
     deps*   : OrderedTable[string, uint64] # esm dependencies as [.esm file, bytes size]
     fin*    : bool                         # whether it was read fully to the last byte
-    rem*    : string                       # remaining string (non-empty only if fin == true)
+    rem*    : string                       # remaining string (non-empty only if fin == false)
     # Plugin regular records
     cell*   : seq[MWCell]            # cells (see `MWCell` in records.nim for reference)
     clot*   : seq[MWCloth]           # clothes (see `MWCloth` in records.nim for reference)
@@ -108,6 +105,9 @@ type
     sndg*   : seq[MWSoundGenerator]  # sound generators (see `MWSoundGenerator` in records.nim for reference)
     crea*   : seq[MWCreature]        # creatures (see `MWCreature` in records.nim for reference)
     levc*   : seq[MWLeveledCreature] # leveled creatures (see `MWLeveledCreature` in records.nim for reference)
+    pgrd*   : seq[MWPathgrid]        # pathgrids (see `MWPathgrid` in records.nim for reference)
+    dial*   : seq[MWDialogue]        # dialogues (see `MWDialogue` in records.nim for reference)
+    info*   : seq[MWDialogueTopic]   # dialogue topics (see `MWDialogueTopic` in records.nim for reference)
     npc*    : seq[MWNPC]             # NPCs (see `MWNPC` in records.nim for reference)
 
 proc `$`* (plugin: MWPlugin): string =
@@ -157,6 +157,9 @@ proc `$`* (plugin: MWPlugin): string =
     * sound generators:  {plugin.sndg.len}
     * creatures:         {plugin.crea.len}
     * leveled creatures: {plugin.levc.len}
+    * pathgrids:         {plugin.pgrd.len}
+    * dialogues:         {plugin.dial.len}
+    * dialogue topics:   {plugin.info.len}
     * NPCs:              {plugin.npc.len}
     """.unindent()
 
@@ -216,7 +219,6 @@ proc newMWPlugin* (path: string, echo_index = false, echo_details = false): MWPl
         of "LTEX": result.ltex.add(parseLTEX(fr))
         of "REGN": result.regn.add(parseREGN(fr, result.deps))
         of "CELL": result.cell.add(parseCELL(fr))
-        # of "CELL": discard readStr(fr, 12 + 29 + 4) # for `tesannwyn.esp` compatibility only (+4 for "CELL")
         of "WEAP": result.weap.add(parseWEAP(fr))
         of "ARMO": result.armo.add(parseARMO(fr))
         of "REPA": result.repa.add(parseREPA(fr))
@@ -240,6 +242,9 @@ proc newMWPlugin* (path: string, echo_index = false, echo_details = false): MWPl
         of "SNDG": result.sndg.add(parseSNDG(fr))
         of "CREA": result.crea.add(parseCREA(fr))
         of "LEVC": result.levc.add(parseLEVC(fr))
+        of "PGRD": result.pgrd.add(parsePGRD(fr))
+        of "DIAL": result.dial.add(parseDIAL(fr, result.info))                    # Includes also INFO
+        of "INFO": raise newException(ParseError, fmt"INFO record out of order!") # INFO should always be parsed by DIAL
         of "NPC_": result.npc.add(parseNPC(fr))
         else:
           result.fin = false

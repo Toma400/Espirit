@@ -15,6 +15,7 @@ proc parseFormReference(fr: var string): MWFormReference =
     result.charge  = optionalField[float32](fr, "XCHG")
     if fr[0..3] == "INTV":   # optional
       discard readStr(fr, 4) # consumes INTV
+      discard readStr(fr, 4) # consumes length ('loose bytes')
       result.rem = readStr(fr, 4)
     result.value   = optionalField[uint32](fr, "NAM9")
 
@@ -34,7 +35,7 @@ proc parseFormReference(fr: var string): MWFormReference =
     result.trpname  = optionalField[zstring](fr, "TNAM")
     result.disabled = optionalField[uint8](fr, "ZNAM")
 
-    if objectField(fr, "DATA", result.pos, $result.ref_id):
+    if optionalObjectField(fr, "DATA", result.pos):
       result.pos = MWReferencePosition(pos_x: readFloat32(fr),
                                        pos_y: readFloat32(fr),
                                        pos_z: readFloat32(fr),

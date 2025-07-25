@@ -141,6 +141,23 @@ proc repeatablePairField* [T, Y](fr: var string, names: array[2, string]): seq[(
       else: break
       result.add(optionalPairField[T, Y](fr, names))
 
+proc optionalTriadField* [T, Y, U](fr: var string, names: array[3, string]): (T, Y, U) =
+    if len(fr) >= 4:
+      for i, name in names.pairs:
+        if fr[0..3] == name:
+          case i:
+            of 0: result[0] = optionalField[T](fr, name)
+            of 1: result[1] = optionalField[Y](fr, name)
+            of 2: result[2] = optionalField[U](fr, name)
+
+proc repeatableTriadField* [T, Y, U](fr: var string, names: array[3, string]): seq[(T, Y, U)] =
+    while true:
+      if len(fr) >= 4:
+        if fr[0..3] notin names:
+          break
+      else: break
+      result.add(optionalTriadField[T, Y, U](fr, names))
+
 proc processAIPackage* (fr: var string): ((int, MWAIPackageActivate),
                                           (int, MWAIPackageEscort),
                                           (int, MWAIPackageFollow),

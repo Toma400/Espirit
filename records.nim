@@ -587,6 +587,53 @@ type
                 (int, MWAIPackageFollow),
                 (int, MWAIPackageTravel),
                 (int, MWAIPackageWander))
+  MWDialogueTopicData* = object of MWRecordData
+    kind*    : uint8
+    dummy*   : array[3, uint8]
+    disp_ji* : uint32
+    rank*    : int8
+    gender*  : int8
+    pcrank*  : int8
+    dummy2*  : uint8
+  MWDialogueTopic* = object of MWRecord
+    id*   : string
+    prev* : string
+    next* : string
+    data* : MWDialogueTopicData
+    actor*  : string
+    race*   : string
+    class*  : string
+    fact*   : string                         # faction
+    cell*   : string
+    pcfact* : string                         # PC faction
+    sound*  : string
+    resp*   : string                         # response text
+    fvstr*  : seq[(string, uint32, float32)] # strings for the Function/Variable list
+    rest*   : string                         # result text
+    qname*  : uint8                          # journal # bool8 | quest name      | only one of `q..` can be set to 1
+    qfin*   : uint8                                    # bool8 | quest finished  | meaning it is working as enum
+    qres*   : uint8                                    # bool8 | quest restarted
+  MWDialogue* = object of MWRecord
+    name*   : string
+    kind*   : uint8
+    topics* : seq[MWDialogueTopic] # topics following DIAL entry
+  MWPathPoint* = object of MWRecordData
+    x*         : int32
+    y*         : int32
+    z*         : int32
+    flags*     : uint8
+    con_count* : uint8  # connection count (number of entries in PGRC)
+    unknown*   : uint16 # unknown (likely alignment padding)
+  MWPathgridData* = object of MWRecordData
+    grid_x*       : int32
+    grid_y*       : int32
+    flags*        : uint16
+    ppoint_count* : uint16 # path point count (used by .ppoint and .clist of main record)
+  MWPathgrid* = object of MWRecord
+    data*   : MWPathgridData
+    cell*   : string           # cell name the path grid belongs to
+    ppoint* : seq[MWPathPoint] # path points
+    clist*  : seq[uint32]      # connection list
   MWCellData* = object of MWRecordData
     flags*  : uint32
     grid_x* : int32
@@ -650,4 +697,4 @@ type
   MWCommonRecord* = MWCloth | MWMisc | MWStatic | MWIngredient  | MWContainer | MWBook        | MWLeveledItem | MWActivator | MWArmor |
                     MWLight | MWDoor | MWPotion | MWLandTexture | MWRegion    | MWRepairTool  | MWApparatus   | MWLock      | MWProbe |
                     MWBody  | MWRace | MWClass  | MWWeapon      | MWBirthsign | MWEnchantment | MWSpell       | MWFaction   | MWSound |
-                              MWNPC             | MWCreature    | MWLeveledCreature | MWSoundGenerator
+                    MWNPC   | MWCreature        | MWLeveledCreature           | MWSoundGenerator              | MWDialogueTopic
