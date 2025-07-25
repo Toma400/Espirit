@@ -1,55 +1,13 @@
-import mwparsers/mwcell
-import mwparsers/mwstat
-import mwparsers/mwmisc
-import mwparsers/mwingr
-import mwparsers/mwlevi
-import mwparsers/mwcont
-import mwparsers/mwbook
-import mwparsers/mwacti
-import mwparsers/mwclot
-import mwparsers/mwligh
-import mwparsers/mwdoor
-import mwparsers/mwalch
-import mwparsers/mwland
-import mwparsers/mwltex
-import mwparsers/mwregn
-import mwparsers/mwrepa
-import mwparsers/mwappa
-import mwparsers/mwprob
-import mwparsers/mwlock
-import mwparsers/mwskil
-import mwparsers/mwscpt
-import mwparsers/mwglob
-import mwparsers/mwsscr
-import mwparsers/mwbody
-import mwparsers/mwgmst
-import mwparsers/mwarmo
-import mwparsers/mwweap
-import mwparsers/mwclas
-import mwparsers/mwrace
-import mwparsers/mwbsgn
-import mwparsers/mwmgef
-import mwparsers/mwench
-import mwparsers/mwspel
-import mwparsers/mwfact
-import mwparsers/mwsoun
-import mwparsers/mwsndg
-import mwparsers/mwcrea
-import mwparsers/mwlevc
-import mwparsers/mwdial
-import mwparsers/mwpgrd
-import mwparsers/mwnpc
-import std/strformat
-import std/strutils
-import std/times
-import std/math
-import std/os
-import formats
-import records
-import recordsutils
+import espirit/mwparsers/[
+    mwcell, mwstat, mwmisc, mwingr, mwlevi, mwcont, mwbook, mwacti, mwclot, mwligh, mwdoor,
+    mwalch, mwland, mwltex, mwregn, mwrepa, mwappa, mwprob, mwlock, mwskil, mwscpt, mwglob,
+    mwsscr, mwbody, mwgmst, mwarmo, mwweap, mwclas, mwrace, mwbsgn, mwmgef, mwench, mwspel,
+    mwfact, mwsoun, mwsndg, mwcrea, mwlevc, mwdial, mwpgrd, mwnpc
+]
+import espirit/[formats, records, recordsutils, parse]
+import std/[strformat, strutils, times, math, os]
 import streams
 import tables
-import parse
 
 export tables
 export records
