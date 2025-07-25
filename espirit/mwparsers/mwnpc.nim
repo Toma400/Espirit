@@ -31,7 +31,7 @@ proc parseNPC* (fr: var string): MWNPC =
                                           disp:    readUint8(fr),
                                           rep:     readUint8(fr),
                                           rank:    readUint8(fr),
-                                          alg_pad: readUint8(fr),
+                                          alg_pad: [readUint8(fr), readUint8(fr), readUint8(fr)],
                                           gold:    readUint32(fr),
                                           size:    length)
         of 52:

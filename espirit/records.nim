@@ -557,7 +557,7 @@ type
     disp*    : uint8
     rep*     : uint8
     rank*    : uint8
-    alg_pad* : uint8
+    alg_pad* : array[3, uint8]
     gold*    : uint32
   MWNPCDataACClear* = object of MWRecordData
     level*   : uint16
