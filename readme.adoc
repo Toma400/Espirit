@@ -47,11 +47,7 @@ executable is recommended. I will search for ways for Espirit to be
 faster when doing large file analysis.
 
 === License
-Espirit is allowed for personal and non-commercial use as dependency
-for other projects. +
-You can use it as library and fork to create PRs, but I do not permit
-using its code for other reasons. Training for large language models
-is specifically prohibited. +
+Espirit is using MIT Non-AI License, that can be found link:license.adoc[here].
 
 === FAQ
 Q: *Will other games (Oblivion, Skyrim, Fallout) be covered?* +
