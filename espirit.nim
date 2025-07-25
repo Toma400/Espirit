@@ -9,9 +9,9 @@ import std/[strformat, strutils, times, math, os]
 import streams
 import tables
 
-export espirit/records
-export espirit/recordsutils
-export espirit/indexes
+export records
+export recordsutils
+export indexes
 export tables
 
 type
