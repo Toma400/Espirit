@@ -43,9 +43,9 @@ proc parseFormReference(fr: var string): MWFormReference =
                                        rot_y: readFloat32(fr),
                                        rot_z: readFloat32(fr))
 
-proc parseCELL* (fr: var string): MWCell =
+proc parseCELL* (fr: var string, header: MWRecordHeader): MWCell =
     #[ Parses single CELL key of .esm/.esp files and returns it as MWCell object ]#
-    result.header = parseRecordHeader(fr, result)
+    setRecordData(result, header)
 
     result.name  = requiredField[zstring](fr, "NAME", field_key)
 

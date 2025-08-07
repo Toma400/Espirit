@@ -5,9 +5,9 @@ import ../parse
 const field_key  = "DIAL"
 const field_keyb = "INFO"
 
-proc parseINFO* (fr: var string): MWDialogueTopic =
+proc parseINFO* (fr: var string, header: MWRecordHeader): MWDialogueTopic =
     #[ Parses single INFO key of .esm/.esp files and returns it as MWDialogueTopic object ]#
-    result.header = parseRecordHeader(fr, result)
+    setRecordData(result, header)
 
     result.id   = requiredField[zstring](fr, "INAM", field_keyb)
     result.prev = requiredField[zstring](fr, "PNAM", field_keyb) # may need to be optional in case first/last entry doesn't have that field
@@ -36,9 +36,9 @@ proc parseINFO* (fr: var string): MWDialogueTopic =
     result.qfin   = optionalField[uint8](fr, "QSTF")
     result.qres   = optionalField[uint8](fr, "QSTR")
 
-proc parseDIAL* (fr: var string, info_seq: var seq[MWDialogueTopic]): MWDialogue =
+proc parseDIAL* (fr: var string, header: MWRecordHeader, info_seq: var seq[MWDialogueTopic]): MWDialogue =
     #[ Parses single DIAL key of .esm/.esp files and returns it as MWDialogue object ]#
-    result.header = parseRecordHeader(fr, result)
+    setRecordData(result, header)
 
     result.name = requiredField[zstring](fr, "NAME", field_key)
     result.kind = requiredField[uint8](fr, "DATA", field_key)
@@ -46,7 +46,8 @@ proc parseDIAL* (fr: var string, info_seq: var seq[MWDialogueTopic]): MWDialogue
     while true:
       if len(fr) >= 4:
         if fr[0..3] == "INFO":
-          let info = parseINFO(fr) # INFO consumed during header parsing
+          let info_header = parseRecordHeader(fr) # INFO consumed during header parsing
+          let info        = parseINFO(fr, info_header)
 
           result.topics.add(info)
           info_seq.add(info)

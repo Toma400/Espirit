@@ -4,9 +4,9 @@ import ../parse
 
 const field_key = "SKIL"
 
-proc parseSKIL* (fr: var string): MWSkill =
+proc parseSKIL* (fr: var string, header: MWRecordHeader): MWSkill =
     #[ Parses singel SKIL key of .esm/.esp files and returns it as MWSkill object ]#
-    result.header = parseRecordHeader(fr, result)
+    setRecordData(result, header)
 
     result.index = requiredField[uint32](fr, "INDX", field_key)
 

@@ -3,9 +3,9 @@ import ../common
 
 const field_key = "DOOR"
 
-proc parseDOOR* (fr: var string): MWDoor =
+proc parseDOOR* (fr: var string, header: MWRecordHeader): MWDoor =
     #[ Parses single DOOR key of .esm/.esp files and returns it as MWDoor object ]#
-    result.header = parseRecordHeader(fr, result)
+    setRecordData(result, header)
 
     result.id     = requiredField[zstring](fr, "NAME", field_key)
     result.model  = requiredField[zstring](fr, "MODL", field_key)

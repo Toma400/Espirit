@@ -3,9 +3,9 @@ import ../common
 
 const field_key = "LEVI"
 
-proc parseLEVI* (fr: var string): MWLeveledItem =
+proc parseLEVI* (fr: var string, header: MWRecordHeader): MWLeveledItem =
     #[ Parses single LEVI key of .esm/.esp files and returns it as MWLeveledItem object ]#
-    result.header = parseRecordHeader(fr, result)
+    setRecordData(result, header)
 
     result.id      = requiredField[zstring](fr, "NAME", field_key)
     result.flags   = requiredField[uint32](fr, "DATA", field_key)

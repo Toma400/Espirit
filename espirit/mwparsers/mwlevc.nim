@@ -3,9 +3,9 @@ import ../common
 
 const field_key = "LEVC"
 
-proc parseLEVC* (fr: var string): MWLeveledCreature =
+proc parseLEVC* (fr: var string, header: MWRecordHeader): MWLeveledCreature =
     #[ Parses single LEVC key of .esm/.esp files and returns it as MWLeveledCreature object ]#
-    result.header = parseRecordHeader(fr, result)
+    setRecordData(result, header)
 
     result.id      = requiredField[zstring](fr, "NAME", field_key)
     result.flags   = requiredField[uint32](fr, "DATA", field_key)

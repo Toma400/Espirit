@@ -4,9 +4,9 @@ import ../parse
 
 const field_key = "CLOT"
 
-proc parseCLOT* (fr: var string): MWCloth =
+proc parseCLOT* (fr: var string, header: MWRecordHeader): MWCloth =
     #[ Parses singel CLOT key of .esm/.esp files and returns it as MWCloth object ]#
-    result.header = parseRecordHeader(fr, result)
+    setRecordData(result, header)
 
     result.id    = requiredField[zstring](fr, "NAME", field_key)
     result.model = requiredField[zstring](fr, "MODL", field_key)

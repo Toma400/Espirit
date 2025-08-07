@@ -11,7 +11,24 @@ type
   zstring* = string                       # used only to differentiate between MW's string and zstring for [T] handling
   rgb*     = (uint8, uint8, uint8, uint8) # shortcut
 
-proc parseRecordHeader* (fr: var string, rc: var MWRecord): MWRecordHeader = # parses first 12 'loose bytes'
+proc parseRecordHeader* (fr: var string): MWRecordHeader = # parses first 12 'loose bytes'
+    for _ in 1..4:
+      result.name.add(readChar(fr))
+    result.size  = readUint32(fr)
+    result.dummy = readUint32(fr)
+    result.flags = readUint32(fr)
+
+    # TODO: parse [size] amount of bytes! so MWRecord parsing will be on header's contents, not `fr`
+    # also: ensure `fr` contains at least `size` amount of bytes
+
+proc setRecordData* (rc: var MWRecord, header: MWRecordHeader) =
+    let flags = checkFlagsData[MWRecordFlags, uint32](header.flags)
+    rc.deleted  = Deleted       in flags
+    rc.disabled = DisabledInit  in flags
+    rc.blocked  = Blocked       in flags
+    rc.persrf   = PersistentRef in flags
+
+proc parseRecordHeader* (fr: var string, rc: var MWRecord): MWRecordHeader {.deprecated.} = # parses first 12 'loose bytes'
     for _ in 1..4:
       result.name.add(readChar(fr))
     result.size  = readUint32(fr)

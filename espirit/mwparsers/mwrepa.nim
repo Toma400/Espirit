@@ -4,9 +4,9 @@ import ../parse
 
 const field_key = "REPA"
 
-proc parseREPA* (fr: var string): MWRepairTool =
+proc parseREPA* (fr: var string, header: MWRecordHeader): MWRepairTool =
     #[ Parses single REPA key of .esm/.esp files and returns it as MWRepairTool object ]#
-    result.header = parseRecordHeader(fr, result)
+    setRecordData(result, header)
 
     result.id     = requiredField[zstring](fr, "NAME", field_key)
     result.model  = requiredField[zstring](fr, "MODL", field_key)

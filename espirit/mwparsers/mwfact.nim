@@ -11,9 +11,9 @@ proc getRankData(fr: var string): array[10, MWRankData] =
                                 fv_skill: readUint32(fr),
                                 fact_rc:  readUint32(fr))
 
-proc parseFACT* (fr: var string): MWFaction =
+proc parseFACT* (fr: var string, header: MWRecordHeader): MWFaction =
     #[ Parses single FACT key of .esm/.esp files and returns it as MWFaction object ]#
-    result.header = parseRecordHeader(fr, result)
+    setRecordData(result, header)
 
     result.id    = requiredField[zstring](fr, "NAME", field_key)
     result.name  = requiredField[zstring](fr, "FNAM", field_key)

@@ -4,9 +4,9 @@ import ../parse
 
 const field_key = "RACE"
 
-proc parseRACE* (fr: var string): MWRace =
+proc parseRACE* (fr: var string, header: MWRecordHeader): MWRace =
     #[ Parses single RACE key of .esm/.esp files and returns it as MWRace object ]#
-    result.header = parseRecordHeader(fr, result)
+    setRecordData(result, header)
 
     result.id   = requiredField[zstring](fr, "NAME", field_key)
     result.name = optionalField[zstring](fr, "FNAM")

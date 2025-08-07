@@ -4,9 +4,9 @@ import ../parse
 
 const field_key = "APPA"
 
-proc parseAPPA* (fr: var string): MWApparatus =
+proc parseAPPA* (fr: var string, header: MWRecordHeader): MWApparatus =
     #[ Parses single APPA key of .esm/.esp files and returns it as MWApparatus object ]#
-    result.header = parseRecordHeader(fr, result)
+    setRecordData(result, header)
 
     result.id     = requiredField[zstring](fr, "NAME", field_key)
     result.model  = optionalField[zstring](fr, "MODL")

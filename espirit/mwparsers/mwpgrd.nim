@@ -4,9 +4,9 @@ import ../parse
 
 const field_key = "PGRD"
 
-proc parsePGRD* (fr: var string): MWPathgrid =
+proc parsePGRD* (fr: var string, header: MWRecordHeader): MWPathgrid =
     #[ Parses single PGRD key of .esm/.esp files and returns it as MWPathgrid object ]#
-    result.header = parseRecordHeader(fr, result)
+    setRecordData(result, header)
 
     var frr = readStr(fr, int(result.header.size))
 

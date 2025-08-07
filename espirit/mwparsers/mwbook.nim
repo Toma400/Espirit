@@ -4,9 +4,9 @@ import ../parse
 
 const field_key = "BOOK"
 
-proc parseBOOK* (fr: var string): MWBook =
+proc parseBOOK* (fr: var string, header: MWRecordHeader): MWBook =
     #[ Parses single BOOK key of .esm/.esp files and returns it as MWBook object ]#
-    result.header = parseRecordHeader(fr, result)
+    setRecordData(result, header)
 
     result.id    = requiredField[zstring](fr, "NAME", field_key)
     result.model = requiredField[zstring](fr, "MODL", field_key)

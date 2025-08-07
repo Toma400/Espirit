@@ -4,9 +4,9 @@ import ../parse
 
 const field_key = "MISC"
 
-proc parseMISC* (fr: var string): MWMisc =
+proc parseMISC* (fr: var string, header: MWRecordHeader): MWMisc =
     #[ Parses single MISC key of .esm/.esp files and returns it as MWMisc object ]#
-    result.header = parseRecordHeader(fr, result)
+    setRecordData(result, header)
 
     result.id    = requiredField[zstring](fr, "NAME", field_key)
     result.model = requiredField[zstring](fr, "MODL", field_key)

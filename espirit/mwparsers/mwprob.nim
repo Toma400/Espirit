@@ -4,10 +4,9 @@ import ../parse
 
 const field_key = "PROB"
 
-proc parsePROB* (fr: var string): MWProbe =
+proc parsePROB* (fr: var string, header: MWRecordHeader): MWProbe =
     #[ Parses single PROB key of .esm/.esp files and returns it as MWProbe object ]#
-    # optional handling uses `fr[0..3]` for scouting, instead of `readStr`/other
-    result.header = parseRecordHeader(fr, result)
+    setRecordData(result, header)
 
     result.id    = requiredField[zstring](fr, "NAME", field_key)
     result.model = requiredField[zstring](fr, "MODL", field_key)

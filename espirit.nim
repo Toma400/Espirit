@@ -4,7 +4,7 @@ import espirit/mwparsers/[
     mwsscr, mwbody, mwgmst, mwarmo, mwweap, mwclas, mwrace, mwbsgn, mwmgef, mwench, mwspel,
     mwfact, mwsoun, mwsndg, mwcrea, mwlevc, mwdial, mwpgrd, mwnpc
 ]
-import espirit/[formats, records, recordsutils, indexes, parse]
+import espirit/[formats, records, recordsutils, indexes, parse, common]
 import std/[strformat, strutils, times, math, os]
 import streams
 import tables
@@ -161,53 +161,57 @@ proc newMWPlugin* (path: string, echo_index = false, echo_details = false): MWPl
       let time = cpuTime()
       if echo_index and echo_details:
         em = fmt" | Type: {fr[0..3]} | Remaining bytes: {len(fr)}"
-      case fr[0..3]: # checks record type (consumed during record header parsing)
-        of "MAST": parseMAST(fr, result.deps)
-        of "CLOT": result.clot.add(parseCLOT(fr))
-        of "STAT": result.stat.add(parseSTAT(fr))
-        of "MISC": result.misc.add(parseMISC(fr))
-        of "INGR": result.ingr.add(parseINGR(fr))
-        of "CONT": result.cont.add(parseCONT(fr))
-        of "LEVI": result.levi.add(parseLEVI(fr))
-        of "BOOK": result.book.add(parseBOOK(fr))
-        of "ACTI": result.acti.add(parseACTI(fr))
-        of "LIGH": result.ligh.add(parseLIGH(fr))
-        of "DOOR": result.door.add(parseDOOR(fr))
-        of "ALCH": result.alch.add(parseALCH(fr))
-        of "LAND": result.land.add(parseLAND(fr))
-        of "LTEX": result.ltex.add(parseLTEX(fr))
-        of "REGN": result.regn.add(parseREGN(fr, result.deps))
-        of "CELL": result.cell.add(parseCELL(fr))
-        of "WEAP": result.weap.add(parseWEAP(fr))
-        of "ARMO": result.armo.add(parseARMO(fr))
-        of "REPA": result.repa.add(parseREPA(fr))
-        of "APPA": result.appa.add(parseAPPA(fr))
-        of "LOCK": result.lock.add(parseLOCK(fr))
-        of "PROB": result.prob.add(parsePROB(fr))
-        of "SKIL": result.skil.add(parseSKIL(fr))
-        of "SCPT": result.scpt.add(parseSCPT(fr))
-        of "GLOB": result.glob.add(parseGLOB(fr))
-        of "SSCR": result.sscr.add(parseSSCR(fr))
-        of "BODY": result.body.add(parseBODY(fr))
-        of "GMST": result.gmst.add(parseGMST(fr))
-        of "CLAS": result.clas.add(parseCLAS(fr))
-        of "RACE": result.race.add(parseRACE(fr))
-        of "SPEL": result.spel.add(parseSPEL(fr))
-        of "ENCH": result.ench.add(parseENCH(fr))
-        of "MGEF": result.mgef.add(parseMGEF(fr))
-        of "BSGN": result.bsgn.add(parseBSGN(fr))
-        of "FACT": result.fact.add(parseFACT(fr))
-        of "SOUN": result.soun.add(parseSOUN(fr))
-        of "SNDG": result.sndg.add(parseSNDG(fr))
-        of "CREA": result.crea.add(parseCREA(fr))
-        of "LEVC": result.levc.add(parseLEVC(fr))
-        of "PGRD": result.pgrd.add(parsePGRD(fr))
-        of "DIAL": result.dial.add(parseDIAL(fr, result.info))                    # Includes also INFO
-        of "INFO": raise newException(ParseError, fmt"INFO record out of order!") # INFO should always be parsed by DIAL
-        of "NPC_": result.npc.add(parseNPC(fr))
-        else:
-          result.fin = false
-          break
+
+      if fr[0..3] == "MAST":
+        parseMAST(fr, result.deps)
+      else:
+        let header = parseRecordHeader(fr)
+        case header.name: # checks record type (consumed during record header parsing)
+          of "CLOT": result.clot.add(parseCLOT(fr, header))
+          of "STAT": result.stat.add(parseSTAT(fr, header))
+          of "MISC": result.misc.add(parseMISC(fr, header))
+          of "INGR": result.ingr.add(parseINGR(fr, header))
+          of "CONT": result.cont.add(parseCONT(fr, header))
+          of "LEVI": result.levi.add(parseLEVI(fr, header))
+          of "BOOK": result.book.add(parseBOOK(fr, header))
+          of "ACTI": result.acti.add(parseACTI(fr, header))
+          of "LIGH": result.ligh.add(parseLIGH(fr, header))
+          of "DOOR": result.door.add(parseDOOR(fr, header))
+          of "ALCH": result.alch.add(parseALCH(fr, header))
+          of "LAND": result.land.add(parseLAND(fr, header))
+          of "LTEX": result.ltex.add(parseLTEX(fr, header))
+          of "REGN": result.regn.add(parseREGN(fr, header, result.deps))
+          of "CELL": result.cell.add(parseCELL(fr, header))
+          of "WEAP": result.weap.add(parseWEAP(fr, header))
+          of "ARMO": result.armo.add(parseARMO(fr, header))
+          of "REPA": result.repa.add(parseREPA(fr, header))
+          of "APPA": result.appa.add(parseAPPA(fr, header))
+          of "LOCK": result.lock.add(parseLOCK(fr, header))
+          of "PROB": result.prob.add(parsePROB(fr, header))
+          of "SKIL": result.skil.add(parseSKIL(fr, header))
+          of "SCPT": result.scpt.add(parseSCPT(fr, header))
+          of "GLOB": result.glob.add(parseGLOB(fr, header))
+          of "SSCR": result.sscr.add(parseSSCR(fr, header))
+          of "BODY": result.body.add(parseBODY(fr, header))
+          of "GMST": result.gmst.add(parseGMST(fr, header))
+          of "CLAS": result.clas.add(parseCLAS(fr, header))
+          of "RACE": result.race.add(parseRACE(fr, header))
+          of "SPEL": result.spel.add(parseSPEL(fr, header))
+          of "ENCH": result.ench.add(parseENCH(fr, header))
+          of "MGEF": result.mgef.add(parseMGEF(fr, header))
+          of "BSGN": result.bsgn.add(parseBSGN(fr, header))
+          of "FACT": result.fact.add(parseFACT(fr, header))
+          of "SOUN": result.soun.add(parseSOUN(fr, header))
+          of "SNDG": result.sndg.add(parseSNDG(fr, header))
+          of "CREA": result.crea.add(parseCREA(fr, header))
+          of "LEVC": result.levc.add(parseLEVC(fr, header))
+          of "PGRD": result.pgrd.add(parsePGRD(fr, header))
+          of "DIAL": result.dial.add(parseDIAL(fr, header, result.info))                    # Includes also INFO
+          of "INFO": raise newException(ParseError, fmt"INFO record out of order!") # INFO should always be parsed by DIAL
+          of "NPC_": result.npc.add(parseNPC(fr, header))
+          else:
+            result.fin = false
+            break
 
       if echo_index:
         ei += 1

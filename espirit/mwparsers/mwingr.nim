@@ -4,9 +4,9 @@ import ../parse
 
 const field_key = "INGR"
 
-proc parseINGR* (fr: var string): MWIngredient =
+proc parseINGR* (fr: var string, header: MWRecordHeader): MWIngredient =
     #[ Parses single INGR key of .esm/.esp files and returns it as MWIngredient object ]#
-    result.header = parseRecordHeader(fr, result)
+    setRecordData(result, header)
 
     result.id    = requiredField[zstring](fr, "NAME", field_key)
     result.model = requiredField[zstring](fr, "MODL", field_key)

@@ -6,9 +6,9 @@ import tables
 
 const field_key = "REGN"
 
-proc parseREGN* (fr: var string, deps: OrderedTable[string, uint64]): MWRegion =
+proc parseREGN* (fr: var string, header: MWRecordHeader, deps: OrderedTable[string, uint64]): MWRegion =
     #[ Parses single REGN key of .esm/.esp files and returns it as MWRegion object ]#
-    result.header = parseRecordHeader(fr, result)
+    setRecordData(result, header)
 
     var exp = (t: false, b: false) # checks if expansion is used
     for f, _ in deps:

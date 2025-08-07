@@ -4,9 +4,9 @@ import ../parse
 
 const field_key = "WEAP"
 
-proc parseWEAP* (fr: var string): MWWeapon =
+proc parseWEAP* (fr: var string, header: MWRecordHeader): MWWeapon =
     #[ Parses single WEAP key of .esm/.esp files and returns it as MWWeapon object ]#
-    result.header = parseRecordHeader(fr, result)
+    setRecordData(result, header)
 
     result.id    = requiredField[string](fr, "NAME", field_key)
     result.model = requiredField[string](fr, "MODL", field_key)

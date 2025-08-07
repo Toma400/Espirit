@@ -3,9 +3,9 @@ import ../common
 
 const field_key = "GLOB"
 
-proc parseGLOB* (fr: var string): MWGlobal =
+proc parseGLOB* (fr: var string, header: MWRecordHeader): MWGlobal =
     #[ Parses single GLOB key of .esm/.esp files and returns it as MWGlobal object ]#
-    result.header = parseRecordHeader(fr, result)
+    setRecordData(result, header)
 
     result.name  = requiredField[zstring](fr, "NAME", field_key)
     result.ftype = requiredField[char](fr,    "FNAM", field_key)
